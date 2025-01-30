@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" class="sl-theme-dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}}</title>
+    {{- template "partials/scripts" .}}
+</head>
+
+<body hx-ext="shoelace">
+    <div hx-ext="debug" id="real-body">
+        {{- template "partials/header" .}}
+        {{- if .CenterContent}}
+        <main id="main" class="center-content">
+            {{- embed}}
+        </main>
+        {{- else}}
+        <main id="main">
+            {{- embed}}
+            {{- template "partials/footer" .}}
+        </main>
+        {{- end}}
+    </div>
+</body>
+
+</html>

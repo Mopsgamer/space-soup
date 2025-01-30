@@ -1,0 +1,74 @@
+package internal
+
+import (
+	"fmt"
+
+	"github.com/Mopsgamer/space-soup/internal/controller"
+	"github.com/Mopsgamer/space-soup/internal/controller/controller_http"
+
+	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/middleware/logger"
+	"github.com/gofiber/fiber/v3/middleware/static"
+)
+
+// Initialize gofiber application, including DB and view engine.
+func NewApp() (*fiber.App, error) {
+	engine := NewAppHtmlEngine()
+	app := fiber.New(fiber.Config{
+		Views:             engine,
+		PassLocalsToViews: true,
+	})
+
+	app.Use(logger.New())
+
+	UseHttp := func(handler func(ctl controller_http.ControllerHttp) error) fiber.Handler {
+		return func(ctx fiber.Ctx) error {
+			ctl := controller_http.ControllerHttp{
+				Ctx: ctx,
+			}
+
+			return handler(ctl)
+		}
+	}
+
+	UseHttpPage := func(
+		templatePath string,
+		bind *fiber.Map,
+		redirect controller_http.RedirectCompute,
+		layouts ...string,
+	) fiber.Handler {
+		bindx := fiber.Map{
+			"Title": "?",
+		}
+		bindx = controller.MapMerge(&bindx, bind)
+		return UseHttp(func(ctl controller_http.ControllerHttp) error {
+			return ctl.RenderPage(
+				templatePath,
+				&bindx,
+				redirect,
+				layouts...,
+			)
+		})
+	}
+
+	// static
+	app.Get("/static/*", static.New("./web/static", static.Config{Browse: true}))
+	app.Get("/partials*", static.New("./web/templates/partials", static.Config{Browse: true}))
+
+	// pages
+	var noRedirect controller_http.RedirectCompute = func(ctl controller_http.ControllerHttp, bind *fiber.Map) string { return "" }
+
+	app.Get("/", UseHttpPage("homepage", &fiber.Map{"Title": "Home", "IsHomePage": true}, noRedirect, "partials/main"))
+	app.Get("/terms", UseHttpPage("terms", &fiber.Map{"Title": "Terms", "CenterContent": true}, noRedirect, "partials/main"))
+	app.Get("/privacy", UseHttpPage("privacy", &fiber.Map{"Title": "Privacy", "CenterContent": true}, noRedirect, "partials/main"))
+	app.Get("/acknowledgements", UseHttpPage("acknowledgements", &fiber.Map{"Title": "Acknowledgements"}, noRedirect, "partials/main"))
+
+	app.Use(UseHttpPage("partials/x", &fiber.Map{
+		"Title":         fmt.Sprintf("%d", fiber.StatusNotFound),
+		"StatusCode":    fiber.StatusNotFound,
+		"StatusMessage": fiber.ErrNotFound.Message,
+		"CenterContent": true,
+	}, noRedirect, "partials/main"))
+
+	return app, nil
+}

@@ -1,0 +1,135 @@
+@import url("../../../node_modules/@shoelace-style/shoelace/dist/themes/light.css");
+@import url("../../../node_modules/@shoelace-style/shoelace/dist/themes/dark.css");
+@import url("./theme.css");
+@import url("./shoelace-ext.css");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    .limited {
+        @apply overflow-hidden text-ellipsis;
+    }
+
+    .aligned {
+        @apply relative flex items-center gap-2;
+    }
+
+    .section {
+        @apply flex flex-col gap-4;
+    }
+}
+
+@layer base {
+    #header {
+        @apply relative flex justify-between bg-neutral-100 p-4 shadow-lg z-20;
+        & > nav {
+            @apply flex items-center;
+        }
+        sl-icon-button {
+            @apply text-3xl;
+        }
+    }
+
+    #main {
+        @apply h-full overflow-auto;
+    }
+
+    #footer {
+        @apply relative flex flex-row flex-wrap justify-between bg-neutral-200 p-24 gap-12;
+        section {
+            @apply flex flex-col gap-4;
+            h1, h2, h3, h4, h5, h6 {
+                @apply m-0 border-none;
+            }
+            nav {
+                @apply flex flex-col gap-1 text-lg;
+                a {
+                    @apply flex items-center gap-3;
+                    &:hover {
+                        @apply text-primary-600;
+                    }
+                }
+            }
+        }
+    }
+
+    /* normal body contains modals. real does not */
+    #real-body {
+        @apply relative flex flex-col h-full overflow-auto;
+        .center-content {
+            @apply flex flex-col size-full justify-center items-center;
+        }
+    }
+}
+
+@layer base {
+    body:has(:not(:defined)) {
+        @apply hidden;
+    }
+
+    body {
+        @apply h-svh bg-neutral-100 text-neutral-700;
+    }
+
+    code, pre {
+        @apply border-neutral-200 border bg-neutral-50 rounded p-1;
+    }
+
+    pre {
+        @apply overflow-auto;
+    }
+
+    table {
+        @apply border-collapse;
+        & > tbody {
+            @apply border bg-neutral-50 rounded;
+        }
+        th, td {
+            @apply p-2 border border-neutral-300 text-neutral-700;
+        }
+        th {
+            @apply bg-neutral-200;
+        }
+    }
+
+    form {
+        @apply section;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        @apply aligned relative p-2 border-neutral-200 font-bold;
+    }
+    h1 {
+        @apply text-4xl mt-12 mb-6;
+    }
+    h2 {
+        @apply text-3xl mt-9 mb-5 border-b;
+    }
+    h3 {
+        @apply text-2xl mt-9 mb-4 border-b;
+    }
+    h4 {
+        @apply text-xl mt-7 mb-3 border-b;
+    }
+    h5 {
+        @apply text-lg mt-7 mb-2;
+    }
+    h6 {
+        @apply text-base mt-5 mb-1;
+    }
+}
+
+@layer components {
+    .note-header {
+        @apply text-neutral-500 p-2 font-semibold;
+    }
+
+    .dialog-footer {
+        @apply flex flex-col gap-2;
+        div {
+            @apply aligned flex justify-end items-center gap-2;
+        }
+    }
+}
