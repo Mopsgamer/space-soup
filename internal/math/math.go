@@ -136,3 +136,39 @@ func RightAscension(S, t float64) (alpha float64) {
 	alpha = S - t
 	return alpha
 }
+
+type Orbit struct {
+	A     float64
+	z_fix float64
+	delta float64
+	sin_t float64
+	cos_t float64
+	t     float64
+	// TODO: StellarTime
+}
+
+func NewOrbit(t1, t2, v_avg float64) (*Orbit, error) {
+	A, err := Azimuth(t1, t2)
+	if err != nil {
+		return nil, err
+	}
+
+	z_fix, err := ZenithAngle(t1, t2, A, v_avg)
+	if err != nil {
+		return nil, err
+	}
+
+	delta := RadiantDeclination(z_fix, A)
+	sin_t, cos_t, t := RadiantClockAngle(A, z_fix, delta)
+
+	// TODO: StellarTime
+
+	return &Orbit{
+		A:     A,
+		z_fix: z_fix,
+		delta: delta,
+		sin_t: sin_t,
+		cos_t: cos_t,
+		t:     t,
+	}, nil
+}

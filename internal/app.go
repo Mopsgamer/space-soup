@@ -5,6 +5,7 @@ import (
 
 	"github.com/Mopsgamer/space-soup/internal/controller"
 	"github.com/Mopsgamer/space-soup/internal/controller/controller_http"
+	"github.com/Mopsgamer/space-soup/internal/controller/model_http"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/logger"
@@ -59,9 +60,27 @@ func NewApp() (*fiber.App, error) {
 	var noRedirect controller_http.RedirectCompute = func(ctl controller_http.ControllerHttp, bind *fiber.Map) string { return "" }
 
 	app.Get("/", UseHttpPage("homepage", &fiber.Map{"Title": "Home", "IsHomePage": true}, noRedirect, "partials/main"))
+	app.Get("/calc", UseHttpPage("calc", &fiber.Map{"Title": "Calculate", "IsCalc": true}, noRedirect, "partials/main"))
 	app.Get("/terms", UseHttpPage("terms", &fiber.Map{"Title": "Terms", "CenterContent": true}, noRedirect, "partials/main"))
 	app.Get("/privacy", UseHttpPage("privacy", &fiber.Map{"Title": "Privacy", "CenterContent": true}, noRedirect, "partials/main"))
 	app.Get("/acknowledgements", UseHttpPage("acknowledgements", &fiber.Map{"Title": "Acknowledgements"}, noRedirect, "partials/main"))
+
+	// calc
+	app.Post("/process", UseHttp(func(ctl controller_http.ControllerHttp) error {
+		process := new(model_http.Process)
+		if err := ctl.BindAll(process); err != nil {
+			return ctl.RenderInternalError("err-request")
+		}
+
+		orbit, err := process.NewOrbit()
+		if err != nil {
+			return ctl.RenderDanger(err.Error(), "err-orbit")
+		}
+
+		return ctl.Ctx.Render("partials/process", fiber.Map{
+			"Orbit": orbit,
+		})
+	}))
 
 	app.Use(UseHttpPage("partials/x", &fiber.Map{
 		"Title":         fmt.Sprintf("%d", fiber.StatusNotFound),
