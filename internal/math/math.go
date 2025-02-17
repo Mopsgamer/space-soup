@@ -127,37 +127,63 @@ func RadiantClockAngle(A, z_fix, delta float64) (sin_t, cos_t, t float64) {
 }
 
 // step 7
-func StellarTime(c2, d, h, m float64) (S float64) {
-	S = c2 + 0.98565*d + 15.0411*h + 0.25068*m
+func StellarTime(c2 float64, d, h, m int) (S float64) {
+	S = c2 + 0.98565*float64(d) + 15.0411*float64(h) + 0.25068*float64(m)
 	return S
 }
 
 // step 8
 func RightAscension(S, t float64) (alpha float64) {
-	alpha = S - t
+	alpha = S - t // 0 < alpha < 2 pi (6.28)
 	return alpha
 }
 
 // step 9
-func FixDiaurnalAberration(sin_t, cos_t, delta, v_deriv float64) (delta_alpha, delta_beta float64) {
+func FixDiaurnalAberration(sin_t, cos_t, delta, v_deriv float64) (delta_alpha, delta_delta float64) {
 	delta_alpha = -(_26_948 / v_deriv) * (cos_t / math.Cos(delta)) * math.Cos(_phi)
-	delta_beta = -(_26_948 / v_deriv) * sin_t * math.Sin(delta) * math.Cos(_phi)
-	return delta_alpha, delta_beta
+	delta_delta = -(_26_948 / v_deriv) * sin_t * math.Sin(delta) * math.Cos(_phi)
+	return delta_alpha, delta_delta
+}
+
+// step 10
+func PrepareSpeed(alpha, delta_alpha, delta, delta_delta, t, v_deriv float64) (v_geoc, v_vacuum float64) {
+	alpha_fix := alpha + delta_alpha // while alpha_fix > 0
+	delta_fix := delta + delta_delta
+
+	_ = alpha_fix // TODO: remove
+
+	// step 11
+	cos_psi_gl := -math.Sin(t) * math.Cos(delta_fix)
+	psi_gl := math.Acos(cos_psi_gl)
+	add := 0.
+	if psi_gl > 0 {
+		add = math.Pi
+	}
+	psi := psi_gl + add
+
+	// step 12
+	delta_S := math.Sqrt(math.Pow(delta_alpha*math.Cos(delta_fix), 2) + math.Pow(delta_delta, 2))
+	v_geoc = (v_deriv * math.Sin(psi-delta_S)) / math.Sin(psi)
+	// step 13
+	v_vacuum = math.Sqrt(math.Pow(v_geoc, 2) + _123_2)
+	return v_geoc, v_vacuum
 }
 
 type Meteor struct {
-	A     float64
-	z_fix float64
-	delta float64
-	sin_t float64
-	cos_t float64
-	t     float64
-	// TODO: StellarTime
+	A           float64
+	z_fix       float64
+	delta       float64
+	sin_t       float64
+	cos_t       float64
+	t           float64
+	S           float64
 	delta_alpha float64
-	delta_beta  float64
+	delta_delta float64
+	v_geoc      float64
+	v_vacuum    float64
 }
 
-func NewMeteor(t1, t2, v_avg float64, time time.Time) (*Meteor, error) {
+func NewMeteor(t1, t2, v_avg float64, tm time.Time) (*Meteor, error) {
 	A, err := Azimuth(t1, t2)
 	if err != nil {
 		return nil, err
@@ -171,9 +197,11 @@ func NewMeteor(t1, t2, v_avg float64, time time.Time) (*Meteor, error) {
 	delta := RadiantDeclination(z_fix, A)
 	sin_t, cos_t, t := RadiantClockAngle(A, z_fix, delta)
 
-	// TODO: StellarTime
-
-	delta_alpha, delta_beta := FixDiaurnalAberration(sin_t, cos_t, delta, v_deriv)
+	c2 := 1. // FIXME: unsure C2
+	S := StellarTime(c2, tm.Day(), tm.Hour(), tm.Minute())
+	alpha := RightAscension(S, t)
+	delta_alpha, delta_delta := FixDiaurnalAberration(sin_t, cos_t, delta, v_deriv)
+	v_geoc, v_vacuum := PrepareSpeed(alpha, delta_alpha, delta, delta_delta, t, v_deriv)
 
 	return &Meteor{
 		A:           A,
@@ -183,6 +211,9 @@ func NewMeteor(t1, t2, v_avg float64, time time.Time) (*Meteor, error) {
 		cos_t:       cos_t,
 		t:           t,
 		delta_alpha: delta_alpha,
-		delta_beta:  delta_beta,
+		delta_delta: delta_delta,
+		S:           S,
+		v_geoc:      v_geoc,
+		v_vacuum:    v_vacuum,
 	}, nil
 }
