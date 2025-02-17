@@ -1,10 +1,10 @@
 <div class="p-page">
     <h4 class="aligned">Input</h4>
     <form id="calc" hx-post="/process" hx-target="#output">
-        <sl-input label="t1" name="t1"></sl-input>
-        <sl-input label="t2" name="t2"></sl-input>
-        <sl-input label="v_avg" name="v_avg"></sl-input>
-        <sl-input label="date" name="date" type="datetime-local"></sl-input>
+        <sl-input label="tau1" name="tau1" step="any" type="number" value="-18.0375"></sl-input>
+        <sl-input label="tau2" name="tau2" step="any" type="number" value="-21.9851"></sl-input>
+        <sl-input label="v_avg" name="v_avg" step="any" type="number" value="30597.3333333"></sl-input>
+        <sl-input label="date" name="date" type="datetime-local" value="1972-01-25T05:23"></sl-input>
     </form>
     <h4 class="aligned">
         Output

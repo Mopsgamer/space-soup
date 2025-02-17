@@ -2,6 +2,7 @@ package math
 
 import (
 	"math"
+	"time"
 )
 
 var (
@@ -14,14 +15,14 @@ var (
 	_0_0398            = 0.0398
 	_123_2             = 123.2
 	_4_00_00           = RadiansFromDegrees(4)
-	_phi               = RadiansFromPrecDegrees(49, 24, 50)
-	_phi1              = RadiansFromPrecDegrees(34, 10, 16)  // 34°10'16''
-	_phi2              = RadiansFromPrecDegrees(110, 16, 22) // 110°16'22''
-	_26_948            = RadiansFromDegrees(26.948)          // 26,948°
-	_20_16_22          = RadiansFromPrecDegrees(20, 16, 22)  // 20°16'22''
-	_124_10_16         = RadiansFromPrecDegrees(124, 10, 16) // 124°10'16''
-	_200_16_22         = RadiansFromPrecDegrees(200, 16, 22) // 200°16'22''
-	_304_10_16         = RadiansFromPrecDegrees(304, 10, 16) // 304°10'16''
+	_phi               = RadiansFromRich(49, 24, 50)
+	_phi1              = RadiansFromRich(34, 10, 16)  // 34°10'16''
+	_phi2              = RadiansFromRich(110, 16, 22) // 110°16'22''
+	_26_948            = RadiansFromDegrees(26.948)   // 26,948°
+	_20_16_22          = RadiansFromRich(20, 16, 22)  // 20°16'22''
+	_124_10_16         = RadiansFromRich(124, 10, 16) // 124°10'16''
+	_200_16_22         = RadiansFromRich(200, 16, 22) // 200°16'22''
+	_304_10_16         = RadiansFromRich(304, 10, 16) // 304°10'16''
 )
 
 func azimuthInRange(A, more_than, less_or_eq float64) bool {
@@ -144,7 +145,7 @@ func FixDiaurnalAberration(sin_t, cos_t, delta, v_deriv float64) (delta_alpha, d
 	return delta_alpha, delta_beta
 }
 
-type Orbit struct {
+type Meteor struct {
 	A     float64
 	z_fix float64
 	delta float64
@@ -156,7 +157,7 @@ type Orbit struct {
 	delta_beta  float64
 }
 
-func NewOrbit(t1, t2, v_avg float64) (*Orbit, error) {
+func NewMeteor(t1, t2, v_avg float64, time time.Time) (*Meteor, error) {
 	A, err := Azimuth(t1, t2)
 	if err != nil {
 		return nil, err
@@ -174,7 +175,7 @@ func NewOrbit(t1, t2, v_avg float64) (*Orbit, error) {
 
 	delta_alpha, delta_beta := FixDiaurnalAberration(sin_t, cos_t, delta, v_deriv)
 
-	return &Orbit{
+	return &Meteor{
 		A:           A,
 		z_fix:       z_fix,
 		delta:       delta,

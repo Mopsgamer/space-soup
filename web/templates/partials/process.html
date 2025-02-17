@@ -1,6 +1,10 @@
-A: {{.Orbit.A}}
-z_fix: {{.Orbit.z_fix}}
-delta: {{.Orbit.delta}}
-cos_t: {{.Orbit.cos_t}}
-sin_t: {{.Orbit.sin_t}}
-t: {{.Orbit.t}}
+{{with .Meteor}}
+A: {{.A}}
+z_fix: {{.z_fix}}
+delta: {{.delta}}
+cos_t: {{.cos_t}}
+sin_t: {{.sin_t}}
+t: {{.t}}
+delta_alpha: {{.delta_alpha}}
+delta_beta: {{.delta_beta}}
+{{end}}

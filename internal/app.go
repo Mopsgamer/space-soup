@@ -72,13 +72,13 @@ func NewApp() (*fiber.App, error) {
 			return ctl.RenderInternalError("err-request")
 		}
 
-		orbit, err := process.NewOrbit()
+		meteor, err := process.NewMeteor()
 		if err != nil {
-			return ctl.RenderDanger(err.Error(), "err-orbit")
+			return ctl.RenderDanger(err.Error(), "err-calc")
 		}
 
 		return ctl.Ctx.Render("partials/process", fiber.Map{
-			"Orbit": orbit,
+			"Meteor": meteor,
 		})
 	}))
 
