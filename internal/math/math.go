@@ -6,23 +6,22 @@ import (
 
 var (
 	_1_94787   float64 = 1.94787
-	_0_9252    float64 = 0.9252
-	_0_4749    float64 = 0.4749
+	_0_9252            = 0.9252
+	_0_4749            = 0.4749
 	_10_pow_n3         = 1e-3 // 10^-3
 	_10_pow_n5         = 1e-5 // 10^-5
 	_0_65              = 0.65
 	_0_0398            = 0.0398
 	_123_2             = 123.2
-
-	_4_00_00 = RadiansFromDegrees(4)
-
-	_phi       = RadiansFromPrecDegrees(49, 24, 50)
-	_phi1      = RadiansFromPrecDegrees(34, 10, 16)  // 34°10'16''
-	_phi2      = RadiansFromPrecDegrees(110, 16, 22) // 110°16'22''
-	_20_16_22  = RadiansFromPrecDegrees(20, 16, 22)  // 20°16'22''
-	_124_10_16 = RadiansFromPrecDegrees(124, 10, 16) // 124°10'16''
-	_200_16_22 = RadiansFromPrecDegrees(200, 16, 22) // 200°16'22''
-	_304_10_16 = RadiansFromPrecDegrees(304, 10, 16) // 304°10'16''
+	_4_00_00           = RadiansFromDegrees(4)
+	_phi               = RadiansFromPrecDegrees(49, 24, 50)
+	_phi1              = RadiansFromPrecDegrees(34, 10, 16)  // 34°10'16''
+	_phi2              = RadiansFromPrecDegrees(110, 16, 22) // 110°16'22''
+	_26_948            = RadiansFromDegrees(26.948)          // 26,948°
+	_20_16_22          = RadiansFromPrecDegrees(20, 16, 22)  // 20°16'22''
+	_124_10_16         = RadiansFromPrecDegrees(124, 10, 16) // 124°10'16''
+	_200_16_22         = RadiansFromPrecDegrees(200, 16, 22) // 200°16'22''
+	_304_10_16         = RadiansFromPrecDegrees(304, 10, 16) // 304°10'16''
 )
 
 func azimuthInRange(A, more_than, less_or_eq float64) bool {
@@ -79,17 +78,17 @@ func Azimuth(t1, t2 float64) (A float64, err error) {
 }
 
 // step 2
-func ZenithAngle(t1, t2, A, v_avg float64) (z_fix float64, err error) {
+func ZenithAngle(t1, t2, A, v_avg float64) (z_fix, v_deriv float64, err error) {
 	sin_z1 := -((_0_9252 * _10_pow_n3 * v_avg * t1) / math.Cos(A-_phi1))
 	sin_z2 := -((_0_4749 * _10_pow_n3 * v_avg * t2) / math.Cos(A-_phi2))
 	z1 := math.Asin(sin_z1)
 	z2 := math.Asin(sin_z2)
 	if z1 < 0 || z2 < 0 {
-		return 0, ErrorSign2
+		return 0, 0, ErrorSign2
 	}
 
 	if z1-z2 >= _4_00_00 {
-		return 0, ErrorSign3
+		return 0, 0, ErrorSign3
 	}
 
 	// step 3
@@ -103,11 +102,11 @@ func ZenithAngle(t1, t2, A, v_avg float64) (z_fix float64, err error) {
 	}
 
 	// step 4
-	v_deriv := math.Sqrt(math.Pow(v0, 2) - _123_2)
+	v_deriv = math.Sqrt(math.Pow(v0, 2) - _123_2)
 	tan_deltaz_divide_2 := math.Abs((v_deriv-v0)/(v_deriv+v0)) * math.Tan(z_avg/2)
 	delta_z := math.Atan(tan_deltaz_divide_2) * 2
 	z_fix = z_avg + delta_z
-	return z_fix, nil
+	return z_fix, v_deriv, nil
 }
 
 // step 5
@@ -121,6 +120,7 @@ func RadiantDeclination(z_fix, A float64) (delta float64) {
 func RadiantClockAngle(A, z_fix, delta float64) (sin_t, cos_t, t float64) {
 	sin_t = (math.Sin(z_fix) * math.Sin(A)) / math.Cos(delta)
 	t = math.Asin(sin_t)
+	// TODO: maybe cos_t replacable with math.Cos(t)
 	cos_t = (math.Cos(_phi)*math.Cos(z_fix) + math.Sin(_phi)*math.Sin(z_fix)*math.Cos(A)) / t
 	return sin_t, cos_t, t
 }
@@ -137,6 +137,13 @@ func RightAscension(S, t float64) (alpha float64) {
 	return alpha
 }
 
+// step 9
+func FixDiaurnalAberration(sin_t, cos_t, delta, v_deriv float64) (delta_alpha, delta_beta float64) {
+	delta_alpha = -(_26_948 / v_deriv) * (cos_t / math.Cos(delta)) * math.Cos(_phi)
+	delta_beta = -(_26_948 / v_deriv) * sin_t * math.Sin(delta) * math.Cos(_phi)
+	return delta_alpha, delta_beta
+}
+
 type Orbit struct {
 	A     float64
 	z_fix float64
@@ -145,6 +152,8 @@ type Orbit struct {
 	cos_t float64
 	t     float64
 	// TODO: StellarTime
+	delta_alpha float64
+	delta_beta  float64
 }
 
 func NewOrbit(t1, t2, v_avg float64) (*Orbit, error) {
@@ -153,7 +162,7 @@ func NewOrbit(t1, t2, v_avg float64) (*Orbit, error) {
 		return nil, err
 	}
 
-	z_fix, err := ZenithAngle(t1, t2, A, v_avg)
+	z_fix, v_deriv, err := ZenithAngle(t1, t2, A, v_avg)
 	if err != nil {
 		return nil, err
 	}
@@ -163,12 +172,16 @@ func NewOrbit(t1, t2, v_avg float64) (*Orbit, error) {
 
 	// TODO: StellarTime
 
+	delta_alpha, delta_beta := FixDiaurnalAberration(sin_t, cos_t, delta, v_deriv)
+
 	return &Orbit{
-		A:     A,
-		z_fix: z_fix,
-		delta: delta,
-		sin_t: sin_t,
-		cos_t: cos_t,
-		t:     t,
+		A:           A,
+		z_fix:       z_fix,
+		delta:       delta,
+		sin_t:       sin_t,
+		cos_t:       cos_t,
+		t:           t,
+		delta_alpha: delta_alpha,
+		delta_beta:  delta_beta,
 	}, nil
 }
