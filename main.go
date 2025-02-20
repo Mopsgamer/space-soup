@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/Mopsgamer/space-soup/internal"
-	"github.com/Mopsgamer/space-soup/internal/environment"
+	"github.com/Mopsgamer/space-soup/server"
+	"github.com/Mopsgamer/space-soup/server/environment"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gofiber/fiber/v3/log"

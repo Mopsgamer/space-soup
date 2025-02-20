@@ -3,7 +3,7 @@ package model_http
 import (
 	"time"
 
-	"github.com/Mopsgamer/space-soup/internal/math"
+	"github.com/Mopsgamer/space-soup/server/math"
 )
 
 type Process struct {

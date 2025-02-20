@@ -3,9 +3,9 @@ package internal
 import (
 	"fmt"
 
-	"github.com/Mopsgamer/space-soup/internal/controller"
-	"github.com/Mopsgamer/space-soup/internal/controller/controller_http"
-	"github.com/Mopsgamer/space-soup/internal/controller/model_http"
+	"github.com/Mopsgamer/space-soup/server/controller"
+	"github.com/Mopsgamer/space-soup/server/controller/controller_http"
+	"github.com/Mopsgamer/space-soup/server/controller/model_http"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/logger"
@@ -53,8 +53,8 @@ func NewApp() (*fiber.App, error) {
 	}
 
 	// static
-	app.Get("/static/*", static.New("./web/static", static.Config{Browse: true}))
-	app.Get("/partials*", static.New("./web/templates/partials", static.Config{Browse: true}))
+	app.Get("/static/*", static.New("./client/static", static.Config{Browse: true}))
+	app.Get("/partials*", static.New("./client/templates/partials", static.Config{Browse: true}))
 
 	// pages
 	var noRedirect controller_http.RedirectCompute = func(ctl controller_http.ControllerHttp, bind *fiber.Map) string { return "" }

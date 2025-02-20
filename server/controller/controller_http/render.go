@@ -1,8 +1,8 @@
 package controller_http
 
 import (
-	"github.com/Mopsgamer/space-soup/internal/controller"
-	"github.com/Mopsgamer/space-soup/internal/environment"
+	"github.com/Mopsgamer/space-soup/server/controller"
+	"github.com/Mopsgamer/space-soup/server/environment"
 
 	"github.com/gofiber/fiber/v3"
 )

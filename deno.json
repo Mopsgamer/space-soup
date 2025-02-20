@@ -37,9 +37,9 @@
     },
     "exclude": [
         "websocket/**/*",
-        "web/assets/**/*",
-        "web/templates/**/*",
-        "web/**/*.css",
-        "web/static/**/*"
+        "client/assets/**/*",
+        "client/templates/**/*",
+        "client/**/*.css",
+        "client/static/**/*"
     ]
 }

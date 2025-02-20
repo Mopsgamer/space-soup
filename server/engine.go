@@ -3,7 +3,7 @@ package internal
 import (
 	"time"
 
-	"github.com/Mopsgamer/space-soup/internal/environment"
+	"github.com/Mopsgamer/space-soup/server/environment"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/template/html/v2"
@@ -11,7 +11,7 @@ import (
 
 // Initialize the view engine.
 func NewAppHtmlEngine() *html.Engine {
-	engine := html.New("./web/templates", ".html")
+	engine := html.New("./client/templates", ".html")
 
 	if environment.Environment == environment.EnvironmentDevelopment {
 		engine.Reload(true)
