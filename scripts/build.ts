@@ -7,7 +7,7 @@ import { exists, existsSync } from "@std/fs";
 import { envKeys, logBuild } from "./tool.ts";
 import dotenv from "dotenv";
 
-const folder = "client"
+const folder = "client";
 dotenv.config();
 const isWatch = Deno.args.includes("--watch");
 
@@ -18,7 +18,9 @@ type BuildOptions = esbuild.BuildOptions & {
 const environment = Number(Deno.env.get(envKeys.ENVIRONMENT));
 const minify = environment > 1;
 logBuild.info(`${envKeys.ENVIRONMENT} = ${environment}`);
-logBuild.info(`Starting bundling ${folder}${isWatch ? " in watch mode" : ""}...`);
+logBuild.info(
+    `Starting bundling ${folder}${isWatch ? " in watch mode" : ""}...`,
+);
 
 const options: esbuild.BuildOptions = {
     bundle: true,

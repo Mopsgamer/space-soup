@@ -1,4 +1,4 @@
-package math
+package soup
 
 import (
 	"math"
@@ -79,23 +79,23 @@ func Azimuth(t1, t2 float64) (A float64, err error) {
 }
 
 // step 2
-func ZenithAngle(t1, t2, A, v_avg float64) (z_fix, v_deriv float64, err error) {
+func ZenithAngle(t1, t2, A, v_avg float64) (z_avg, z_fix, v_deriv float64, err error) {
 	sin_z1 := -((_0_9252 * _10_pow_n3 * v_avg * t1) / math.Cos(A-_phi1))
 	sin_z2 := -((_0_4749 * _10_pow_n3 * v_avg * t2) / math.Cos(A-_phi2))
 	z1 := math.Asin(sin_z1)
 	z2 := math.Asin(sin_z2)
 	if z1 < 0 || z2 < 0 {
-		return 0, 0, ErrorSign2
+		return 0, 0, 0, ErrorSign2
 	}
 
 	if z1-z2 >= _4_00_00 {
-		return 0, 0, ErrorSign3
+		return 0, 0, 0, ErrorSign3
 	}
 
 	// step 3
 	delta_v := _0_65 + _0_0398*v_avg // FIXME: 0.0398 or 1.0398?
 	v0 := v_avg + delta_v
-	z_avg := (z1 + z2) / 2
+	z_avg = (z1 + z2) / 2
 	if t1 == 0 {
 		z_avg = z2
 	} else if t2 == 0 {
@@ -107,7 +107,7 @@ func ZenithAngle(t1, t2, A, v_avg float64) (z_fix, v_deriv float64, err error) {
 	tan_deltaz_divide_2 := math.Abs((v_deriv-v0)/(v_deriv+v0)) * math.Tan(z_avg/2)
 	delta_z := math.Atan(tan_deltaz_divide_2) * 2
 	z_fix = z_avg + delta_z
-	return z_fix, v_deriv, nil
+	return z_avg, z_fix, v_deriv, nil
 }
 
 // step 5
@@ -169,8 +169,9 @@ func PrepareSpeed(alpha, delta_alpha, delta, delta_delta, t, v_deriv float64) (v
 	return v_geoc, v_vacuum
 }
 
-type Meteor struct {
+type MeteoroidMovement struct {
 	A           float64
+	z_avg       float64
 	z_fix       float64
 	delta       float64
 	sin_t       float64
@@ -183,13 +184,25 @@ type Meteor struct {
 	v_vacuum    float64
 }
 
-func NewMeteor(t1, t2, v_avg float64, tm time.Time) (*Meteor, error) {
-	A, err := Azimuth(t1, t2)
+func ParseDate(date string) (time.Time, error) {
+	return time.Parse("2006-01-02T03:04", date)
+}
+
+type MeteoroidMovementInput struct {
+	Dist  int32
+	Tau1  float64
+	Tau2  float64
+	V_avg float64
+	Date  time.Time
+}
+
+func NewMeteoroidMovement(inp MeteoroidMovementInput) (*MeteoroidMovement, error) {
+	A, err := Azimuth(inp.Tau1, inp.Tau2)
 	if err != nil {
 		return nil, err
 	}
 
-	z_fix, v_deriv, err := ZenithAngle(t1, t2, A, v_avg)
+	z_avg, z_fix, v_deriv, err := ZenithAngle(inp.Tau1, inp.Tau2, A, inp.V_avg)
 	if err != nil {
 		return nil, err
 	}
@@ -198,13 +211,14 @@ func NewMeteor(t1, t2, v_avg float64, tm time.Time) (*Meteor, error) {
 	sin_t, cos_t, t := RadiantClockAngle(A, z_fix, delta)
 
 	c2 := 1. // FIXME: unsure C2
-	S := StellarTime(c2, tm.Day(), tm.Hour(), tm.Minute())
+	S := StellarTime(c2, inp.Date.YearDay()-1, inp.Date.Hour(), inp.Date.Minute())
 	alpha := RightAscension(S, t)
 	delta_alpha, delta_delta := FixDiaurnalAberration(sin_t, cos_t, delta, v_deriv)
 	v_geoc, v_vacuum := PrepareSpeed(alpha, delta_alpha, delta, delta_delta, t, v_deriv)
 
-	return &Meteor{
+	return &MeteoroidMovement{
 		A:           A,
+		z_avg:       z_avg,
 		z_fix:       z_fix,
 		delta:       delta,
 		sin_t:       sin_t,

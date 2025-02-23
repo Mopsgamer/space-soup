@@ -67,17 +67,17 @@ func NewApp() (*fiber.App, error) {
 
 	// calc
 	app.Post("/process", UseHttp(func(ctl controller_http.ControllerHttp) error {
-		process := new(model_http.Process)
-		if err := ctl.BindAll(process); err != nil {
+		req := new(model_http.MeteoroidMovement)
+		if err := ctl.BindAll(req); err != nil {
 			return ctl.RenderInternalError("err-request")
 		}
 
-		meteor, err := process.NewMeteor()
+		meteor, err := req.MeteoroidMovement()
 		if err != nil {
 			return ctl.RenderDanger(err.Error(), "err-calc")
 		}
 
-		return ctl.Ctx.Render("partials/process", fiber.Map{
+		return ctl.Ctx.Render("partials/meteoroid_movement", fiber.Map{
 			"Meteor": meteor,
 		})
 	}))

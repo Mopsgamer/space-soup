@@ -21,6 +21,7 @@
         "esbuild-plugin-tailwindcss": "npm:esbuild-plugin-tailwindcss@^1.2.1",
         "htmx-ext-debug": "npm:htmx-ext-debug@^2.0.0",
         "htmx.org": "npm:htmx.org@^1.9.12",
+        "lit": "npm:lit@^2.8.0",
         "tailwindcss": "npm:tailwindcss@^3.4.17"
     },
     "exports": {},
