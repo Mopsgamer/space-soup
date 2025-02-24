@@ -17,3 +17,7 @@ func DegreesRich(deg, min, sec float64) float64 {
 func RadiansFromRich(deg, min, sec float64) float64 {
 	return RadiansFromDegrees(DegreesRich(deg, min, sec))
 }
+
+func Ctg(x float64) float64 {
+	return math.Cos(x) / math.Sin(x)
+}

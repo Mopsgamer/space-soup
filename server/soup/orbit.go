@@ -6,23 +6,31 @@ import (
 )
 
 var (
-	_0_4703 = 0.47033133
-	_0_65   = 0.65
-	_1_0398 = 1.0398 // FIXME: 0.0398 or 1.0398?
-	_123_2  = 123.2
-	T       = 1e-3
-	l1      = 4324.
-	l2      = 8422.
-	m       = l1 / l2
-	phi     = RadiansFromRich(49, 24, 50)
-	phi1    = RadiansFromRich(34, 10, 16)  // 34°10'16''
-	phi2    = RadiansFromRich(110, 16, 22) // 110°16'22''
+	Pi0      = 1.7864122
+	_0_4703  = 0.47033133
+	_0_65    = 0.65
+	_1_0398  = 1.0398 // FIXME: 0.0398 or 1.0398?
+	_123_2   = 123.2
+	_0_01672 = 0.01672
+	e        = 0.40918274
+	e0       = 0.01675
+	T        = 1e-3
+	l1       = 4324.
+	l2       = 8422.
+	m        = l1 / l2
+	phi      = RadiansFromRich(49, 24, 50)
+	phi1     = RadiansFromRich(34, 10, 16)  // 34°10'16''
+	phi2     = RadiansFromRich(110, 16, 22) // 110°16'22''
 )
 
-// step 7
 func StellarTime(c2, d, h, m int) (S float64) {
 	S = float64(c2) + 0.98565*float64(d) + 15.0411*float64(h) + 0.25068*float64(m)
 	return S
+}
+
+func SolarLongitude(c3, d, h, m int) (lambda_theta float64) {
+	lambda_theta = -float64(c3) + 0.0000097*float64(m) + 0.000717*float64(h) + 0.017203*float64(d) + 0.034435*math.Sin(0.017203*float64(d-2))
+	return lambda_theta
 }
 
 type MeteoroidMovement struct {
@@ -57,6 +65,7 @@ type MeteoroidMovementInput struct {
 }
 
 func NewMeteoroidMovement(inp MeteoroidMovementInput) (*MeteoroidMovement, error) {
+	var temp float64
 	// step 1
 
 	k := m * (inp.Tau1 / inp.Tau2)
@@ -65,7 +74,7 @@ func NewMeteoroidMovement(inp MeteoroidMovementInput) (*MeteoroidMovement, error
 	A_gl := math.Atan((math.Cos(phi1) - k*math.Cos(phi2)) / (k*math.Sin(phi1) - math.Sin(phi2)))
 
 	// Азимут
-	A := 0.
+	var A float64
 
 	if inp.Tau1 <= 0 {
 		if inp.Tau2 < 0 {
@@ -123,15 +132,15 @@ func NewMeteoroidMovement(inp MeteoroidMovementInput) (*MeteoroidMovement, error
 	// Часовой угол радианта
 	t_gl := math.Atan((math.Sin(Z_fix) * math.Sin(A)) / (math.Cos(phi)*math.Cos(Z_fix) + math.Sin(phi)*math.Sin(Z_fix)*math.Cos(A)))
 	t := 0.
-	t_temp := math.Sin(Z_fix) * math.Sin(A)
+	temp = math.Sin(Z_fix) * math.Sin(A)
 	if t_gl >= 0 {
-		if t_temp >= 0 {
+		if temp >= 0 {
 			t = t_gl
 		} else {
 			t = t_gl + math.Pi
 		}
 	} else { // t_gl < 0
-		if t_temp >= 0 {
+		if temp >= 0 {
 			t = t_gl + math.Pi
 		} else {
 			t = t_gl + 2*math.Pi
@@ -140,7 +149,7 @@ func NewMeteoroidMovement(inp MeteoroidMovementInput) (*MeteoroidMovement, error
 
 	// step 7
 
-	c2 := inp.Dist // FIXME: unsure c2
+	c2 := inp.Dist // FIXME: c2
 	S := StellarTime(c2, inp.Date.YearDay()-1, inp.Date.Hour(), inp.Date.Minute())
 
 	// step 8
@@ -173,6 +182,136 @@ func NewMeteoroidMovement(inp MeteoroidMovementInput) (*MeteoroidMovement, error
 	// step 13
 
 	V_inf := math.Sqrt(math.Pow(V_g, 2) + _123_2)
+
+	// step 14
+
+	// Эклиптическая широта радианта
+	beta := math.Asin(-math.Sin(e)*math.Sin(alpha_fix)*math.Cos(delta_fix) + math.Cos(e) + math.Sin(delta_fix))
+
+	// step 15
+
+	// Эклиптическая долгота радианта
+	cos_lambda := ((math.Cos(delta_fix) * math.Cos(alpha_fix)) / math.Cos(beta))
+	sin_lambda := (1 / math.Cos(beta)) * (math.Cos(delta_fix)*math.Sin(alpha_fix)*math.Cos(e) + math.Sin(delta_fix)*math.Sin(e))
+	lambda := math.Atan2(sin_lambda, cos_lambda)
+
+	// step 16
+
+	c3 := 0 // FIXME: c3
+	lambda_theta := SolarLongitude(c3, inp.Date.YearDay()-1, inp.Date.Hour(), inp.Date.Minute())
+
+	// step 17
+
+	delta_theta := _0_01672 * math.Sin(lambda_theta-Pi0)
+	lambda_apex := lambda_theta + delta_theta - (math.Pi / 2)
+
+	// step 18
+
+	E_apex := math.Acos(math.Cos(beta) * math.Cos(lambda-lambda_apex))
+
+	// step 19
+
+	R := (1 - math.Pow(e0, 2)) / (1 - e0*math.Cos(lambda_theta-Pi0))
+
+	// step 20
+
+	// Орбитальная скорость Земли для данного дня
+	V_t := 29.76 * math.Sqrt((2/R)-1)
+
+	// step 21
+
+	temp = lambda_theta + delta_theta - lambda
+	cos_temp := math.Cos(temp)
+	temp_deriv_gl := math.Atan2(math.Sin(temp)-(V_t/(V_g*math.Cos(beta))), cos_temp)
+	temp_deriv := temp_deriv_gl
+	if cos_temp < 0 {
+		temp_deriv += math.Pi
+	}
+
+	lambda_deriv := lambda_theta + delta_theta - temp_deriv // 0 <= lambda_deriv <= 2*pi
+
+	// step 22
+
+	V_h := math.Sqrt(math.Pow(V_g, 2) + math.Pow(V_t, 2) - 2*V_g*V_t*math.Cos(E_apex))
+
+	// step 23
+
+	beta_deriv := math.Asin((V_g / V_h) * math.Sin(beta))
+
+	// step 24
+
+	E_deriv := math.Acos(math.Cos(beta_deriv) * math.Cos(lambda_deriv-lambda_apex))
+	_ = E_deriv
+
+	// step 25
+
+	i_gl := math.Atan(-(math.Abs(math.Tan(beta_deriv)) / math.Sin(lambda_theta-lambda_deriv)))
+	i := i_gl
+	if i_gl > 0 {
+		i += math.Pi
+	}
+
+	// step 26
+
+	Q := math.Pow(V_h/V_t, 2)
+
+	// step 27
+
+	// Величина, обратная большой полуоси
+	a := 1 / ((2 - Q) / R)
+
+	// step 28
+
+	psi := math.Acos(-math.Cos(beta_deriv) * math.Cos(lambda_theta-lambda_deriv))
+	E_theta_deriv := math.Pi - psi
+
+	// step 29
+
+	p := math.Pow(R, 2) * Q * math.Pow(math.Sin(E_theta_deriv), 2)
+	b := math.Sqrt(p * math.Abs(a))
+
+	// step 30
+
+	var c float64
+	if a > 0 {
+		c = math.Sqrt(math.Pow(a, 2) - math.Pow(b, 2))
+	} else {
+		c = math.Sqrt(math.Pow(a, 2) + math.Pow(b, 2))
+	}
+	e = math.Abs(c / a)
+
+	// step 31
+
+	q := a - c
+	if a < 0 {
+		q = c - math.Abs(a)
+	}
+	_ = q
+
+	// step 32
+
+	// Долгота восходящего узла
+	omega := lambda_theta
+	if beta_deriv < 0 {
+		omega += math.Pi
+	}
+	_ = omega
+
+	// step 33
+
+	cos_v := (p - R) / (R * e)
+	sin_v := p / (R * e) * math.Cos(i) * Ctg(lambda_deriv-lambda_theta)
+	v := math.Atan2(sin_v, cos_v)
+
+	// step 34
+
+	var wmega float64
+	if beta_deriv > 0 {
+		wmega = math.Pi - v
+	} else {
+		wmega = -v
+	}
+	_ = wmega
 
 	return &MeteoroidMovement{
 		K:           k,
