@@ -5,7 +5,7 @@ import (
 )
 
 type MeteoroidMovement struct {
-	Dist int32   `form:"dist"`
+	Dist int     `form:"dist"`
 	Tau1 float64 `form:"tau1"`
 	Tau2 float64 `form:"tau2"`
 	V1   float64 `form:"v1"`

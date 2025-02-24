@@ -1,14 +1,1 @@
-{{with .Meteor}}
-A: {{.A}}
-z_avg: {{.Z_avg}}
-z_fix: {{.Z_fix}}
-delta: {{.Delta}}
-cos_t: {{.Cos_t}}
-sin_t: {{.Sin_t}}
-t: {{.T}}
-delta_alpha: {{.Delta_alpha}}
-delta_delta: {{.Delta_delta}}
-S: {{.S}}
-v_geoc: {{.V_geoc}}
-v_vacuum: {{.V_vacuum}}
-{{end}}
+{{printf "%+v\n" .Meteor}}
