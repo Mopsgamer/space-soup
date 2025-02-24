@@ -14,7 +14,7 @@ var (
 	_0_01672 = 0.01672
 	e        = 0.40918274
 	e0       = 0.01675
-	T        = 1e-3
+	T        = 2 * 1e-3 // FIXME: T = 2 *10^-3 c. what is c
 	l1       = 4324.
 	l2       = 8422.
 	m        = l1 / l2
@@ -119,18 +119,21 @@ func NewMeteoroidMovement(inp MeteoroidMovementInput) (*MeteoroidMovement, error
 
 	// step 4
 
+	// Скорость
 	V_deriv := math.Sqrt(math.Pow(V0, 2) - _123_2)
 	delta_Z := 2 * math.Atan(math.Abs((V_deriv-V0))/(V_deriv+V0)*math.Tan(Z_avg/inp.V_avg))
+	// Зенитное расстояние радианта
 	Z_fix := Z_avg + delta_Z
 
 	// step 5
 
+	// Склонение радианта
 	delta := math.Asin(math.Sin(phi)*math.Cos(Z_fix) - math.Cos(phi)*math.Sin(Z_fix)*math.Cos(A))
 
 	// step 6
 
-	// Часовой угол радианта
 	t_gl := math.Atan((math.Sin(Z_fix) * math.Sin(A)) / (math.Cos(phi)*math.Cos(Z_fix) + math.Sin(phi)*math.Sin(Z_fix)*math.Cos(A)))
+	// Часовой угол радианта
 	t := 0.
 	temp = math.Sin(Z_fix) * math.Sin(A)
 	if t_gl >= 0 {
@@ -149,26 +152,35 @@ func NewMeteoroidMovement(inp MeteoroidMovementInput) (*MeteoroidMovement, error
 
 	// step 7
 
+	// Константа, определяемая для каждого года
 	c2 := inp.Dist // FIXME: c2
+
+	// Звездное время S в момент наблюдения
 	S := StellarTime(c2, inp.Date.YearDay()-1, inp.Date.Hour(), inp.Date.Minute())
 
 	// step 8
 
+	// Прямое восхождение радианта
 	alpha := S - t // 0 < alpha < 2 pi (6.28)
 
 	// step 9
 
+	// Поправки за суточную аберрацию в экваториальных координатах
 	delta_alpha := -((_0_4703 * math.Cos(t) * math.Cos(phi)) / (V_deriv * math.Cos(delta)))
+	// Поправки за суточную аберрацию в экваториальных координатах
 	delta_delta := -((_0_4703 * math.Sin(t) * math.Sin(delta) * math.Cos(phi)) / (V_deriv))
 
 	// step 10
 
+	// Исправленные экваториальные координаты радианта
 	alpha_fix := alpha + delta_alpha // while alpha_fix > 0
+	// Исправленные экваториальные координаты радианта
 	delta_fix := delta + delta_delta
 
 	// step 11
 
 	psi_E_gl := math.Acos(-math.Sin(t) * math.Cos(delta_fix))
+	// Элонгация
 	psi_E := psi_E_gl
 	if psi_E_gl < 0 {
 		psi_E += math.Pi
@@ -177,10 +189,12 @@ func NewMeteoroidMovement(inp MeteoroidMovementInput) (*MeteoroidMovement, error
 	// step 12
 
 	delta_s := math.Sqrt(math.Pow(delta_alpha*math.Cos(delta_fix), 2) + math.Pow(delta_delta, 2))
+	// Геоцентрическая скорость
 	V_g := V_deriv * (math.Sin(psi_E-delta_s) / math.Sin(psi_E))
 
 	// step 13
 
+	// Внеатмосферная скорость
 	V_inf := math.Sqrt(math.Pow(V_g, 2) + _123_2)
 
 	// step 14
@@ -190,27 +204,34 @@ func NewMeteoroidMovement(inp MeteoroidMovementInput) (*MeteoroidMovement, error
 
 	// step 15
 
-	// Эклиптическая долгота радианта
 	cos_lambda := ((math.Cos(delta_fix) * math.Cos(alpha_fix)) / math.Cos(beta))
 	sin_lambda := (1 / math.Cos(beta)) * (math.Cos(delta_fix)*math.Sin(alpha_fix)*math.Cos(e) + math.Sin(delta_fix)*math.Sin(e))
+	// Эклиптическая долгота радианта
 	lambda := math.Atan2(sin_lambda, cos_lambda)
 
 	// step 16
 
+	// Константа, определяемая для каждого года
 	c3 := 0 // FIXME: c3
+	// Долгота Солнца
 	lambda_theta := SolarLongitude(c3, inp.Date.YearDay()-1, inp.Date.Hour(), inp.Date.Minute())
 
 	// step 17
 
 	delta_theta := _0_01672 * math.Sin(lambda_theta-Pi0)
 	lambda_apex := lambda_theta + delta_theta - (math.Pi / 2)
+	// Долгота радианта относительно апекса
+	diff_lambda := lambda - lambda_apex
+	_ = diff_lambda
 
 	// step 18
 
+	// Угол элонгации видимого радианта от апекса движения Земли
 	E_apex := math.Acos(math.Cos(beta) * math.Cos(lambda-lambda_apex))
 
 	// step 19
 
+	// Радиус вектор орбиты Земли
 	R := (1 - math.Pow(e0, 2)) / (1 - e0*math.Cos(lambda_theta-Pi0))
 
 	// step 20
@@ -227,25 +248,29 @@ func NewMeteoroidMovement(inp MeteoroidMovementInput) (*MeteoroidMovement, error
 	if cos_temp < 0 {
 		temp_deriv += math.Pi
 	}
-
+	// Долгота истинного радианта
 	lambda_deriv := lambda_theta + delta_theta - temp_deriv // 0 <= lambda_deriv <= 2*pi
 
 	// step 22
 
+	// Гелиоцентрическая скорость
 	V_h := math.Sqrt(math.Pow(V_g, 2) + math.Pow(V_t, 2) - 2*V_g*V_t*math.Cos(E_apex))
 
 	// step 23
 
+	// Широта истинного радианта
 	beta_deriv := math.Asin((V_g / V_h) * math.Sin(beta))
 
 	// step 24
 
+	// Элонгация истинного радианта от апекса
 	E_deriv := math.Acos(math.Cos(beta_deriv) * math.Cos(lambda_deriv-lambda_apex))
 	_ = E_deriv
 
 	// step 25
 
 	i_gl := math.Atan(-(math.Abs(math.Tan(beta_deriv)) / math.Sin(lambda_theta-lambda_deriv)))
+	// Наклонение орбиты частицы к плоскости эклиптики
 	i := i_gl
 	if i_gl > 0 {
 		i += math.Pi
@@ -253,20 +278,24 @@ func NewMeteoroidMovement(inp MeteoroidMovementInput) (*MeteoroidMovement, error
 
 	// step 26
 
+	// Афелий – точка орбиты максимально удаленная от Солнца
 	Q := math.Pow(V_h/V_t, 2)
 
 	// step 27
 
-	// Величина, обратная большой полуоси
+	// Большая полуось
 	a := 1 / ((2 - Q) / R)
 
 	// step 28
 
+	// Угол, образуемый радиус-вектором метеорного тела с вектором его скорости
 	psi := math.Acos(-math.Cos(beta_deriv) * math.Cos(lambda_theta-lambda_deriv))
+	// Элонгация радианта от Солнца
 	E_theta_deriv := math.Pi - psi
 
 	// step 29
 
+	// Параметр орбиты
 	p := math.Pow(R, 2) * Q * math.Pow(math.Sin(E_theta_deriv), 2)
 	b := math.Sqrt(p * math.Abs(a))
 
@@ -278,10 +307,12 @@ func NewMeteoroidMovement(inp MeteoroidMovementInput) (*MeteoroidMovement, error
 	} else {
 		c = math.Sqrt(math.Pow(a, 2) + math.Pow(b, 2))
 	}
+	// Эксцентриситет
 	e = math.Abs(c / a)
 
 	// step 31
 
+	// Перигелийное расстояние
 	q := a - c
 	if a < 0 {
 		q = c - math.Abs(a)
@@ -301,10 +332,12 @@ func NewMeteoroidMovement(inp MeteoroidMovementInput) (*MeteoroidMovement, error
 
 	cos_v := (p - R) / (R * e)
 	sin_v := p / (R * e) * math.Cos(i) * Ctg(lambda_deriv-lambda_theta)
+	// Истинная аномалия
 	v := math.Atan2(sin_v, cos_v)
 
 	// step 34
 
+	// Аргумент перигелия
 	var wmega float64
 	if beta_deriv > 0 {
 		wmega = math.Pi - v
