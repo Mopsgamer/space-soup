@@ -2,6 +2,7 @@ package soup
 
 import (
 	"math"
+	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -18,9 +19,7 @@ func TestOrbit(t *testing.T) {
 	assert := assert.New(t)
 
 	// TODO: write tests
-	calc, err := NewMeteoroidMovement(MeteoroidMovementInput{})
+	calc := NewMeteoroidMovement(MeteoroidMovementInput{})
 
-	if assert.NoError(err) {
-		assert.Equal(calc, &MeteoroidMovement{})
-	}
+	assert.True(reflect.DeepEqual(*calc, MeteoroidMovement{}))
 }

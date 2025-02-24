@@ -29,12 +29,12 @@ var (
 
 func StellarTime(c2, d, h, m int) (S float64) {
 	S = float64(c2) + 0.98565*float64(d) + 15.0411*float64(h) + 0.25068*float64(m)
-	return S
+	return
 }
 
 func SolarLongitude(c3, d, h, m int) (lambda_theta float64) {
 	lambda_theta = -float64(c3) + 0.0000097*float64(m) + 0.000717*float64(h) + 0.017203*float64(d) + 0.034435*math.Sin(0.017203*float64(d-2))
-	return lambda_theta
+	return
 }
 
 type MeteoroidMovement struct {
@@ -68,7 +68,7 @@ type MeteoroidMovementInput struct {
 	Date  time.Time
 }
 
-func NewMeteoroidMovement(inp MeteoroidMovementInput) (*MeteoroidMovement, error) {
+func NewMeteoroidMovement(inp MeteoroidMovementInput) *MeteoroidMovement {
 	var temp float64
 	// step 1
 
@@ -380,5 +380,5 @@ func NewMeteoroidMovement(inp MeteoroidMovementInput) (*MeteoroidMovement, error
 		S:           S,
 		V_geoc:      V_g,
 		V_vacuum:    V_inf,
-	}, nil
+	}
 }

@@ -27,11 +27,12 @@ func (p *MeteoroidMovement) MeteoroidMovement() (meteor *soup.MeteoroidMovement,
 	}
 	V_avg /= float64(len(VList))
 
-	return soup.NewMeteoroidMovement(soup.MeteoroidMovementInput{
+	meteor = soup.NewMeteoroidMovement(soup.MeteoroidMovementInput{
 		Dist:  p.Dist,
 		Tau1:  p.Tau1,
 		Tau2:  p.Tau2,
 		V_avg: V_avg,
 		Date:  date,
 	})
+	return
 }
