@@ -19,63 +19,52 @@ var (
 	_phi1              = RadiansFromRich(34, 10, 16)  // 34°10'16''
 	_phi2              = RadiansFromRich(110, 16, 22) // 110°16'22''
 	_26_948            = RadiansFromDegrees(26.948)   // 26,948°
-	_20_16_22          = RadiansFromRich(20, 16, 22)  // 20°16'22''
-	_124_10_16         = RadiansFromRich(124, 10, 16) // 124°10'16''
-	_200_16_22         = RadiansFromRich(200, 16, 22) // 200°16'22''
-	_304_10_16         = RadiansFromRich(304, 10, 16) // 304°10'16''
+
+	// TODO: remove
+	// _20_16_22          = RadiansFromRich(20, 16, 22)  // 20°16'22''
+	// _124_10_16         = RadiansFromRich(124, 10, 16) // 124°10'16''
+	// _200_16_22         = RadiansFromRich(200, 16, 22) // 200°16'22''
+	// _304_10_16         = RadiansFromRich(304, 10, 16) // 304°10'16''
 )
 
-func azimuthInRange(A, more_than, less_or_eq float64) bool {
-	return A > more_than && A <= less_or_eq
-}
+// TODO: remove
+// func azimuthInRange(A, more_than, less_or_eq float64) bool {
+// 	return A > more_than && A <= less_or_eq
+// }
 
 // step 1
-func Azimuth(t1, t2 float64) (A float64, err error) {
-	K := _1_94787*(t1/t2) + _10_pow_n5
+func Azimuth(tau1, tau2 float64) (K, A_gl, A float64) {
+	K = _1_94787*(tau1/tau2) + _10_pow_n5
 
-	A_gl := math.Atan((math.Cos(_phi1) - K*math.Cos(_phi2)) / (K*math.Sin(_phi1) - math.Sin(_phi2)))
+	A_gl = math.Atan((math.Cos(_phi1) - K*math.Cos(_phi2)) / (K*math.Sin(_phi1) - math.Sin(_phi2)))
 
-	if t1 > 0 && t2 >= 0 {
-		var add float64 = math.Pi
-		if A < 0 {
-			add += math.Pi
+	if tau1 <= 0 {
+		if tau2 < 0 {
+			if A_gl >= 0 {
+				A = A_gl
+			} else {
+				A = A_gl + math.Pi
+			}
+		} else {
+			if A_gl >= 0 {
+				A = A_gl
+			} else {
+				A = A_gl + 2*math.Pi
+			}
 		}
-
-		A = A_gl + add
-
-		if azimuthInRange(A, _200_16_22, _304_10_16) {
-			return A, nil
-		}
-	} else if t1 <= 0 && t2 < 0 {
-		var add float64 = 0
-		if A < 0 {
-			add += math.Pi
-		}
-
-		A = A_gl + add
-
-		if azimuthInRange(A, _20_16_22, _124_10_16) {
-			return A, nil
-		}
-	} else if t1 < 0 && t2 >= 0 { // FIXME: unsure
-		A = A_gl
-		if azimuthInRange(A_gl, 0, _20_16_22) {
-			return A, nil
-		}
-
-		A = A_gl + math.Pi
-		if A >= _304_10_16 {
-			return A, nil
-		}
-
-	} else if t1 > 0 && t2 <= 0 {
-		A = A_gl + math.Pi
-		if azimuthInRange(A, _124_10_16, _200_16_22) {
-			return A, nil
+	} else { // tau1 > 0
+		if tau2 < 0 {
+			A = A_gl + math.Pi
+		} else {
+			if A_gl >= 0 {
+				A = A_gl + math.Pi
+			} else {
+				A = A_gl + 2*math.Pi
+			}
 		}
 	}
 
-	return 0, ErrorSign1
+	return K, A_gl, A
 }
 
 // step 2
@@ -170,18 +159,20 @@ func PrepareSpeed(alpha, delta_alpha, delta, delta_delta, t, v_deriv float64) (v
 }
 
 type MeteoroidMovement struct {
+	K           float64
+	A_gl        float64
 	A           float64
-	z_avg       float64
-	z_fix       float64
-	delta       float64
-	sin_t       float64
-	cos_t       float64
-	t           float64
+	Z_avg       float64
+	Z_fix       float64
+	Delta       float64
+	Sin_t       float64
+	Cos_t       float64
+	T           float64
 	S           float64
-	delta_alpha float64
-	delta_delta float64
-	v_geoc      float64
-	v_vacuum    float64
+	Delta_alpha float64
+	Delta_delta float64
+	V_geoc      float64
+	V_vacuum    float64
 }
 
 func ParseDate(date string) (time.Time, error) {
@@ -197,10 +188,7 @@ type MeteoroidMovementInput struct {
 }
 
 func NewMeteoroidMovement(inp MeteoroidMovementInput) (*MeteoroidMovement, error) {
-	A, err := Azimuth(inp.Tau1, inp.Tau2)
-	if err != nil {
-		return nil, err
-	}
+	K, A_gl, A := Azimuth(inp.Tau1, inp.Tau2)
 
 	z_avg, z_fix, v_deriv, err := ZenithAngle(inp.Tau1, inp.Tau2, A, inp.V_avg)
 	if err != nil {
@@ -217,17 +205,19 @@ func NewMeteoroidMovement(inp MeteoroidMovementInput) (*MeteoroidMovement, error
 	v_geoc, v_vacuum := PrepareSpeed(alpha, delta_alpha, delta, delta_delta, t, v_deriv)
 
 	return &MeteoroidMovement{
+		K:           K,
+		A_gl:        A_gl,
 		A:           A,
-		z_avg:       z_avg,
-		z_fix:       z_fix,
-		delta:       delta,
-		sin_t:       sin_t,
-		cos_t:       cos_t,
-		t:           t,
-		delta_alpha: delta_alpha,
-		delta_delta: delta_delta,
+		Z_avg:       z_avg,
+		Z_fix:       z_fix,
+		Delta:       delta,
+		Sin_t:       sin_t,
+		Cos_t:       cos_t,
+		T:           t,
+		Delta_alpha: delta_alpha,
+		Delta_delta: delta_delta,
 		S:           S,
-		v_geoc:      v_geoc,
-		v_vacuum:    v_vacuum,
+		V_geoc:      v_geoc,
+		V_vacuum:    v_vacuum,
 	}, nil
 }
