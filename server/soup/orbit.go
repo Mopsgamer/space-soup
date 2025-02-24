@@ -6,21 +6,25 @@ import (
 )
 
 var (
-	Pi0      = 1.7864122
-	_0_4703  = 0.47033133
-	_0_65    = 0.65
-	_1_0398  = 1.0398 // FIXME: 0.0398 or 1.0398?
-	_123_2   = 123.2
-	_0_01672 = 0.01672
-	e        = 0.40918274
-	e0       = 0.01675
-	T        = 2 * 1e-3 // FIXME: T = 2 *10^-3 c. what is c
-	l1       = 4324.
-	l2       = 8422.
-	m        = l1 / l2
-	phi      = RadiansFromRich(49, 24, 50)
-	phi1     = RadiansFromRich(34, 10, 16)  // 34°10'16''
-	phi2     = RadiansFromRich(110, 16, 22) // 110°16'22''
+	Pi0                = 1.7864122
+	_0_4703            = 0.47033133
+	_0_65              = 0.65
+	_1_0398            = 1.0398 // FIXME: 0.0398 or 1.0398?
+	_123_2             = 123.2
+	_0_01672           = 0.01672
+	e                  = 0.40918274
+	sin_e, cos_e       = math.Sincos(e)
+	e0                 = 0.01675
+	T                  = 2 * 1e-3 // FIXME: T = 2 *10^-3 c. what is c
+	l1                 = 4324.
+	l2                 = 8422.
+	m                  = l1 / l2
+	phi                = RadiansFromRich(49, 24, 50)
+	sin_phi, cos_phi   = math.Sincos(phi)
+	phi1               = RadiansFromRich(34, 10, 16) // 34°10'16''
+	sin_phi1, cos_phi1 = math.Sincos(phi1)
+	phi2               = RadiansFromRich(110, 16, 22) // 110°16'22''
+	sin_phi2, cos_phi2 = math.Sincos(phi2)
 )
 
 func StellarTime(c2, d, h, m int) (S float64) {
@@ -71,7 +75,7 @@ func NewMeteoroidMovement(inp MeteoroidMovementInput) (*MeteoroidMovement, error
 	k := m * (inp.Tau1 / inp.Tau2)
 
 	// Главное значение азимута
-	A_gl := math.Atan((math.Cos(phi1) - k*math.Cos(phi2)) / (k*math.Sin(phi1) - math.Sin(phi2)))
+	A_gl := math.Atan((cos_phi1 - k*cos_phi2) / (k*sin_phi1 - sin_phi2))
 
 	// Азимут
 	var A float64
@@ -101,14 +105,18 @@ func NewMeteoroidMovement(inp MeteoroidMovementInput) (*MeteoroidMovement, error
 			}
 		}
 	}
+	sin_A, cos_A := math.Sincos(A)
 
 	// step 2
 
-	sin_z1 := (2 * inp.V_avg * T * inp.Tau1) / (l1 * math.Cos(A-phi1))
-	sin_z2 := (2 * inp.V_avg * T * inp.Tau2) / (l2 * math.Cos(A-phi2))
+	temp = 2 * inp.V_avg * T
+	cos_A_minus_phi1 := math.Cos(A - phi1)
+	cos_A_minus_phi2 := math.Cos(A - phi2)
+	sin_z1 := (temp * inp.Tau1) / (l1 * cos_A_minus_phi1)
+	sin_z2 := (temp * inp.Tau2) / (l2 * cos_A_minus_phi2)
 
-	W1 := math.Abs(math.Cos(A - phi1))
-	W2 := math.Abs(math.Cos(A - phi2))
+	W1 := math.Abs(cos_A_minus_phi1)
+	W2 := math.Abs(cos_A_minus_phi2)
 	// Зенитный угол радианта
 	Z_avg := math.Asin((W1*sin_z1 + W2*sin_z2) / (W1 + W2))
 
@@ -124,18 +132,22 @@ func NewMeteoroidMovement(inp MeteoroidMovementInput) (*MeteoroidMovement, error
 	delta_Z := 2 * math.Atan(math.Abs((V_deriv-V0))/(V_deriv+V0)*math.Tan(Z_avg/inp.V_avg))
 	// Зенитное расстояние радианта
 	Z_fix := Z_avg + delta_Z
+	sin_Z_fix, cos_Z_fix := math.Sincos(Z_fix)
+	sin_Z_fix_cos_A := sin_Z_fix * cos_A
+	sin_Z_fix_sin_A := sin_Z_fix * sin_A
 
 	// step 5
 
 	// Склонение радианта
-	delta := math.Asin(math.Sin(phi)*math.Cos(Z_fix) - math.Cos(phi)*math.Sin(Z_fix)*math.Cos(A))
+	delta := math.Asin(sin_phi*cos_Z_fix - cos_phi*sin_Z_fix_cos_A)
+	sin_delta, cos_delta := math.Sincos(delta)
 
 	// step 6
 
-	t_gl := math.Atan((math.Sin(Z_fix) * math.Sin(A)) / (math.Cos(phi)*math.Cos(Z_fix) + math.Sin(phi)*math.Sin(Z_fix)*math.Cos(A)))
+	t_gl := math.Atan((sin_Z_fix_sin_A) / (cos_phi*cos_Z_fix + sin_phi*sin_Z_fix_cos_A))
 	// Часовой угол радианта
 	t := 0.
-	temp = math.Sin(Z_fix) * math.Sin(A)
+	temp = sin_Z_fix_sin_A
 	if t_gl >= 0 {
 		if temp >= 0 {
 			t = t_gl
@@ -149,6 +161,7 @@ func NewMeteoroidMovement(inp MeteoroidMovementInput) (*MeteoroidMovement, error
 			t = t_gl + 2*math.Pi
 		}
 	}
+	sin_t, cos_t := math.Sincos(t)
 
 	// step 7
 
@@ -166,20 +179,22 @@ func NewMeteoroidMovement(inp MeteoroidMovementInput) (*MeteoroidMovement, error
 	// step 9
 
 	// Поправки за суточную аберрацию в экваториальных координатах
-	delta_alpha := -((_0_4703 * math.Cos(t) * math.Cos(phi)) / (V_deriv * math.Cos(delta)))
+	delta_alpha := -((_0_4703 * cos_t * cos_phi) / (V_deriv * cos_delta))
 	// Поправки за суточную аберрацию в экваториальных координатах
-	delta_delta := -((_0_4703 * math.Sin(t) * math.Sin(delta) * math.Cos(phi)) / (V_deriv))
+	delta_delta := -((_0_4703 * sin_t * sin_delta * cos_phi) / (V_deriv))
 
 	// step 10
 
 	// Исправленные экваториальные координаты радианта
 	alpha_fix := alpha + delta_alpha // while alpha_fix > 0
+	sin_alpha_fix, cos_alpha_fix := math.Sincos(alpha_fix)
 	// Исправленные экваториальные координаты радианта
 	delta_fix := delta + delta_delta
+	sin_delta_fix, cos_delta_fix := math.Sincos(delta_fix)
 
 	// step 11
 
-	psi_E_gl := math.Acos(-math.Sin(t) * math.Cos(delta_fix))
+	psi_E_gl := math.Acos(-sin_t * cos_delta_fix)
 	// Элонгация
 	psi_E := psi_E_gl
 	if psi_E_gl < 0 {
@@ -188,24 +203,26 @@ func NewMeteoroidMovement(inp MeteoroidMovementInput) (*MeteoroidMovement, error
 
 	// step 12
 
-	delta_s := math.Sqrt(math.Pow(delta_alpha*math.Cos(delta_fix), 2) + math.Pow(delta_delta, 2))
+	delta_s := math.Sqrt(math.Pow(delta_alpha*cos_delta_fix, 2) + math.Pow(delta_delta, 2))
 	// Геоцентрическая скорость
 	V_g := V_deriv * (math.Sin(psi_E-delta_s) / math.Sin(psi_E))
+	pow_2_V_g := math.Pow(V_g, 2)
 
 	// step 13
 
 	// Внеатмосферная скорость
-	V_inf := math.Sqrt(math.Pow(V_g, 2) + _123_2)
+	V_inf := math.Sqrt(pow_2_V_g + _123_2)
 
 	// step 14
 
 	// Эклиптическая широта радианта
-	beta := math.Asin(-math.Sin(e)*math.Sin(alpha_fix)*math.Cos(delta_fix) + math.Cos(e) + math.Sin(delta_fix))
+	beta := math.Asin(-sin_e*sin_alpha_fix*cos_delta_fix + cos_e + sin_delta_fix)
+	sin_beta, cos_beta := math.Sincos(beta)
 
 	// step 15
 
-	cos_lambda := ((math.Cos(delta_fix) * math.Cos(alpha_fix)) / math.Cos(beta))
-	sin_lambda := (1 / math.Cos(beta)) * (math.Cos(delta_fix)*math.Sin(alpha_fix)*math.Cos(e) + math.Sin(delta_fix)*math.Sin(e))
+	cos_lambda := ((cos_delta_fix * cos_alpha_fix) / cos_beta)
+	sin_lambda := (1 / cos_beta) * (cos_delta_fix*sin_alpha_fix*cos_e + sin_delta_fix*sin_e)
 	// Эклиптическая долгота радианта
 	lambda := math.Atan2(sin_lambda, cos_lambda)
 
@@ -227,7 +244,7 @@ func NewMeteoroidMovement(inp MeteoroidMovementInput) (*MeteoroidMovement, error
 	// step 18
 
 	// Угол элонгации видимого радианта от апекса движения Земли
-	E_apex := math.Acos(math.Cos(beta) * math.Cos(lambda-lambda_apex))
+	E_apex := math.Acos(cos_beta * math.Cos(lambda-lambda_apex))
 
 	// step 19
 
@@ -242,34 +259,36 @@ func NewMeteoroidMovement(inp MeteoroidMovementInput) (*MeteoroidMovement, error
 	// step 21
 
 	temp = lambda_theta + delta_theta - lambda
-	cos_temp := math.Cos(temp)
-	temp_deriv_gl := math.Atan2(math.Sin(temp)-(V_t/(V_g*math.Cos(beta))), cos_temp)
+	sin_temp, cos_temp := math.Sincos(temp)
+	temp_deriv_gl := math.Atan2(sin_temp-(V_t/(V_g*cos_beta)), cos_temp)
 	temp_deriv := temp_deriv_gl
 	if cos_temp < 0 {
 		temp_deriv += math.Pi
 	}
 	// Долгота истинного радианта
 	lambda_deriv := lambda_theta + delta_theta - temp_deriv // 0 <= lambda_deriv <= 2*pi
+	sin_lambda_diff, cos_lambda_diff := math.Sincos(lambda_theta - lambda_deriv)
 
 	// step 22
 
 	// Гелиоцентрическая скорость
-	V_h := math.Sqrt(math.Pow(V_g, 2) + math.Pow(V_t, 2) - 2*V_g*V_t*math.Cos(E_apex))
+	V_h := math.Sqrt(pow_2_V_g + math.Pow(V_t, 2) - 2*V_g*V_t*math.Cos(E_apex))
 
 	// step 23
 
 	// Широта истинного радианта
-	beta_deriv := math.Asin((V_g / V_h) * math.Sin(beta))
+	beta_deriv := math.Asin((V_g / V_h) * sin_beta)
+	cos_beta_deriv := math.Cos(beta_deriv)
 
 	// step 24
 
 	// Элонгация истинного радианта от апекса
-	E_deriv := math.Acos(math.Cos(beta_deriv) * math.Cos(lambda_deriv-lambda_apex))
+	E_deriv := math.Acos(cos_beta_deriv * math.Cos(lambda_deriv-lambda_apex))
 	_ = E_deriv
 
 	// step 25
 
-	i_gl := math.Atan(-(math.Abs(math.Tan(beta_deriv)) / math.Sin(lambda_theta-lambda_deriv)))
+	i_gl := math.Atan(-(math.Abs(math.Tan(beta_deriv)) / sin_lambda_diff))
 	// Наклонение орбиты частицы к плоскости эклиптики
 	i := i_gl
 	if i_gl > 0 {
@@ -289,7 +308,7 @@ func NewMeteoroidMovement(inp MeteoroidMovementInput) (*MeteoroidMovement, error
 	// step 28
 
 	// Угол, образуемый радиус-вектором метеорного тела с вектором его скорости
-	psi := math.Acos(-math.Cos(beta_deriv) * math.Cos(lambda_theta-lambda_deriv))
+	psi := math.Acos(-cos_beta_deriv * cos_lambda_diff)
 	// Элонгация радианта от Солнца
 	E_theta_deriv := math.Pi - psi
 
