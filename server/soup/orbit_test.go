@@ -23,11 +23,11 @@ func TestOrbit3(t *testing.T) {
 	}
 
 	movement := NewMovement(Input{
-		Tau1:  -12.76,
-		Tau2:  -17.55,
-		V_avg: Average([]float64{33.86, 33.83, 33.97}),
+		Tau1:  -12.7572,
+		Tau2:  -17.5536,
+		V_avg: Average([]float64{33.858, 33.832, 33.965}),
 		Date:  date,
 	})
 
-	assert.Equal(59.827, movement.A) // FIXME: test fails
+	assert.Equal(RadiansFromDegrees(59.827), movement.A) // FIXME: test fails
 }

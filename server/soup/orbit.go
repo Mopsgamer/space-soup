@@ -23,9 +23,9 @@ var (
 	l1   = 4324.
 	l2   = 8422.
 	m    = l1 / l2
-	phi  = RadiansFromRich(49, 24, 50)
-	phi1 = RadiansFromRich(34, 10, 16)  // 34°10'16''
-	phi2 = RadiansFromRich(110, 16, 22) // 110°16'22''
+	phi  = 0.86244  // Широта места наблюдения
+	phi1 = 0.596398 // 34°10'16''
+	phi2 = 1.92462  // 110°16'22''
 
 	// optimizations
 	sin_phi, cos_phi   = math.Sincos(phi)
