@@ -35,8 +35,6 @@ var (
 )
 
 type Movement struct {
-	K    float64
-	A_gl float64
 	// Азимут
 	A float64
 	// Зенитный угол радианта
@@ -45,8 +43,6 @@ type Movement struct {
 	Z_fix float64
 	// Склонение радианта
 	Delta float64
-	Sin_t float64
-	Cos_t float64
 	// Часовой угол
 	T float64
 	// Звездное время в момент наблюдения
@@ -369,8 +365,6 @@ func NewMeteoroidMovement(inp Input) *Movement {
 	_ = wmega
 
 	return &Movement{
-		K:           k,
-		A_gl:        A_gl,
 		A:           A,
 		Z_avg:       Z_avg,
 		Z_fix:       Z_fix,
