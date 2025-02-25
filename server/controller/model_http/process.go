@@ -4,7 +4,7 @@ import (
 	"github.com/Mopsgamer/space-soup/server/soup"
 )
 
-type MeteoroidMovement struct {
+type OrbitInput struct {
 	Dist int     `form:"dist"`
 	Tau1 float64 `form:"tau1"`
 	Tau2 float64 `form:"tau2"`
@@ -14,13 +14,13 @@ type MeteoroidMovement struct {
 	Date string  `form:"date"`
 }
 
-func (p *MeteoroidMovement) MeteoroidMovement() (*soup.MeteoroidMovement, error) {
+func (p *OrbitInput) Movement() (*soup.Movement, error) {
 	date, err := soup.ParseDate(p.Date)
 	if err != nil {
 		return nil, err
 	}
 
-	return soup.NewMeteoroidMovement(soup.MeteoroidMovementInput{
+	return soup.NewMeteoroidMovement(soup.Input{
 		Dist:  p.Dist,
 		Tau1:  p.Tau1,
 		Tau2:  p.Tau2,

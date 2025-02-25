@@ -6,28 +6,35 @@ import (
 )
 
 var (
-	Pi0                = 1.7864122
-	_0_4703            = 0.47033133
-	_0_65              = 0.65
-	_1_0398            = 1.0398 // FIXME: 0.0398 or 1.0398?
-	_123_2             = 123.2
-	_0_01672           = 0.01672
-	e                  = 0.40918274
-	sin_e, cos_e       = math.Sincos(e)
-	e0                 = 0.01675
-	T                  = 2 * 1e-3 // FIXME: T = 2 *10^-3 c. what is c
-	l1                 = 4324.
-	l2                 = 8422.
-	m                  = l1 / l2
-	phi                = RadiansFromRich(49, 24, 50)
+	c2 = 1.61222 // TODO: c2, c3 hardcoded for 1972
+	c3 = 1.4481
+
+	Pi0 = 1.7864122
+
+	_0_4703  = 0.47033133
+	_0_65    = 0.65
+	_1_0398  = 1.0398 // FIXME: 0.0398 or 1.0398?
+	_123_2   = 123.2
+	_0_01672 = 0.01672
+
+	e    = 0.40918274
+	e0   = 0.01675
+	T    = 2 * 1e-3 // FIXME: T = 2 *10^-3 c. what is c
+	l1   = 4324.
+	l2   = 8422.
+	m    = l1 / l2
+	phi  = RadiansFromRich(49, 24, 50)
+	phi1 = RadiansFromRich(34, 10, 16)  // 34°10'16''
+	phi2 = RadiansFromRich(110, 16, 22) // 110°16'22''
+
+	// optimizations
 	sin_phi, cos_phi   = math.Sincos(phi)
-	phi1               = RadiansFromRich(34, 10, 16) // 34°10'16''
 	sin_phi1, cos_phi1 = math.Sincos(phi1)
-	phi2               = RadiansFromRich(110, 16, 22) // 110°16'22''
 	sin_phi2, cos_phi2 = math.Sincos(phi2)
+	sin_e, cos_e       = math.Sincos(e)
 )
 
-type MeteoroidMovement struct {
+type Movement struct {
 	K    float64
 	A_gl float64
 	// Азимут
@@ -58,7 +65,7 @@ type MeteoroidMovement struct {
 	V_inf float64
 }
 
-type MeteoroidMovementInput struct {
+type Input struct {
 	Dist int
 	// Временная задержка
 	Tau1 float64
@@ -69,7 +76,7 @@ type MeteoroidMovementInput struct {
 	Date time.Time
 }
 
-func NewMeteoroidMovement(inp MeteoroidMovementInput) *MeteoroidMovement {
+func NewMeteoroidMovement(inp Input) *Movement {
 	var temp float64
 	// step 1
 
@@ -166,9 +173,6 @@ func NewMeteoroidMovement(inp MeteoroidMovementInput) *MeteoroidMovement {
 
 	// step 7
 
-	// Константа, определяемая для каждого года
-	c2 := inp.Dist // FIXME: c2
-
 	// Звездное время в момент наблюдения
 	S := StellarTime(c2, inp.Date.YearDay()-1, inp.Date.Hour(), inp.Date.Minute())
 
@@ -229,8 +233,6 @@ func NewMeteoroidMovement(inp MeteoroidMovementInput) *MeteoroidMovement {
 
 	// step 16
 
-	// Константа, определяемая для каждого года
-	c3 := 0 // FIXME: c3
 	// Долгота Солнца
 	lambda_theta := SolarLongitude(c3, inp.Date.YearDay()-1, inp.Date.Hour(), inp.Date.Minute())
 
@@ -366,7 +368,7 @@ func NewMeteoroidMovement(inp MeteoroidMovementInput) *MeteoroidMovement {
 	}
 	_ = wmega
 
-	return &MeteoroidMovement{
+	return &Movement{
 		K:           k,
 		A_gl:        A_gl,
 		A:           A,
@@ -389,12 +391,12 @@ func ParseDate(date string) (time.Time, error) {
 	return time.Parse("2006-01-02T03:04", date)
 }
 
-func StellarTime(c2, d, h, m int) (S float64) {
-	S = float64(c2) + 0.98565*float64(d) + 15.0411*float64(h) + 0.25068*float64(m)
+func StellarTime(c2 float64, d, h, m int) (S float64) {
+	S = c2 + 0.98565*float64(d) + 15.0411*float64(h) + 0.25068*float64(m)
 	return
 }
 
-func SolarLongitude(c3, d, h, m int) (lambda_theta float64) {
-	lambda_theta = -float64(c3) + 0.0000097*float64(m) + 0.000717*float64(h) + 0.017203*float64(d) + 0.034435*math.Sin(0.017203*float64(d-2))
+func SolarLongitude(c3 float64, d, h, m int) (lambda_theta float64) {
+	lambda_theta = -c3 + 0.0000097*float64(m) + 0.000717*float64(h) + 0.017203*float64(d) + 0.034435*math.Sin(0.017203*float64(d-2))
 	return
 }

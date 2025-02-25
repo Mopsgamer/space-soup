@@ -22,7 +22,7 @@ func TestOrbit(t *testing.T) {
 		return // error
 	}
 
-	movement := NewMeteoroidMovement(MeteoroidMovementInput{
+	movement := NewMeteoroidMovement(Input{
 		Dist:  17299,
 		Tau1:  471889,
 		Tau2:  213476,

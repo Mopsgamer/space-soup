@@ -67,12 +67,12 @@ func NewApp() (*fiber.App, error) {
 
 	// calc
 	app.Post("/process", UseHttp(func(ctl controller_http.ControllerHttp) error {
-		req := new(model_http.MeteoroidMovement)
+		req := new(model_http.OrbitInput)
 		if err := ctl.BindAll(req); err != nil {
 			return ctl.RenderInternalError("err-request")
 		}
 
-		meteor, err := req.MeteoroidMovement()
+		meteor, err := req.Movement()
 		if err != nil {
 			return ctl.RenderDanger(err.Error(), "err-calc")
 		}
