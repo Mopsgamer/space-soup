@@ -28,30 +28,45 @@ var (
 )
 
 type MeteoroidMovement struct {
-	K           float64
-	A_gl        float64
-	A           float64
-	Z_avg       float64
-	Z_fix       float64
-	Delta       float64
-	Sin_t       float64
-	Cos_t       float64
-	T           float64
-	S           float64
-	Alpha_fix   float64
-	Delta_fix   float64
+	K    float64
+	A_gl float64
+	// Азимут
+	A float64
+	// Зенитный угол радианта
+	Z_avg float64
+	// Зенитное расстояние радианта
+	Z_fix float64
+	// Склонение радианта
+	Delta float64
+	Sin_t float64
+	Cos_t float64
+	// Часовой угол
+	T float64
+	// Звездное время в момент наблюдения
+	S float64
+	// Исправленные экваториальные координаты радианта
+	Alpha_fix float64
+	// Исправленные экваториальные координаты радианта
+	Delta_fix float64
+	// Поправки за суточную аберрацию в экваториальных координатах
 	Delta_alpha float64
+	// Поправки за суточную аберрацию в экваториальных координатах
 	Delta_delta float64
-	V_geoc      float64
-	V_vacuum    float64
+	// Геоцентрическая скорость
+	V_g float64
+	// Внеатмосферная скорость
+	V_inf float64
 }
 
 type MeteoroidMovementInput struct {
-	Dist  int
-	Tau1  float64
+	Dist int
+	// Временная задержка
+	Tau1 float64
+	// Временная задержка
 	Tau2  float64
 	V_avg float64
-	Date  time.Time
+	// Время и дата появления метеороида
+	Date time.Time
 }
 
 func NewMeteoroidMovement(inp MeteoroidMovementInput) *MeteoroidMovement {
@@ -154,7 +169,7 @@ func NewMeteoroidMovement(inp MeteoroidMovementInput) *MeteoroidMovement {
 	// Константа, определяемая для каждого года
 	c2 := inp.Dist // FIXME: c2
 
-	// Звездное время S в момент наблюдения
+	// Звездное время в момент наблюдения
 	S := StellarTime(c2, inp.Date.YearDay()-1, inp.Date.Hour(), inp.Date.Minute())
 
 	// step 8
@@ -364,11 +379,12 @@ func NewMeteoroidMovement(inp MeteoroidMovementInput) *MeteoroidMovement {
 		Delta_alpha: delta_alpha,
 		Delta_delta: delta_delta,
 		S:           S,
-		V_geoc:      V_g,
-		V_vacuum:    V_inf,
+		V_g:         V_g,
+		V_inf:       V_inf,
 	}
 }
 
+// Format: 2006-01-02T03:04
 func ParseDate(date string) (time.Time, error) {
 	return time.Parse("2006-01-02T03:04", date)
 }

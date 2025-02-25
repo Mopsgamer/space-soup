@@ -14,25 +14,17 @@ type MeteoroidMovement struct {
 	Date string  `form:"date"`
 }
 
-func (p *MeteoroidMovement) MeteoroidMovement() (meteor *soup.MeteoroidMovement, err error) {
+func (p *MeteoroidMovement) MeteoroidMovement() (*soup.MeteoroidMovement, error) {
 	date, err := soup.ParseDate(p.Date)
 	if err != nil {
 		return nil, err
 	}
 
-	VList := []float64{p.V1, p.V2, p.V3}
-	V_avg := 0.
-	for _, v := range VList {
-		V_avg += v
-	}
-	V_avg /= float64(len(VList))
-
-	meteor = soup.NewMeteoroidMovement(soup.MeteoroidMovementInput{
+	return soup.NewMeteoroidMovement(soup.MeteoroidMovementInput{
 		Dist:  p.Dist,
 		Tau1:  p.Tau1,
 		Tau2:  p.Tau2,
-		V_avg: V_avg,
+		V_avg: soup.Average([]float64{p.V1, p.V2, p.V3}),
 		Date:  date,
-	})
-	return
+	}), nil
 }

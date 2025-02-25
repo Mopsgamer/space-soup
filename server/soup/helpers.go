@@ -21,3 +21,11 @@ func RadiansFromRich(deg, min, sec float64) float64 {
 func Ctg(x float64) float64 {
 	return math.Cos(x) / math.Sin(x)
 }
+
+func Average(x []float64) (avg float64) {
+	for _, v := range x {
+		avg += v
+	}
+	avg /= float64(len(x))
+	return
+}
