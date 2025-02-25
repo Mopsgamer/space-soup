@@ -27,16 +27,6 @@ var (
 	sin_phi2, cos_phi2 = math.Sincos(phi2)
 )
 
-func StellarTime(c2, d, h, m int) (S float64) {
-	S = float64(c2) + 0.98565*float64(d) + 15.0411*float64(h) + 0.25068*float64(m)
-	return
-}
-
-func SolarLongitude(c3, d, h, m int) (lambda_theta float64) {
-	lambda_theta = -float64(c3) + 0.0000097*float64(m) + 0.000717*float64(h) + 0.017203*float64(d) + 0.034435*math.Sin(0.017203*float64(d-2))
-	return
-}
-
 type MeteoroidMovement struct {
 	K           float64
 	A_gl        float64
@@ -54,10 +44,6 @@ type MeteoroidMovement struct {
 	Delta_delta float64
 	V_geoc      float64
 	V_vacuum    float64
-}
-
-func ParseDate(date string) (time.Time, error) {
-	return time.Parse("2006-01-02T03:04", date)
 }
 
 type MeteoroidMovementInput struct {
@@ -381,4 +367,18 @@ func NewMeteoroidMovement(inp MeteoroidMovementInput) *MeteoroidMovement {
 		V_geoc:      V_g,
 		V_vacuum:    V_inf,
 	}
+}
+
+func ParseDate(date string) (time.Time, error) {
+	return time.Parse("2006-01-02T03:04", date)
+}
+
+func StellarTime(c2, d, h, m int) (S float64) {
+	S = float64(c2) + 0.98565*float64(d) + 15.0411*float64(h) + 0.25068*float64(m)
+	return
+}
+
+func SolarLongitude(c3, d, h, m int) (lambda_theta float64) {
+	lambda_theta = -float64(c3) + 0.0000097*float64(m) + 0.000717*float64(h) + 0.017203*float64(d) + 0.034435*math.Sin(0.017203*float64(d-2))
+	return
 }
