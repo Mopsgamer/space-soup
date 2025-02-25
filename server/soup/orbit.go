@@ -59,6 +59,8 @@ type Movement struct {
 	Beta_deriv float64
 	// Часовой угол
 	T float64
+	// Долгота апекса
+	Lambda_apex float64
 	// Долгота радианта относительно апекса
 	Diff_lambda float64
 	// Долгота истинного радианта
@@ -265,12 +267,12 @@ func NewMeteoroidMovement(inp Input) (mv *Movement) {
 	// step 17
 
 	delta_theta := _0_01672 * math.Sin(mov.Lambda_theta-Pi0)
-	lambda_apex := mov.Lambda_theta + delta_theta - (math.Pi / 2)
-	mov.Diff_lambda = mov.Lambda - lambda_apex
+	mov.Lambda_apex = mov.Lambda_theta + delta_theta - (math.Pi / 2)
+	mov.Diff_lambda = mov.Lambda - mov.Lambda_apex
 
 	// step 18
 
-	mov.E_apex = math.Acos(cos_beta * math.Cos(mov.Lambda-lambda_apex))
+	mov.E_apex = math.Acos(cos_beta * math.Cos(mov.Lambda-mov.Lambda_apex))
 
 	// step 19
 
@@ -303,7 +305,7 @@ func NewMeteoroidMovement(inp Input) (mv *Movement) {
 
 	// step 24
 
-	mov.E_deriv = math.Acos(cos_beta_deriv * math.Cos(mov.Lambda_deriv-lambda_apex))
+	mov.E_deriv = math.Acos(cos_beta_deriv * math.Cos(mov.Lambda_deriv-mov.Lambda_apex))
 
 	// step 25
 
