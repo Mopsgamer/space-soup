@@ -124,7 +124,7 @@ type Input struct {
 	Date time.Time
 }
 
-func NewMeteoroidMovement(inp Input) (mv *Movement) {
+func NewMovement(inp Input) (mv *Movement) {
 	mov := Movement{}
 	var temp float64
 	// step 1

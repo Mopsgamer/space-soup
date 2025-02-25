@@ -20,7 +20,7 @@ func (p *OrbitInput) Movement() (*soup.Movement, error) {
 		return nil, err
 	}
 
-	return soup.NewMeteoroidMovement(soup.Input{
+	return soup.NewMovement(soup.Input{
 		Dist:  p.Dist,
 		Tau1:  p.Tau1,
 		Tau2:  p.Tau2,
