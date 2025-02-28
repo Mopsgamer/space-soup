@@ -132,7 +132,7 @@ func NewMovement(inp Input) (mv *Movement) {
 	k := m * (inp.Tau1 / inp.Tau2)
 
 	// Главное значение азимута
-	A_gl := math.Atan((cos_phi1 - k*cos_phi2) / (k*sin_phi1 - sin_phi2))
+	A_gl := math.Atan((cos_phi1 - k*cos_phi2) / (k*sin_phi2 - sin_phi1))
 
 	if inp.Tau1 <= 0 {
 		if inp.Tau2 < 0 {
