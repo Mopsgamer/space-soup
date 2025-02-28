@@ -29,5 +29,23 @@ func TestOrbit3(t *testing.T) {
 		Date:  date,
 	})
 
-	assert.Equal(RadiansFromDegrees(59.827), movement.A) // FIXME: test fails
+	assert.Equal(59.827, DegreesFromRadians(movement.A)) // FIXME: test fails
+}
+
+func TestOrbit4(t *testing.T) {
+	assert := assert.New(t)
+
+	date, err := ParseDate("1972-05-13T06:27")
+	if !assert.NoError(err) {
+		return // error
+	}
+
+	movement := NewMovement(Input{
+		Tau1:  -12.5536,
+		Tau2:  -0.3927,
+		V_avg: Average([]float64{56.36, 60.908, 55.398}),
+		Date:  date,
+	})
+
+	assert.Equal(21.169, DegreesFromRadians(movement.A)) // FIXME: test fails
 }
