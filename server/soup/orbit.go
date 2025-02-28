@@ -134,29 +134,25 @@ func NewMovement(inp Input) (mv *Movement) {
 	// Главное значение азимута
 	A_gl := math.Atan((cos_phi1 - k*cos_phi2) / (k*sin_phi2 - sin_phi1))
 
-	if inp.Tau1 <= 0 {
-		if inp.Tau2 < 0 {
-			if A_gl >= 0 {
-				mov.A = A_gl
-			} else {
-				mov.A = A_gl + math.Pi
-			}
-		} else {
-			if A_gl >= 0 {
-				mov.A = A_gl
-			} else {
-				mov.A = A_gl + 2*math.Pi
-			}
-		}
-	} else { // inp.Tau1 > 0
-		if inp.Tau2 < 0 {
+	if inp.Tau1 <= 0 && inp.Tau2 < 0 {
+		if A_gl > 0 {
+			mov.A = A_gl
+		} else if A_gl < 0 {
 			mov.A = A_gl + math.Pi
-		} else {
-			if A_gl >= 0 {
-				mov.A = A_gl + math.Pi
-			} else {
-				mov.A = A_gl + 2*math.Pi
-			}
+		}
+	} else if inp.Tau1 < 0 && inp.Tau2 >= 0 {
+		if A_gl > 0 {
+			mov.A = A_gl
+		} else if A_gl < 0 {
+			mov.A = A_gl + 2*math.Pi
+		}
+	} else if inp.Tau1 > 0 && inp.Tau2 <= 0 {
+		mov.A = A_gl + math.Pi
+	} else if inp.Tau1 > 0 && inp.Tau2 >= 0 {
+		if A_gl > 0 {
+			mov.A = A_gl + math.Pi
+		} else if A_gl < 0 {
+			mov.A = A_gl + 2*math.Pi
 		}
 	}
 	sin_A, cos_A := math.Sincos(mov.A)
