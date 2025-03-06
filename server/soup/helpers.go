@@ -18,6 +18,19 @@ func RadiansFromRich(deg, min, sec float64) float64 {
 	return RadiansFromDegrees(DegreesRich(deg, min, sec))
 }
 
+func RichFromRadians(radians float64) (degrees, minutes, seconds float64) {
+	degreesFloat := radians * 180 / math.Pi
+	degrees = math.Floor(degreesFloat)
+
+	minutesFloat := (degreesFloat - degrees) * 60
+	minutes = math.Floor(minutesFloat)
+
+	secondsFloat := (minutesFloat - minutes) * 60
+	seconds = secondsFloat
+
+	return degrees, minutes, seconds
+}
+
 func Ctg(x float64) float64 {
 	return math.Cos(x) / math.Sin(x)
 }

@@ -19,13 +19,10 @@ var (
 
 	e    = 0.40918274
 	e0   = 0.01675
-	T    = 2 * 1e-3
-	l1   = 8422.
-	l2   = 4324.
-	m    = l1 / l2
-	phi  = 0.86244  // Широта места наблюдения
-	phi1 = 0.596398 // 34°10'16''
-	phi2 = 1.92462  // 110°16'22''
+	m    = 1.94787
+	phi  = 0.86244                      // Широта места наблюдения
+	phi1 = RadiansFromRich(34, 10, 16)  // 34°10'16''
+	phi2 = RadiansFromRich(110, 16, 22) // 110°16'22''
 
 	// optimizations
 	sin_phi, cos_phi   = math.Sincos(phi)
@@ -159,15 +156,16 @@ func NewMovement(inp Input) (mv *Movement) {
 
 	// step 2
 
-	temp = 2 * inp.V_avg * T
-	cos_A_minus_phi1 := math.Cos(mov.A - phi1)
-	cos_A_minus_phi2 := math.Cos(mov.A - phi2)
-	sin_z1 := (temp * inp.Tau1) / (l1 * cos_A_minus_phi1)
-	sin_z2 := (temp * inp.Tau2) / (l2 * cos_A_minus_phi2)
+	cos_A_substract_phi1 := math.Cos(mov.A - phi1)
+	cos_A_substract_phi2 := math.Cos(mov.A - phi2)
+	sin_z1 := -(0.9252 * 1e-3 * inp.V_avg * inp.Tau1) / (cos_A_substract_phi1)
+	sin_z2 := -(0.4749 * 1e-3 * inp.V_avg * inp.Tau2) / (cos_A_substract_phi2)
 
-	W1 := math.Abs(cos_A_minus_phi1)
-	W2 := math.Abs(cos_A_minus_phi2)
-	mov.Z_avg = math.Asin((W1*sin_z1 + W2*sin_z2) / (W1 + W2))
+	// W1 := math.Abs(cos_A_substract_phi1)
+	// W2 := math.Abs(cos_A_substract_phi2)
+	// mov.Z_avg = math.Asin((W1*sin_z1 + W2*sin_z2) / (W1 + W2))
+
+	mov.Z_avg = (math.Asin(sin_z1) + math.Asin(sin_z2)) / 2
 
 	// step 3
 
