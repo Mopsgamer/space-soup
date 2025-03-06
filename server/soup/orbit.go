@@ -1,6 +1,7 @@
 package soup
 
 import (
+	"fmt"
 	"math"
 	"time"
 )
@@ -20,7 +21,7 @@ var (
 	e    = 0.40918274
 	e0   = 0.01675
 	m    = 1.94787
-	phi  = 0.86244                      // Широта места наблюдения
+	phi  = RadiansFromRich(49, 24, 50)  // Широта места наблюдения
 	phi1 = RadiansFromRich(34, 10, 16)  // 34°10'16''
 	phi2 = RadiansFromRich(110, 16, 22) // 110°16'22''
 
@@ -161,11 +162,20 @@ func NewMovement(inp Input) (mv *Movement) {
 	sin_z1 := -(0.9252 * 1e-3 * inp.V_avg * inp.Tau1) / (cos_A_substract_phi1)
 	sin_z2 := -(0.4749 * 1e-3 * inp.V_avg * inp.Tau2) / (cos_A_substract_phi2)
 
+	z1 := math.Asin(sin_z1)
+	z2 := math.Asin(sin_z2)
+	if z1 < 0 || z2 < 0 {
+		panic("z1 or z2 less than 0")
+	}
+	if delta := z1 - z2; DegreesFromRadians(delta) >= 4 {
+		panic(fmt.Sprintf("z1 (%v) and z2 (%v) delta (%v) greater than 4 deg (%v)", z1, z2, RadiansFromDegrees(delta), 4))
+	}
+
 	// W1 := math.Abs(cos_A_substract_phi1)
 	// W2 := math.Abs(cos_A_substract_phi2)
 	// mov.Z_avg = math.Asin((W1*sin_z1 + W2*sin_z2) / (W1 + W2))
 
-	mov.Z_avg = (math.Asin(sin_z1) + math.Asin(sin_z2)) / 2
+	mov.Z_avg = (z1 + z2) / 2
 
 	// step 3
 
@@ -190,22 +200,26 @@ func NewMovement(inp Input) (mv *Movement) {
 
 	// step 6
 
-	t_gl := math.Atan((sin_Z_fix_sin_A) / (cos_delta))
+	// t_gl := math.Atan((sin_Z_fix_sin_A) / (cos_delta))
 
-	if t_gl >= 0 {
-		if sin_Z_fix_sin_A >= 0 {
-			mov.Angle = t_gl
-		} else {
-			mov.Angle = t_gl + math.Pi
-		}
-	} else { // t_gl < 0
-		if sin_Z_fix_sin_A >= 0 {
-			mov.Angle = t_gl + math.Pi
-		} else {
-			mov.Angle = t_gl + 2*math.Pi
-		}
-	}
-	sin_t, cos_t := math.Sincos(mov.Angle)
+	// if t_gl >= 0 {
+	// 	if sin_Z_fix_sin_A >= 0 {
+	// 		mov.Angle = t_gl
+	// 	} else {
+	// 		mov.Angle = t_gl + math.Pi
+	// 	}
+	// } else { // t_gl < 0
+	// 	if sin_Z_fix_sin_A >= 0 {
+	// 		mov.Angle = t_gl + math.Pi
+	// 	} else {
+	// 		mov.Angle = t_gl + 2*math.Pi
+	// 	}
+	// }
+	// sin_t, cos_t := math.Sincos(mov.Angle)
+
+	sin_t := (sin_Z_fix_sin_A) / cos_delta
+	mov.Angle = math.Asin(sin_t)
+	cos_t := math.Cos(mov.Angle)
 
 	// step 7
 
