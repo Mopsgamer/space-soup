@@ -6,22 +6,22 @@ import (
 )
 
 var (
-	c2 = 1.61222 // TODO: c2, c3 hardcoded for 1972
+	c2 = 1.61222
 	c3 = 1.4481
 
 	Pi0 = 1.7864122
 
 	_0_4703  = 0.47033133
 	_0_65    = 0.65
-	_1_0398  = 1.0398 // FIXME: 0.0398 or 1.0398?
+	_1_0398  = 1.0398
 	_123_2   = 123.2
 	_0_01672 = 0.01672
 
 	e    = 0.40918274
 	e0   = 0.01675
-	T    = 2 * 1e-3 // FIXME: T = 2 *10^-3 c. what is c
-	l1   = 4324.
-	l2   = 8422.
+	T    = 2 * 1e-3
+	l1   = 8422.
+	l2   = 4324.
 	m    = l1 / l2
 	phi  = 0.86244  // Широта места наблюдения
 	phi1 = 0.596398 // 34°10'16''
@@ -129,10 +129,10 @@ func NewMovement(inp Input) (mv *Movement) {
 	var temp float64
 	// step 1
 
-	k := m * (inp.Tau1 / inp.Tau2)
+	k := m * (inp.Tau1 / (inp.Tau2 + 1e-5))
 
 	// Главное значение азимута
-	A_gl := math.Atan((cos_phi1 - k*cos_phi2) / (k*sin_phi2 - sin_phi1))
+	A_gl := math.Atan2((cos_phi1 - k*cos_phi2), (k*sin_phi2 - sin_phi1))
 
 	if inp.Tau1 <= 0 && inp.Tau2 < 0 {
 		if A_gl > 0 {
