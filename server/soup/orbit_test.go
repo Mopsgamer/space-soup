@@ -26,14 +26,10 @@ func TestRichFromRadians(t *testing.T) {
 	assert.InDelta(s, 16, 1)
 }
 
-func TestOrbit3(t *testing.T) {
+func TestOrbit3A(t *testing.T) {
 	assert := assert.New(t)
 
-	date, err := ParseDate("1972-01-25T06:07")
-	if !assert.NoError(err) {
-		return // error
-	}
-
+	date, _ := ParseDate("1972-01-25T06:07")
 	movement := NewMovement(Input{
 		Tau1:  -12.7572,
 		Tau2:  -17.5536,
@@ -43,4 +39,7 @@ func TestOrbit3(t *testing.T) {
 
 	assert.InDelta(59.827, DegreesFromRadians(movement.A), 1e-3)     // FIXME: Fails: 59.8242
 	assert.InDelta(27.004, DegreesFromRadians(movement.Z_avg), 1e-3) // FIXME: Fails: 26.3362
+	assert.InDelta(31.76, DegreesFromRadians(movement.Delta), 1e-3)  // FIXME: Fails: 32.3506
+	assert.InDelta(179.07, DegreesFromRadians(movement.Alpha), 1e-3) // FIXME: Fails: 92.82223959
+	assert.InDelta(28.51, DegreesFromRadians(movement.Beta), 1e-3)   // FIXME: Fails: 6691.9893
 }

@@ -175,7 +175,9 @@ func NewMovement(inp Input) (mv *Movement) {
 
 	// Скорость
 	V_deriv := math.Sqrt(math.Pow(mov.V0, 2) - _123_2)
-	delta_Z := 2 * math.Atan(math.Abs((V_deriv-mov.V0))/(V_deriv+mov.V0)*math.Tan(mov.Z_avg/inp.V_avg))
+	abs_VV := math.Abs((V_deriv - mov.V0) / (V_deriv + mov.V0))
+	tan_delta_Z := abs_VV * math.Tan(mov.Z_avg/2)
+	delta_Z := 2 * math.Atan(tan_delta_Z)
 	mov.Z_fix = mov.Z_avg + delta_Z
 	sin_Z_fix, cos_Z_fix := math.Sincos(mov.Z_fix)
 	sin_Z_fix_cos_A := sin_Z_fix * cos_A
@@ -188,7 +190,7 @@ func NewMovement(inp Input) (mv *Movement) {
 
 	// step 6
 
-	t_gl := math.Atan((sin_Z_fix_sin_A) / (cos_phi*cos_Z_fix + sin_phi*sin_Z_fix_cos_A))
+	t_gl := math.Atan((sin_Z_fix_sin_A) / (cos_delta))
 
 	if t_gl >= 0 {
 		if sin_Z_fix_sin_A >= 0 {
@@ -207,7 +209,7 @@ func NewMovement(inp Input) (mv *Movement) {
 
 	// step 7
 
-	mov.S = StellarTime(c2, inp.Date.YearDay()-1, inp.Date.Hour(), inp.Date.Minute())
+	mov.S = StellarTime(inp.Date.YearDay()-1, inp.Date.Hour(), inp.Date.Minute())
 
 	// step 8
 
@@ -256,7 +258,7 @@ func NewMovement(inp Input) (mv *Movement) {
 
 	// step 16
 
-	mov.Lambda_theta = SolarLongitude(c3, inp.Date.YearDay()-1, inp.Date.Hour(), inp.Date.Minute())
+	mov.Lambda_theta = SolarLongitude(inp.Date.YearDay()-1, inp.Date.Hour(), inp.Date.Minute())
 
 	// step 17
 
@@ -375,12 +377,12 @@ func ParseDate(date string) (time.Time, error) {
 	return time.Parse("2006-01-02T03:04", date)
 }
 
-func StellarTime(c2 float64, d, h, m int) (S float64) {
-	S = c2 + 0.98565*float64(d) + 15.0411*float64(h) + 0.25068*float64(m)
+func StellarTime(d, h, m int) (S float64) {
+	S = RadiansFromDegrees(c2 + 0.98565*float64(d) + 15.0411*float64(h) + 0.25068*float64(m))
 	return
 }
 
-func SolarLongitude(c3 float64, d, h, m int) (lambda_theta float64) {
-	lambda_theta = -c3 + 0.0000097*float64(m) + 0.000717*float64(h) + 0.017203*float64(d) + 0.034435*math.Sin(0.017203*float64(d-2))
+func SolarLongitude(d, h, m int) (lambda_theta float64) {
+	lambda_theta = RadiansFromDegrees(-c3 + 0.0000097*float64(m) + 0.000717*float64(h) + 0.017203*float64(d) + 0.034435*math.Sin(0.017203*float64(d-2)))
 	return
 }
