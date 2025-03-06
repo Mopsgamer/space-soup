@@ -128,6 +128,7 @@ func NewMovement(inp Input) (mv *Movement) {
 	// step 1
 
 	k := m * (inp.Tau1 / (inp.Tau2 + 1e-5))
+	// DegreesFromRadians(k) // 81.109, not actual H
 
 	// Главное значение азимута
 	A_gl := math.Atan2((cos_phi1 - k*cos_phi2), (k*sin_phi2 - sin_phi1))
