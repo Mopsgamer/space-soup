@@ -293,10 +293,14 @@ func NewMovement(inp Input) *Movement {
 	sin_temp, cos_temp := math.Sincos(temp)
 	temp_deriv_gl := math.Atan2(sin_temp-(mov.V_t/(mov.V_g*cos_beta)), cos_temp)
 	temp_deriv := temp_deriv_gl
-	if cos_temp < 0 {
-		temp_deriv += math.Pi
+	if cos_temp > 0 {
+		temp_deriv = temp_deriv_gl
+	} else if cos_temp < 0 {
+		temp_deriv = temp_deriv_gl + math.Pi
 	}
-	mov.Lambda_deriv = mov.Lambda_theta + delta_theta - temp_deriv // 0 <= lambda_deriv <= 2*pi
+	mov.Lambda_deriv = mov.Lambda_theta + delta_theta - temp_deriv
+	mov.Lambda_deriv = LoopNumber(mov.Lambda_deriv, 0, 2*math.Pi)
+
 	sin_lambda_diff, cos_lambda_diff := math.Sincos(mov.Lambda_theta - mov.Lambda_deriv)
 
 	// step 22
