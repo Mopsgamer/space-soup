@@ -277,9 +277,8 @@ func NewMovement(inp Input) *Movement {
 
 	// step 15
 
-	cos_lambda := ((cos_delta_fix * cos_alpha_fix) / cos_beta)
-	sin_lambda := (1 / cos_beta) * (cos_delta_fix*sin_alpha_fix*cos_e + sin_delta_fix*sin_e)
-	mov.Lambda = math.Atan2(sin_lambda, cos_lambda)
+	cos_lambda := (cos_delta_fix * cos_alpha_fix) / cos_beta
+	mov.Lambda = math.Acos(cos_lambda)
 
 	// step 16
 
