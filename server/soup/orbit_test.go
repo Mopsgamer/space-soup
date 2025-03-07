@@ -15,7 +15,7 @@ var movement3 = NewMovement(Input{
 })
 
 var (
-	AllowedDeltaDegrees float64 = 5
+	AllowedDeltaDegrees float64 = 3
 	AllowedDeltaRadians float64 = 1e-2
 	AllowedDeltaSpeed   float64 = 2
 )
