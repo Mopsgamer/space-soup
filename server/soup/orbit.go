@@ -206,7 +206,7 @@ func NewMovement(inp Input) *Movement {
 
 	// step 7
 
-	d := float64(inp.Date.YearDay() - 0)
+	d := float64(inp.Date.YearDay() - 1)
 	h := float64(inp.Date.Hour())
 	m := float64(inp.Date.Minute())
 	dMod := RadiansFromDegrees(0.98565)
