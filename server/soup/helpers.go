@@ -1,6 +1,25 @@
 package soup
 
-import "math"
+import (
+	"math"
+
+	"golang.org/x/exp/constraints"
+)
+
+func LoopNumber[T constraints.Float | constraints.Integer](value, min, max T) T {
+	rangeSize := max - min
+	if rangeSize == 0 {
+		return min // Avoid division by zero
+	}
+
+	modVal := T(math.Mod(float64(value-min), float64(rangeSize)))
+
+	// Ensure the result stays within the range
+	if modVal < 0 {
+		modVal += rangeSize
+	}
+	return modVal + min
+}
 
 func RadiansFromDegrees(deg float64) float64 {
 	return deg * (math.Pi / 180.0)
@@ -32,7 +51,8 @@ func RichFromRadians(radians float64) (degrees, minutes, seconds float64) {
 }
 
 func Ctg(x float64) float64 {
-	return math.Cos(x) / math.Sin(x)
+	sin_x, cos_x := math.Sincos(x)
+	return cos_x / sin_x
 }
 
 func Average(x []float64) (avg float64) {

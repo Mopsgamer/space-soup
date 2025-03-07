@@ -10,15 +10,19 @@ var (
 	c2 = 1.61222
 	c3 = 1.4481
 
+	dayMod = RadiansFromDegrees(0.98565)
+
 	Pi0 = 1.7864122
 
-	_0_4703  = 0.47033133
-	_0_65    = 0.65
-	_1_0398  = 1.0398
-	_123_2   = 123.2
-	_0_01672 = 0.01672
+	_26_948deg = RadiansFromDegrees(26.948)
+	_0_9252    = 0.9252
+	_0_4749    = 0.4749
+	_0_65      = 0.65
+	_1_0398    = 1.0398
+	_123_2     = 123.2
+	_0_01672   = 0.01672
 
-	e    = 0.40918274
+	e    = RadiansFromRich(23, 26, 40)
 	e0   = 0.01675
 	m    = 1.94787
 	phi  = RadiansFromRich(49, 24, 50)  // Широта места наблюдения
@@ -122,7 +126,7 @@ type Input struct {
 	Date time.Time
 }
 
-func NewMovement(inp Input) (mv *Movement) {
+func NewMovement(inp Input) *Movement {
 	mov := Movement{}
 	var temp float64
 	// step 1
@@ -160,8 +164,8 @@ func NewMovement(inp Input) (mv *Movement) {
 
 	cos_A_substract_phi1 := math.Cos(mov.A - phi1)
 	cos_A_substract_phi2 := math.Cos(mov.A - phi2)
-	sin_z1 := -(0.9252 * 1e-3 * inp.V_avg * inp.Tau1) / (cos_A_substract_phi1)
-	sin_z2 := -(0.4749 * 1e-3 * inp.V_avg * inp.Tau2) / (cos_A_substract_phi2)
+	sin_z1 := -(_0_9252 * 1e-3 * inp.V_avg * inp.Tau1) / (cos_A_substract_phi1)
+	sin_z2 := -(_0_4749 * 1e-3 * inp.V_avg * inp.Tau2) / (cos_A_substract_phi2)
 
 	z1 := math.Asin(sin_z1)
 	z2 := math.Asin(sin_z2)
@@ -169,7 +173,7 @@ func NewMovement(inp Input) (mv *Movement) {
 		panic("z1 or z2 less than 0")
 	}
 	if delta := z1 - z2; DegreesFromRadians(delta) >= 4 {
-		panic(fmt.Sprintf("z1 (%v) and z2 (%v) delta (%v) greater than 4 deg (%v)", z1, z2, RadiansFromDegrees(delta), 4))
+		panic(fmt.Sprintf("z1 (%v) and z2 (%v) delta (%v) greater than 4 deg (%v)", z1, z2, RadiansFromDegrees(delta), RadiansFromDegrees(4)))
 	}
 
 	// W1 := math.Abs(cos_A_substract_phi1)
@@ -229,15 +233,19 @@ func NewMovement(inp Input) (mv *Movement) {
 	// step 8
 
 	mov.Alpha = mov.S - mov.Angle
+	mov.Alpha = LoopNumber(mov.Alpha, 0, 2*math.Pi)
 
 	// step 9
 
-	mov.Delta_alpha = -((_0_4703 * cos_t * cos_phi) / (V_deriv * cos_delta))
-	mov.Delta_delta = -((_0_4703 * sin_t * sin_delta * cos_phi) / (V_deriv))
+	mov.Delta_alpha = -(_26_948deg / V_deriv) * (cos_t / cos_delta) * cos_phi
+	mov.Delta_delta = (_26_948deg / V_deriv) * sin_t * sin_delta * cos_phi
 
 	// step 10
 
-	mov.Alpha_fix = mov.Alpha + mov.Delta_alpha // while alpha_fix > 0
+	mov.Alpha_fix = mov.Alpha + mov.Delta_alpha
+	if mov.Alpha_fix <= 0 {
+		panic(fmt.Sprintf("Alpha_fix (%v) should be greater than 0", mov.Alpha_fix))
+	}
 	sin_alpha_fix, cos_alpha_fix := math.Sincos(mov.Alpha_fix)
 	mov.Delta_fix = mov.Delta + mov.Delta_delta
 	sin_delta_fix, cos_delta_fix := math.Sincos(mov.Delta_fix)
@@ -245,9 +253,10 @@ func NewMovement(inp Input) (mv *Movement) {
 	// step 11
 
 	psi_E_gl := math.Acos(-sin_t * cos_delta_fix)
-	mov.Psi_E = psi_E_gl
-	if psi_E_gl < 0 {
-		mov.Psi_E += math.Pi
+	if psi_E_gl > 0 {
+		mov.Psi_E = psi_E_gl
+	} else if psi_E_gl < 0 {
+		mov.Psi_E = psi_E_gl + math.Pi
 	}
 
 	// step 12
@@ -262,7 +271,8 @@ func NewMovement(inp Input) (mv *Movement) {
 
 	// step 14
 
-	mov.Beta = math.Asin(-sin_e*sin_alpha_fix*cos_delta_fix + cos_e + sin_delta_fix)
+	mov.Beta = math.Asin(-sin_e*sin_alpha_fix*cos_delta_fix + cos_e*sin_delta_fix) // TODO: satisfy
+	mov.Beta = LoopNumber(mov.Beta, -math.Pi/2, math.Pi/2)
 	sin_beta, cos_beta := math.Sincos(mov.Beta)
 
 	// step 15
@@ -311,7 +321,7 @@ func NewMovement(inp Input) (mv *Movement) {
 
 	// step 23
 
-	mov.Beta_deriv = math.Asin((mov.V_g / mov.V_h) * sin_beta)
+	mov.Beta_deriv = math.Asin((mov.V_g / mov.V_h) * sin_beta) // TODO: (%)
 	cos_beta_deriv := math.Cos(mov.Beta_deriv)
 
 	// step 24
@@ -383,8 +393,7 @@ func NewMovement(inp Input) (mv *Movement) {
 		mov.Wmega = -mov.Nu
 	}
 
-	mv = &mov
-	return
+	return &mov
 }
 
 // Format: 2006-01-02T03:04
@@ -393,11 +402,11 @@ func ParseDate(date string) (time.Time, error) {
 }
 
 func StellarTime(d, h, m int) (S float64) {
-	S = RadiansFromDegrees(c2 + 0.98565*float64(d) + 15.0411*float64(h) + 0.25068*float64(m))
+	S = c2 + dayMod*float64(d) + RadiansFromDegrees(15.0411)*float64(h) + RadiansFromDegrees(0.25068)*float64(m)
 	return
 }
 
 func SolarLongitude(d, h, m int) (lambda_theta float64) {
-	lambda_theta = RadiansFromDegrees(-c3 + 0.0000097*float64(m) + 0.000717*float64(h) + 0.017203*float64(d) + 0.034435*math.Sin(0.017203*float64(d-2)))
+	lambda_theta = dayMod*float64(d) + RadiansFromDegrees(1.973)*math.Sin(dayMod*float64(d-2)) - c3
 	return
 }

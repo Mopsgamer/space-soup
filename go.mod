@@ -1,8 +1,8 @@
 module github.com/Mopsgamer/space-soup
 
-go 1.23
+go 1.23.0
 
-toolchain go1.23.2
+toolchain go1.23.4
 
 require (
 	github.com/go-sql-driver/mysql v1.8.1
@@ -10,7 +10,8 @@ require (
 	github.com/gofiber/template/html/v2 v2.1.2
 	github.com/joho/godotenv v1.5.1
 	github.com/stretchr/testify v1.10.0
-	golang.org/x/mod v0.22.0
+	golang.org/x/exp v0.0.0-20250305212735-054e65f0b394
+	golang.org/x/mod v0.24.0
 )
 
 require (
