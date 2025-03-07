@@ -1,6 +1,7 @@
 package soup
 
 import (
+	"math"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -29,9 +30,16 @@ func TestRichFromRadians(t *testing.T) {
 func TestLoopNumber(t *testing.T) {
 	assert := assert.New(t)
 
-	assert.Equal(LoopNumber(0, 0, 360), 0)
-	assert.Equal(LoopNumber(10, 0, 360), 10)
-	assert.Equal(LoopNumber(360, 0, 360), 0)
-	assert.Equal(LoopNumber(370, 0, 360), 10)
-	assert.Equal(LoopNumber(-10, 0, 360), 350)
+	assert.Equal(0, LoopNumber(0, 0, 360))
+	assert.Equal(10, LoopNumber(10, 0, 360))
+	assert.Equal(0, LoopNumber(360, 0, 360))
+	assert.Equal(10, LoopNumber(370, 0, 360))
+	assert.Equal(350, LoopNumber(-10, 0, 360))
+
+	assert.Equal(-3, LoopNumber(-1, -3, -1))
+	assert.Equal(-2, LoopNumber(-2, -3, -1))
+	assert.Equal(-3, LoopNumber(-3, -3, -1))
+
+	assert.Equal(-math.Pi/2, LoopNumber(-math.Pi/2, -math.Pi/2, math.Pi/2))
+	assert.Equal(-math.Pi/2, LoopNumber(math.Pi/2, -math.Pi/2, math.Pi/2))
 }

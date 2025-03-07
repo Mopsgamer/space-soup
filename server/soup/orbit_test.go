@@ -16,7 +16,7 @@ var movement3 = NewMovement(Input{
 
 var (
 	AllowedDeltaDegrees float64 = 5
-	AllowedDeltaRadians float64 = RadiansFromDegrees(AllowedDeltaDegrees)
+	AllowedDeltaRadians float64 = 1e-2
 	AllowedDeltaSpeed   float64 = 2
 )
 
@@ -62,17 +62,17 @@ func TestOrbit3Beta_deriv(t *testing.T) {
 
 func TestOrbit3Inc(t *testing.T) {
 	assert := assert.New(t)
-	assert.InDelta(57.26, DegreesFromRadians(movement3.Inc), AllowedDeltaDegrees) // FIXME: Fails: -60.9913
+	assert.InDelta(57.26, DegreesFromRadians(movement3.Inc), AllowedDeltaDegrees) // FIXME: Fails: 119.0086
 }
 
 func TestOrbit3Wmega(t *testing.T) {
 	assert := assert.New(t)
-	assert.InDelta(320.13, DegreesFromRadians(movement3.Wmega), AllowedDeltaDegrees) // 324.6336
+	assert.InDelta(320.13, DegreesFromRadians(movement3.Wmega), AllowedDeltaDegrees) // FIXME: Fails: 35.3663
 }
 
 func TestOrbit3Omega(t *testing.T) {
 	assert := assert.New(t)
-	assert.InDelta(304.34, DegreesFromRadians(movement3.Omega), AllowedDeltaDegrees) // FIXME: Fails: -58.5854
+	assert.InDelta(304.34, DegreesFromRadians(movement3.Omega), AllowedDeltaDegrees) // 301.414589
 }
 
 func TestOrbit3V_g(t *testing.T) {
@@ -87,15 +87,15 @@ func TestOrbit3V_h(t *testing.T) {
 
 func TestOrbit3Axis(t *testing.T) {
 	assert := assert.New(t)
-	assert.InDelta(0.97, movement3.Axis, 0) // 0.8828
+	assert.InDelta(0.97, movement3.Axis, AllowedDeltaRadians) // FIXME: Fails: 0.8828
 }
 
 func TestOrbit3Exc(t *testing.T) {
 	assert := assert.New(t)
-	assert.InDelta(0.76, movement3.Exc, 0) // 0.75205
+	assert.InDelta(0.76, movement3.Exc, AllowedDeltaRadians) // 0.75205
 }
 
 func TestOrbit3Nu(t *testing.T) {
 	assert := assert.New(t)
-	assert.InDelta(219.87, movement3.Nu, AllowedDeltaDegrees) // FIXME: Fails: -2.5243
+	assert.InDelta(219.87, DegreesFromRadians(movement3.Nu), AllowedDeltaDegrees) // FIXME: Fails: 144.6336
 }

@@ -2,6 +2,7 @@ package soup
 
 import (
 	"math"
+	"time"
 
 	"golang.org/x/exp/constraints"
 )
@@ -9,7 +10,7 @@ import (
 func LoopNumber[T constraints.Float | constraints.Integer](value, min, max T) T {
 	rangeSize := max - min
 	if rangeSize == 0 {
-		return min // Avoid division by zero
+		return min
 	}
 
 	modVal := T(math.Mod(float64(value-min), float64(rangeSize)))
@@ -55,10 +56,19 @@ func Ctg(x float64) float64 {
 	return cos_x / sin_x
 }
 
+func ArcCtg(x float64) float64 {
+	return math.Pi/2 - math.Atan(x)
+}
+
 func Average(x []float64) (avg float64) {
 	for _, v := range x {
 		avg += v
 	}
 	avg /= float64(len(x))
 	return
+}
+
+// Format: 2006-01-02T03:04
+func ParseDate(date string) (time.Time, error) {
+	return time.Parse("2006-01-02T03:04", date)
 }

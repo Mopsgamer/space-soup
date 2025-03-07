@@ -201,6 +201,7 @@ func NewMovement(inp Input) *Movement {
 	// step 5
 
 	mov.Delta = math.Asin(sin_phi*cos_Z_fix - cos_phi*sin_Z_fix_cos_A)
+	mov.Delta = LoopNumber(mov.Delta, -math.Pi/2, math.Pi/2)
 	sin_delta, cos_delta := math.Sincos(mov.Delta)
 
 	// step 6
@@ -228,7 +229,10 @@ func NewMovement(inp Input) *Movement {
 
 	// step 7
 
-	mov.S = StellarTime(inp.Date.YearDay()-1, inp.Date.Hour(), inp.Date.Minute())
+	d := inp.Date.YearDay() - 1
+	h := inp.Date.Hour()
+	m := inp.Date.Minute()
+	mov.S = c2 + dayMod*float64(d) + RadiansFromDegrees(15.0411)*float64(h) + RadiansFromDegrees(0.25068)*float64(m)
 
 	// step 8
 
@@ -271,7 +275,7 @@ func NewMovement(inp Input) *Movement {
 
 	// step 14
 
-	mov.Beta = math.Asin(-sin_e*sin_alpha_fix*cos_delta_fix + cos_e*sin_delta_fix) // TODO: satisfy
+	mov.Beta = math.Asin(-sin_e*sin_alpha_fix*cos_delta_fix + cos_e*sin_delta_fix)
 	mov.Beta = LoopNumber(mov.Beta, -math.Pi/2, math.Pi/2)
 	sin_beta, cos_beta := math.Sincos(mov.Beta)
 
@@ -282,7 +286,7 @@ func NewMovement(inp Input) *Movement {
 
 	// step 16
 
-	mov.Lambda_theta = SolarLongitude(inp.Date.YearDay()-1, inp.Date.Hour(), inp.Date.Minute())
+	mov.Lambda_theta = dayMod*float64(d) + RadiansFromDegrees(1.973)*math.Sin(dayMod*float64(d-2)) - c3
 
 	// step 17
 
@@ -320,7 +324,8 @@ func NewMovement(inp Input) *Movement {
 
 	// step 23
 
-	mov.Beta_deriv = math.Asin((mov.V_g / mov.V_h) * sin_beta) // TODO: (%)
+	mov.Beta_deriv = math.Asin((mov.V_g / mov.V_h) * sin_beta)
+	mov.Beta_deriv = LoopNumber(mov.Beta_deriv, -math.Pi/2, math.Pi/2)
 	cos_beta_deriv := math.Cos(mov.Beta_deriv)
 
 	// step 24
@@ -329,11 +334,13 @@ func NewMovement(inp Input) *Movement {
 
 	// step 25
 
-	i_gl := math.Atan(-(math.Abs(math.Tan(mov.Beta_deriv)) / sin_lambda_diff))
-	mov.Inc = i_gl
+	i_gl := math.Atan(-math.Abs(math.Tan(mov.Beta_deriv)) / sin_lambda_diff)
 	if i_gl > 0 {
-		mov.Inc += math.Pi
+		mov.Inc = i_gl
+	} else if i_gl < 0 {
+		mov.Inc = i_gl + math.Pi
 	}
+	mov.Inc = LoopNumber(mov.Inc, 0, math.Pi)
 
 	// step 26
 
@@ -373,10 +380,12 @@ func NewMovement(inp Input) *Movement {
 
 	// step 32
 
-	mov.Omega = mov.Lambda_theta
-	if mov.Beta_deriv < 0 {
-		mov.Omega += math.Pi
+	if mov.Beta_deriv > 0 {
+		mov.Omega = mov.Lambda_theta
+	} else if mov.Beta_deriv < 0 {
+		mov.Omega = mov.Lambda_theta + math.Pi
 	}
+	mov.Omega = LoopNumber(mov.Omega, 0, 2*math.Pi)
 
 	// step 33
 
@@ -393,19 +402,4 @@ func NewMovement(inp Input) *Movement {
 	}
 
 	return &mov
-}
-
-// Format: 2006-01-02T03:04
-func ParseDate(date string) (time.Time, error) {
-	return time.Parse("2006-01-02T03:04", date)
-}
-
-func StellarTime(d, h, m int) (S float64) {
-	S = c2 + dayMod*float64(d) + RadiansFromDegrees(15.0411)*float64(h) + RadiansFromDegrees(0.25068)*float64(m)
-	return
-}
-
-func SolarLongitude(d, h, m int) (lambda_theta float64) {
-	lambda_theta = dayMod*float64(d) + RadiansFromDegrees(1.973)*math.Sin(dayMod*float64(d-2)) - c3
-	return
 }
