@@ -10,8 +10,6 @@ var (
 	c2 = 1.61222
 	c3 = 1.4481
 
-	dayMod = RadiansFromDegrees(0.98565)
-
 	Pi0 = 1.7864122
 
 	_26_948deg = RadiansFromDegrees(26.948)
@@ -128,7 +126,7 @@ type Input struct {
 
 func NewMovement(inp Input) *Movement {
 	mov := Movement{}
-	var temp float64
+
 	// step 1
 
 	k := m * (inp.Tau1 / (inp.Tau2 + 1e-5))
@@ -229,10 +227,13 @@ func NewMovement(inp Input) *Movement {
 
 	// step 7
 
-	d := inp.Date.YearDay() - 1
-	h := inp.Date.Hour()
-	m := inp.Date.Minute()
-	mov.S = c2 + dayMod*float64(d) + RadiansFromDegrees(15.0411)*float64(h) + RadiansFromDegrees(0.25068)*float64(m)
+	d := float64(inp.Date.YearDay() - 0)
+	h := float64(inp.Date.Hour())
+	m := float64(inp.Date.Minute())
+	dMod := RadiansFromDegrees(0.98565)
+	hMod := RadiansFromDegrees(15.0411)
+	mMod := RadiansFromDegrees(0.25068)
+	mov.S = c2 + dMod*d + hMod*h + mMod*m
 
 	// step 8
 
@@ -286,7 +287,8 @@ func NewMovement(inp Input) *Movement {
 
 	// step 16
 
-	mov.Lambda_theta = dayMod*float64(d) + RadiansFromDegrees(1.973)*math.Sin(dayMod*float64(d-2)) - c3
+	lambdaMod := RadiansFromDegrees(1.973)
+	mov.Lambda_theta = dMod*d + lambdaMod*math.Sin(dMod*(d-2)) - c3
 
 	// step 17
 
@@ -308,7 +310,7 @@ func NewMovement(inp Input) *Movement {
 
 	// step 21
 
-	temp = mov.Lambda_theta + delta_theta - mov.Lambda
+	temp := mov.Lambda_theta + delta_theta - mov.Lambda
 	sin_temp, cos_temp := math.Sincos(temp)
 	temp_deriv_gl := math.Atan2(sin_temp-(mov.V_t/(mov.V_g*cos_beta)), cos_temp)
 	temp_deriv := temp_deriv_gl
