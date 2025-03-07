@@ -174,10 +174,6 @@ func NewMovement(inp Input) *Movement {
 		panic(fmt.Sprintf("z1 (%v) and z2 (%v) delta (%v) greater than 4 deg (%v)", z1, z2, RadiansFromDegrees(delta), RadiansFromDegrees(4)))
 	}
 
-	// W1 := math.Abs(cos_A_substract_phi1)
-	// W2 := math.Abs(cos_A_substract_phi2)
-	// mov.Z_avg = math.Asin((W1*sin_z1 + W2*sin_z2) / (W1 + W2))
-
 	mov.Z_avg = (z1 + z2) / 2
 
 	// step 3
@@ -203,23 +199,6 @@ func NewMovement(inp Input) *Movement {
 	sin_delta, cos_delta := math.Sincos(mov.Delta)
 
 	// step 6
-
-	// t_gl := math.Atan((sin_Z_fix_sin_A) / (cos_delta))
-
-	// if t_gl >= 0 {
-	// 	if sin_Z_fix_sin_A >= 0 {
-	// 		mov.Angle = t_gl
-	// 	} else {
-	// 		mov.Angle = t_gl + math.Pi
-	// 	}
-	// } else { // t_gl < 0
-	// 	if sin_Z_fix_sin_A >= 0 {
-	// 		mov.Angle = t_gl + math.Pi
-	// 	} else {
-	// 		mov.Angle = t_gl + 2*math.Pi
-	// 	}
-	// }
-	// sin_t, cos_t := math.Sincos(mov.Angle)
 
 	sin_t := (sin_Z_fix_sin_A) / cos_delta
 	mov.Angle = math.Asin(sin_t)

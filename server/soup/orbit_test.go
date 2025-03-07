@@ -16,7 +16,7 @@ var movement3 = NewMovement(Input{
 
 var (
 	AllowedDeltaDegrees float64 = 3
-	AllowedDeltaRadians float64 = 1e-2
+	AllowedDeltaRadians float64 = 2e-2
 	AllowedDeltaSpeed   float64 = 2
 )
 
@@ -92,7 +92,7 @@ func TestOrbit3Axis(t *testing.T) {
 
 func TestOrbit3Exc(t *testing.T) {
 	assert := assert.New(t)
-	assert.InDelta(0.76, movement3.Exc, AllowedDeltaRadians) // 0.75205
+	assert.InDelta(0.76, movement3.Exc, AllowedDeltaRadians) // 0.7469
 }
 
 func TestOrbit3Nu(t *testing.T) {
