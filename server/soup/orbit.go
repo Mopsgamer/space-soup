@@ -209,10 +209,10 @@ func NewMovement(inp Input) *Movement {
 	d := float64(inp.Date.YearDay() - 1)
 	h := float64(inp.Date.Hour())
 	m := float64(inp.Date.Minute())
-	dMod := RadiansFromDegrees(0.98565)
-	hMod := RadiansFromDegrees(15.0411)
-	mMod := RadiansFromDegrees(0.25068)
-	mov.S = c2 + dMod*d + hMod*h + mMod*m
+	dMod := 0.98565
+	hMod := 15.0411
+	mMod := 0.25068
+	mov.S = c2 + RadiansFromDegrees(dMod)*d + RadiansFromDegrees(hMod)*h + RadiansFromDegrees(mMod)*m
 
 	// step 8
 
@@ -266,8 +266,9 @@ func NewMovement(inp Input) *Movement {
 
 	// step 16
 
-	lambdaMod := RadiansFromDegrees(1.973)
-	mov.Lambda_theta = dMod*d + lambdaMod*math.Sin(dMod*(d-2)) - c3
+	lambdaMod := 1.973
+	// FIXME: mov.Lambda_theta test fails
+	mov.Lambda_theta = RadiansFromDegrees(dMod)*d + RadiansFromDegrees(lambdaMod*math.Sin(dMod*(d-2))) - c3
 
 	// step 17
 
@@ -309,6 +310,7 @@ func NewMovement(inp Input) *Movement {
 
 	// step 23
 
+	// FIXME: deriv V_h
 	mov.Beta_deriv = math.Asin((mov.V_g / mov.V_h) * sin_beta)
 	mov.Beta_deriv = LoopNumber(mov.Beta_deriv, -math.Pi/2, math.Pi/2)
 	cos_beta_deriv := math.Cos(mov.Beta_deriv)
@@ -319,7 +321,7 @@ func NewMovement(inp Input) *Movement {
 
 	// step 25
 
-	i_gl := math.Atan(-math.Abs(math.Tan(mov.Beta_deriv)) / sin_lambda_diff)
+	i_gl := math.Atan2(-math.Abs(math.Tan(mov.Beta_deriv)), sin_lambda_diff)
 	if i_gl > 0 {
 		mov.Inc = i_gl
 	} else if i_gl < 0 {
