@@ -168,7 +168,7 @@ func NewMovement(inp Input) *Movement {
 	z1 := math.Asin(sin_z1)
 	z2 := math.Asin(sin_z2)
 	if z1 < 0 || z2 < 0 {
-		panic("z1 or z2 less than 0")
+		panic(fmt.Sprintf("z1 (%v) or z2 (%v) less than 0", z1, z2))
 	}
 	if delta := z1 - z2; DegreesFromRadians(delta) >= 4 {
 		panic(fmt.Sprintf("z1 (%v) and z2 (%v) delta (%v) greater than 4 deg (%v)", z1, z2, RadiansFromDegrees(delta), RadiansFromDegrees(4)))
