@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func CheckOrbit(t *testing.T, excpected, actual *Movement) {
+func CheckOrbit(t *testing.T, excpected, actual *Movement[float64]) {
 	assert := assert.New(t)
 	assert.InDelta(DegreesFromRadians(excpected.Lambda_apex), DegreesFromRadians(actual.Lambda_apex), allowedDeltaDegrees)
 	assert.InDelta(DegreesFromRadians(excpected.A), DegreesFromRadians(actual.A), allowedDeltaDegrees)
@@ -27,7 +27,7 @@ func CheckOrbit(t *testing.T, excpected, actual *Movement) {
 	assert.InDelta(DegreesFromRadians(excpected.Nu), DegreesFromRadians(actual.Nu), allowedDeltaDegrees)
 }
 
-var date4, _ = ParseDate("1972-01-25T06:27")
+var date4, _ = ParseDateJSON("1972-01-25T06:27")
 var movement4 = NewMovement(Input{
 	Tau1:  -12.55,
 	Tau2:  -0.39,
@@ -36,7 +36,7 @@ var movement4 = NewMovement(Input{
 })
 
 func TestOrbit4(t *testing.T) {
-	CheckOrbit(t, &Movement{
+	CheckOrbit(t, &Movement[float64]{
 		Lambda_apex:  RadiansFromDegrees(214.00),
 		A:            RadiansFromDegrees(21.17),
 		Z_avg:        RadiansFromDegrees(42.30),
@@ -57,7 +57,7 @@ func TestOrbit4(t *testing.T) {
 	}, movement4)
 }
 
-var date8, _ = ParseDate("1972-01-25T07:07")
+var date8, _ = ParseDateJSON("1972-01-25T07:07")
 var movement8 = NewMovement(Input{
 	Tau1:  -17.29,
 	Tau2:  -9.95,
@@ -66,7 +66,7 @@ var movement8 = NewMovement(Input{
 })
 
 func TestOrbit8(t *testing.T) {
-	CheckOrbit(t, &Movement{
+	CheckOrbit(t, &Movement[float64]{
 		Lambda_apex:  RadiansFromDegrees(214.03),
 		A:            RadiansFromDegrees(37.42),
 		Z_avg:        RadiansFromDegrees(32.53),
@@ -96,7 +96,7 @@ func TestOrbit8(t *testing.T) {
 // })
 
 // func TestOrbit9(t *testing.T) {
-// 	CheckOrbit(t, &Movement{
+// 	CheckOrbit(t, &Movement[float64]{
 // 		Lambda_apex:  RadiansFromDegrees(214.04),
 // 		A:            RadiansFromDegrees(10.48),
 // 		Z_avg:        RadiansFromDegrees(39.83),
@@ -117,7 +117,7 @@ func TestOrbit8(t *testing.T) {
 // 	}, movement9)
 // }
 
-var date11, _ = ParseDate("1972-01-25T07:47")
+var date11, _ = ParseDateJSON("1972-01-25T07:47")
 var movement11 = NewMovement(Input{
 	Tau1:  -12.92,
 	Tau2:  -67.86,
@@ -126,7 +126,7 @@ var movement11 = NewMovement(Input{
 })
 
 func TestOrbit11(t *testing.T) {
-	CheckOrbit(t, &Movement{
+	CheckOrbit(t, &Movement[float64]{
 		Lambda_apex:  RadiansFromDegrees(214.06),
 		A:            RadiansFromDegrees(102.60),
 		Z_avg:        RadiansFromDegrees(68.56),

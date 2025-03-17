@@ -6,6 +6,7 @@ import (
 	"github.com/Mopsgamer/space-soup/server/controller"
 	"github.com/Mopsgamer/space-soup/server/controller/controller_http"
 	"github.com/Mopsgamer/space-soup/server/controller/model_http"
+	"github.com/Mopsgamer/space-soup/server/soup"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/logger"
@@ -13,9 +14,9 @@ import (
 )
 
 // Initialize gofiber application, including DB and view engine.
-func NewApp() (*fiber.App, error) {
+func NewApp() (app *fiber.App, err error) {
 	engine := NewAppHtmlEngine()
-	app := fiber.New(fiber.Config{
+	app = fiber.New(fiber.Config{
 		Views:             engine,
 		PassLocalsToViews: true,
 	})
@@ -59,8 +60,13 @@ func NewApp() (*fiber.App, error) {
 	// pages
 	var noRedirect controller_http.RedirectCompute = func(ctl controller_http.ControllerHttp, bind *fiber.Map) string { return "" }
 
+	table, err := soup.CheckOrbitList()
+	if err != nil {
+		return
+	}
 	app.Get("/", UseHttpPage("homepage", &fiber.Map{"Title": "Home", "IsHomePage": true}, noRedirect, "partials/main"))
 	app.Get("/calc", UseHttpPage("calc", &fiber.Map{"Title": "Calculate", "IsCalc": true}, noRedirect, "partials/main"))
+	app.Get("/table", UseHttpPage("table", &fiber.Map{"Title": "Test table", "Table": table}, noRedirect, "partials/main"))
 	app.Get("/terms", UseHttpPage("terms", &fiber.Map{"Title": "Terms", "CenterContent": true}, noRedirect, "partials/main"))
 	app.Get("/privacy", UseHttpPage("privacy", &fiber.Map{"Title": "Privacy", "CenterContent": true}, noRedirect, "partials/main"))
 	app.Get("/acknowledgements", UseHttpPage("acknowledgements", &fiber.Map{"Title": "Acknowledgements"}, noRedirect, "partials/main"))
@@ -89,5 +95,5 @@ func NewApp() (*fiber.App, error) {
 		"CenterContent": true,
 	}, noRedirect, "partials/main"))
 
-	return app, nil
+	return
 }

@@ -2,6 +2,8 @@ package soup
 
 import (
 	"math"
+	"strconv"
+	"strings"
 	"time"
 
 	"golang.org/x/exp/constraints"
@@ -69,6 +71,17 @@ func Average(x []float64) (avg float64) {
 }
 
 // Format: 2006-01-02T03:04
-func ParseDate(date string) (time.Time, error) {
+func ParseDateJSON(date string) (time.Time, error) {
 	return time.Parse("2006-01-02T03:04", date)
+}
+
+func Float64(str string) float64 {
+	str = strings.Replace(str, ",", ".", -1)
+	result, _ := strconv.ParseFloat(str, 64)
+	return result
+}
+
+func Int(str string) int {
+	result, _ := strconv.ParseInt(str, 0, strconv.IntSize)
+	return int(result)
 }

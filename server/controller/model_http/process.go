@@ -14,8 +14,8 @@ type OrbitInput struct {
 	Date string  `form:"date"`
 }
 
-func (p *OrbitInput) Movement() (*soup.Movement, error) {
-	date, err := soup.ParseDate(p.Date)
+func (p *OrbitInput) Movement() (*soup.Movement[float64], error) {
+	date, err := soup.ParseDateJSON(p.Date)
 	if err != nil {
 		return nil, err
 	}

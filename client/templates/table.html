@@ -1,0 +1,43 @@
+<div class="p-page">
+    <table>
+        <tr>
+            <th colspan="2">Lambda_apex</th>
+            <th colspan="2">A</th>
+            <th colspan="2">Z_avg</th>
+            <th colspan="2">Delta</th>
+            <th colspan="2">Alpha</th>
+            <th colspan="2">Beta</th>
+            <th colspan="2">Lambda</th>
+            <th colspan="2">Lambda_theta</th>
+            <th colspan="2">Beta_deriv</th>
+            <th colspan="2">Inc</th>
+            <th colspan="2">Wmega</th>
+            <th colspan="2">Omega</th>
+            <th colspan="2">V_g</th>
+            <th colspan="2">V_h</th>
+            <th colspan="2">Axis</th>
+            <th colspan="2">Exc</th>
+            <th colspan="2">Nu</th>
+        </tr>
+        {{range $i, $entry := .Table}}
+        {{if eq $i 21}}{{break}}{{end}}
+        <tr><td>{{$entry.Lambda_apex.Actual}}</td><td>{{$entry.Lambda_apex.Expected}}</td>
+        <td>{{$entry.A.Actual}}</td><td>{{$entry.A.Expected}}</td>
+        <td>{{$entry.Z_avg.Actual}}</td><td>{{$entry.Z_avg.Expected}}</td>
+        <td>{{$entry.Delta.Actual}}</td><td>{{$entry.Delta.Expected}}</td>
+        <td>{{$entry.Alpha.Actual}}</td><td>{{$entry.Alpha.Expected}}</td>
+        <td>{{$entry.Beta.Actual}}</td><td>{{$entry.Beta.Expected}}</td>
+        <td>{{$entry.Lambda.Actual}}</td><td>{{$entry.Lambda.Expected}}</td>
+        <td>{{$entry.Lambda_theta.Actual}}</td><td>{{$entry.Lambda_theta.Expected}}</td>
+        <td>{{$entry.Beta_deriv.Actual}}</td><td>{{$entry.Beta_deriv.Expected}}</td>
+        <td>{{$entry.Inc.Actual}}</td><td>{{$entry.Inc.Expected}}</td>
+        <td>{{$entry.Wmega.Actual}}</td><td>{{$entry.Wmega.Expected}}</td>
+        <td>{{$entry.Omega.Actual}}</td><td>{{$entry.Omega.Expected}}</td>
+        <td>{{$entry.V_g.Actual}}</td><td>{{$entry.V_g.Expected}}</td>
+        <td>{{$entry.V_h.Actual}}</td><td>{{$entry.V_h.Expected}}</td>
+        <td>{{$entry.Axis.Actual}}</td><td>{{$entry.Axis.Expected}}</td>
+        <td>{{$entry.Exc.Actual}}</td><td>{{$entry.Exc.Expected}}</td>
+        <td>{{$entry.Nu.Actual}}</td><td>{{$entry.Nu.Expected}}</td></tr>
+        {{end}}
+    </table>
+</div>

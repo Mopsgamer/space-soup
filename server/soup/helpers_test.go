@@ -43,3 +43,10 @@ func TestLoopNumber(t *testing.T) {
 	assert.Equal(-math.Pi/2, LoopNumber(-math.Pi/2, -math.Pi/2, math.Pi/2))
 	assert.Equal(-math.Pi/2, LoopNumber(math.Pi/2, -math.Pi/2, math.Pi/2))
 }
+
+func TestFloat64(t *testing.T) {
+	assert := assert.New(t)
+	assert.Equal(Float64("12"), 12.)
+	assert.Equal(Float64("12.64"), 12.64)
+	assert.Equal(Float64("12,64"), 12.64)
+}

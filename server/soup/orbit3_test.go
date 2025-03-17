@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var date3, _ = ParseDate("1972-01-25T06:07")
+var date3, _ = ParseDateJSON("1972-01-25T06:07")
 var movement3 = NewMovement(Input{
 	Tau1:  -12.7572,
 	Tau2:  -17.5536,
@@ -21,7 +21,7 @@ var (
 )
 
 func TestOrbit3(t *testing.T) {
-	CheckOrbit(t, &Movement{
+	CheckOrbit(t, &Movement[float64]{
 		Lambda_apex:  RadiansFromDegrees(213.99),
 		A:            RadiansFromDegrees(59.827),
 		Z_avg:        RadiansFromDegrees(27.004),

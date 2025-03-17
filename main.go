@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/Mopsgamer/space-soup/server"
+	internal "github.com/Mopsgamer/space-soup/server"
 	"github.com/Mopsgamer/space-soup/server/environment"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -12,5 +12,7 @@ func main() {
 	environment.Load()
 	if app, err := internal.NewApp(); err == nil {
 		log.Fatal(app.Listen(":" + environment.Port))
+	} else {
+		log.Fatal(err)
 	}
 }

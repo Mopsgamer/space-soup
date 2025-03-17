@@ -34,83 +34,83 @@ var (
 	sin_e, cos_e       = math.Sincos(e)
 )
 
-type Movement struct {
+type Movement[T any] struct {
 	// Азимут
-	A float64
+	A T
 	// Зенитный угол радианта
-	Z_avg float64
+	Z_avg T
 	// Зенитное расстояние радианта
-	Z_fix float64
+	Z_fix T
 	// Скорость V0 с учетом поправки за торможение
-	V0 float64
+	V0 T
 	// Склонение радианта
-	Delta float64
+	Delta T
 	// Прямое восхождение радианта. 0 < mov.Alpha < 2*pi
-	Alpha float64
+	Alpha T
 	// Эклиптическая широта радианта
-	Beta float64
+	Beta T
 	// Эклиптическая долгота радианта
-	Lambda float64
+	Lambda T
 	// Долгота Солнца
-	Lambda_theta float64
+	Lambda_theta T
 	// Гелиоцентрическая скорость
-	V_h float64
+	V_h T
 	// Широта истинного радианта
-	Beta_deriv float64
+	Beta_deriv T
 	// Часовой угол
-	T float64
+	T T
 	// Долгота апекса
-	Lambda_apex float64
+	Lambda_apex T
 	// Долгота радианта относительно апекса
-	Diff_lambda float64
+	Diff_lambda T
 	// Долгота истинного радианта
-	Lambda_deriv float64
+	Lambda_deriv T
 	// Звездное время в момент наблюдения
-	S float64
+	S T
 	// Исправленные экваториальные координаты радианта
-	Alpha_fix float64
+	Alpha_fix T
 	// Исправленные экваториальные координаты радианта
-	Delta_fix float64
+	Delta_fix T
 	// Поправки за суточную аберрацию в экваториальных координатах
-	Delta_alpha float64
+	Delta_alpha T
 	// Поправки за суточную аберрацию в экваториальных координатах
-	Delta_delta float64
+	Delta_delta T
 	// Элонгация
-	Psi_E float64
+	Psi_E T
 	// Геоцентрическая скорость
-	V_g float64
+	V_g T
 	// Орбитальная скорость Земли для данного дня
-	V_t float64
+	V_t T
 	// Афелий – точка орбиты максимально удаленная от Солнца
-	Q float64
+	Q T
 	// Большая полуось
-	Axis float64
+	Axis T
 	// Угол, образуемый радиус-вектором метеорного тела с вектором его скорости
-	Psi float64
+	Psi T
 	// Элонгация радианта от Солнца
-	E_theta_deriv float64
+	E_theta_deriv T
 	// Внеатмосферная скорость
-	V_inf float64
+	V_inf T
 	// Наклонение орбиты частицы к плоскости эклиптики
-	Inc float64
+	Inc T
 	// Элонгация истинного радианта от апекса
-	E_deriv float64
+	E_deriv T
 	// Перигелийное расстояние
-	DistPer float64
+	DistPer T
 	// Долгота восходящего узла
-	Omega float64
+	Omega T
 	// Аргумент перигелия
-	Wmega float64
+	Wmega T
 	// Истинная аномалия
-	Nu float64
+	Nu T
 	// Эксцентриситет
-	Exc float64
+	Exc T
 	// Часовой угол радианта
-	Angle float64
+	Angle T
 	// Радиус вектор орбиты Земли
-	R float64
+	R T
 	// Угол элонгации видимого радианта от апекса движения Земли
-	E_apex float64
+	E_apex T
 }
 
 type Input struct {
@@ -124,8 +124,8 @@ type Input struct {
 	Date time.Time
 }
 
-func NewMovement(inp Input) *Movement {
-	mov := Movement{}
+func NewMovement(inp Input) *Movement[float64] {
+	mov := Movement[float64]{}
 
 	// step 1
 
