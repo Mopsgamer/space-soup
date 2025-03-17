@@ -10,7 +10,7 @@ var (
 	c2 = 1.61222
 	c3 = 1.4481
 
-	Pi0 = 1.7864122
+	Pi0 = RadiansFromRich(102, 21, 14)
 
 	_26_948deg = RadiansFromDegrees(26.948)
 	_0_9252    = 0.9252
@@ -18,7 +18,7 @@ var (
 	_0_65      = 0.65
 	_1_0398    = 1.0398
 	_123_2     = 123.2
-	_0_01672   = 0.01672
+	_0_958     = 0.958
 
 	e    = RadiansFromRich(23, 26, 40)
 	e0   = 0.01675
@@ -272,7 +272,7 @@ func NewMovement(inp Input) *Movement {
 
 	// step 17
 
-	delta_theta := _0_01672 * math.Sin(mov.Lambda_theta-Pi0)
+	delta_theta := RadiansFromDegrees(_0_958) * math.Sin(mov.Lambda_theta-Pi0)
 	mov.Lambda_apex = mov.Lambda_theta + delta_theta - (math.Pi / 2)
 	mov.Diff_lambda = mov.Lambda - mov.Lambda_apex
 
