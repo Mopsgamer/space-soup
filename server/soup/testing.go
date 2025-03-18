@@ -1,6 +1,7 @@
 package soup
 
 import (
+	"fmt"
 	"os"
 	"reflect"
 	"strings"
@@ -61,8 +62,8 @@ func CheckOrbitList() (result []MovementTest, err error) {
 			continue
 		}
 		actual, err := NewMovement(input)
-		if err != nil {
-			continue
+		if err != nil && *input.Id < 50 {
+			fmt.Printf("%d-th got error: %s\n", 200000+*input.Id, err)
 		}
 
 		entry := MovementTest{
