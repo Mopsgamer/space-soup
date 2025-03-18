@@ -124,13 +124,12 @@ type Input struct {
 	Date time.Time
 }
 
-func NewMovement(inp Input) *Movement[float64] {
+func NewMovement(inp Input) (*Movement[float64], error) {
 	mov := Movement[float64]{}
 
 	// step 1
 
 	k := m * (inp.Tau1 / (inp.Tau2 + 1e-5))
-	// DegreesFromRadians(k) // 81.109, not actual H
 
 	// Главное значение азимута
 	A_gl := math.Atan2((cos_phi1 - k*cos_phi2), (k*sin_phi2 - sin_phi1))
@@ -168,10 +167,10 @@ func NewMovement(inp Input) *Movement[float64] {
 	z1 := math.Asin(sin_z1)
 	z2 := math.Asin(sin_z2)
 	if z1 < 0 || z2 < 0 {
-		panic(fmt.Sprintf("z1 (%v) or z2 (%v) less than 0", z1, z2))
+		return &mov, fmt.Errorf("z1 (%v) or z2 (%v) less than 0", z1, z2)
 	}
 	if delta := z1 - z2; DegreesFromRadians(delta) >= 4 {
-		panic(fmt.Sprintf("z1 (%v) and z2 (%v) delta (%v) greater than 4 deg (%v)", z1, z2, RadiansFromDegrees(delta), RadiansFromDegrees(4)))
+		return &mov, fmt.Errorf("z1 (%v) and z2 (%v) delta (%v) greater than 4 deg (%v)", z1, z2, RadiansFromDegrees(delta), RadiansFromDegrees(4))
 	}
 
 	mov.Z_avg = (z1 + z2) / 2
@@ -228,7 +227,7 @@ func NewMovement(inp Input) *Movement[float64] {
 
 	mov.Alpha_fix = mov.Alpha + mov.Delta_alpha
 	if mov.Alpha_fix <= 0 {
-		panic(fmt.Sprintf("Alpha_fix (%v) should be greater than 0", mov.Alpha_fix))
+		return &mov, fmt.Errorf("alpha_fix (%v) should be greater than 0", mov.Alpha_fix)
 	}
 	sin_alpha_fix, cos_alpha_fix := math.Sincos(mov.Alpha_fix)
 	mov.Delta_fix = mov.Delta + mov.Delta_delta
@@ -388,5 +387,5 @@ func NewMovement(inp Input) *Movement[float64] {
 		mov.Wmega = -mov.Nu
 	}
 
-	return &mov
+	return &mov, nil
 }

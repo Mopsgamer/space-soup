@@ -26,5 +26,5 @@ func (p *OrbitInput) Movement() (*soup.Movement[float64], error) {
 		Tau2:  p.Tau2,
 		V_avg: soup.Average([]float64{p.V1, p.V2, p.V3}),
 		Date:  date,
-	}), nil
+	})
 }

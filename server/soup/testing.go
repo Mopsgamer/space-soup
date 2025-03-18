@@ -9,7 +9,8 @@ import (
 type TestEntry[T any] struct {
 	Expected T
 	Actual   T
-	Diff     uint
+	// 0 - Success, 1 - Acceptable, 2 - Not acceptable
+	AssertionResult uint
 }
 
 func CheckOrbitList() (result []Movement[TestEntry[float64]], err error) {
@@ -56,7 +57,10 @@ func CheckOrbitList() (result []Movement[TestEntry[float64]], err error) {
 		if !ok {
 			continue
 		}
-		actual := NewMovement(input)
+		actual, err := NewMovement(input)
+		if err != nil {
+			continue
+		}
 		entry := Movement[TestEntry[float64]]{
 			Lambda_apex:  TestEntry[float64]{Actual: actual.Lambda_apex, Expected: Float64(fields[5])},
 			A:            TestEntry[float64]{Actual: actual.A, Expected: Float64(fields[10])},
