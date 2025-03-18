@@ -7,6 +7,12 @@ import (
 )
 
 var (
+	allowedDeltaDegrees float64 = 4
+	allowedDeltaRadians float64 = RadiansFromDegrees(4)
+	allowedDeltaSpeed   float64 = 2
+)
+
+var (
 	c2 = 1.61222
 	c3 = 1.4481
 
@@ -34,7 +40,7 @@ var (
 	sin_e, cos_e       = math.Sincos(e)
 )
 
-type Movement[T any] struct {
+type MovementGeneric[T any] struct {
 	// Азимут
 	A T
 	// Зенитный угол радианта
@@ -113,6 +119,11 @@ type Movement[T any] struct {
 	E_apex T
 }
 
+type Movement = MovementGeneric[float64]
+
+// 0 - Success, 1 - Acceptable, 2 - Not acceptable
+type MovementAssertion = MovementGeneric[uint]
+
 type Input struct {
 	Dist int
 	// Временная задержка
@@ -124,8 +135,8 @@ type Input struct {
 	Date time.Time
 }
 
-func NewMovement(inp Input) (*Movement[float64], error) {
-	mov := Movement[float64]{}
+func NewMovement(inp Input) (*Movement, error) {
+	mov := Movement{}
 
 	// step 1
 

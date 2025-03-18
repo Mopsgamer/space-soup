@@ -92,6 +92,18 @@
         th {
             @apply bg-neutral-200;
         }
+
+        td.danger-level-0 {
+            @apply text-[#00ff00];
+        }
+
+        td.danger-level-1 {
+            @apply text-[#ffff00];
+        }
+
+        td.danger-level-2 {
+            @apply text-[#ff0000];
+        }
     }
 
     form {

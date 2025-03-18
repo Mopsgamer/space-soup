@@ -18,6 +18,13 @@ func NewAppHtmlEngine() *html.Engine {
 	}
 
 	engine.AddFuncMap(map[string]interface{}{
+		"seq": func(n int) []int {
+			result := make([]int, n)
+			for i := 0; i < n; i++ {
+				result[i] = i
+			}
+			return result
+		},
 		"concatString": func(v ...string) string {
 			result := ""
 			for _, str := range v {

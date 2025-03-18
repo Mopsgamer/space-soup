@@ -85,3 +85,19 @@ func Int(str string) int {
 	result, _ := strconv.ParseInt(str, 0, strconv.IntSize)
 	return int(result)
 }
+
+// 0 - Success, 1 - Acceptable, 2 - Not acceptable
+func InDelta(expected, actual, delta float64) uint {
+	if math.IsNaN(expected) || math.IsNaN(actual) {
+		return 2
+	}
+	if expected == actual {
+		return 0
+	}
+	dt := expected - actual
+	if dt >= -delta && dt <= delta {
+		return 1
+	}
+
+	return 2
+}

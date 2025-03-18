@@ -2,19 +2,20 @@ package soup
 
 import (
 	"os"
+	"reflect"
 	"strings"
 	"time"
 )
 
-type TestEntry[T any] struct {
-	Expected T
-	Actual   T
+type MovementTest struct {
+	Expected *Movement
+	Actual   *Movement
 	// 0 - Success, 1 - Acceptable, 2 - Not acceptable
-	AssertionResult uint
+	AssertionResult *MovementAssertion
 }
 
-func CheckOrbitList() (result []Movement[TestEntry[float64]], err error) {
-	result = []Movement[TestEntry[float64]]{}
+func CheckOrbitList() (result []MovementTest, err error) {
+	result = []MovementTest{}
 	bytes, err := os.ReadFile("ORB_72.txt")
 	if err != nil {
 		return
@@ -61,25 +62,74 @@ func CheckOrbitList() (result []Movement[TestEntry[float64]], err error) {
 		if err != nil {
 			continue
 		}
-		entry := Movement[TestEntry[float64]]{
-			Lambda_apex:  TestEntry[float64]{Actual: actual.Lambda_apex, Expected: Float64(fields[5])},
-			A:            TestEntry[float64]{Actual: actual.A, Expected: Float64(fields[10])},
-			Z_avg:        TestEntry[float64]{Actual: actual.Z_avg, Expected: Float64(fields[11])},
-			Delta:        TestEntry[float64]{Actual: actual.Delta, Expected: Float64(fields[12])},
-			Alpha:        TestEntry[float64]{Actual: actual.Alpha, Expected: Float64(fields[13])},
-			Beta:         TestEntry[float64]{Actual: actual.Beta, Expected: Float64(fields[14])},
-			Lambda:       TestEntry[float64]{Actual: actual.Lambda, Expected: Float64(fields[15])},
-			Lambda_theta: TestEntry[float64]{Actual: actual.Lambda_theta, Expected: Float64(fields[16])},
-			Beta_deriv:   TestEntry[float64]{Actual: actual.Beta_deriv, Expected: Float64(fields[17])},
-			Inc:          TestEntry[float64]{Actual: actual.Inc, Expected: Float64(fields[18])},
-			Wmega:        TestEntry[float64]{Actual: actual.Wmega, Expected: Float64(fields[19])},
-			Omega:        TestEntry[float64]{Actual: actual.Omega, Expected: Float64(fields[20])},
-			V_g:          TestEntry[float64]{Actual: actual.V_g, Expected: Float64(fields[21])},
-			V_h:          TestEntry[float64]{Actual: actual.V_h, Expected: Float64(fields[22])},
-			Axis:         TestEntry[float64]{Actual: actual.Axis, Expected: Float64(fields[23])},
-			Exc:          TestEntry[float64]{Actual: actual.Exc, Expected: Float64(fields[24])},
-			Nu:           TestEntry[float64]{Actual: actual.Nu, Expected: Float64(fields[25])},
+
+		entry := MovementTest{
+			Actual:          &Movement{},
+			Expected:        &Movement{},
+			AssertionResult: &MovementAssertion{},
 		}
+
+		entry.Actual.Lambda_apex = DegreesFromRadians(actual.Lambda_apex)
+		entry.Actual.A = DegreesFromRadians(actual.A)
+		entry.Actual.Z_avg = DegreesFromRadians(actual.Z_avg)
+		entry.Actual.Delta = DegreesFromRadians(actual.Delta)
+		entry.Actual.Alpha = DegreesFromRadians(actual.Alpha)
+		entry.Actual.Beta = DegreesFromRadians(actual.Beta)
+		entry.Actual.Lambda = DegreesFromRadians(actual.Lambda)
+		entry.Actual.Lambda_theta = DegreesFromRadians(actual.Lambda_theta)
+		entry.Actual.Beta_deriv = DegreesFromRadians(actual.Beta_deriv)
+		entry.Actual.Inc = DegreesFromRadians(actual.Inc)
+		entry.Actual.Wmega = DegreesFromRadians(actual.Wmega)
+		entry.Actual.Omega = DegreesFromRadians(actual.Omega)
+		entry.Actual.V_g = actual.V_g
+		entry.Actual.V_h = actual.V_h
+		entry.Actual.Axis = DegreesFromRadians(actual.Axis)
+		entry.Actual.Exc = DegreesFromRadians(actual.Exc)
+		entry.Actual.Nu = DegreesFromRadians(actual.Nu)
+
+		entry.Expected.Lambda_apex = Float64(fields[5])
+		entry.Expected.A = Float64(fields[10])
+		entry.Expected.Z_avg = Float64(fields[11])
+		entry.Expected.Delta = Float64(fields[12])
+		entry.Expected.Alpha = Float64(fields[13])
+		entry.Expected.Beta = Float64(fields[14])
+		entry.Expected.Lambda = Float64(fields[15])
+		entry.Expected.Lambda_theta = Float64(fields[16])
+		entry.Expected.Beta_deriv = Float64(fields[17])
+		entry.Expected.Inc = Float64(fields[18])
+		entry.Expected.Wmega = Float64(fields[19])
+		entry.Expected.Omega = Float64(fields[20])
+		entry.Expected.V_g = Float64(fields[21])
+		entry.Expected.V_h = Float64(fields[22])
+		entry.Expected.Axis = Float64(fields[23])
+		entry.Expected.Exc = Float64(fields[24])
+		entry.Expected.Nu = Float64(fields[25])
+
+		valueOfExpected := reflect.ValueOf(entry.Expected)
+		valueOfActual := reflect.ValueOf(entry.Actual)
+		InDelta := func(delta float64, propName string) uint {
+			e := reflect.Indirect(valueOfExpected).FieldByName(propName).Float()
+			a := reflect.Indirect(valueOfActual).FieldByName(propName).Float()
+			return InDelta(e, a, delta)
+		}
+
+		entry.AssertionResult.Lambda_apex = InDelta(allowedDeltaDegrees, "Lambda_apex")
+		entry.AssertionResult.A = InDelta(allowedDeltaDegrees, "A")
+		entry.AssertionResult.Z_avg = InDelta(allowedDeltaDegrees, "Z_avg")
+		entry.AssertionResult.Delta = InDelta(allowedDeltaDegrees, "Delta")
+		entry.AssertionResult.Alpha = InDelta(allowedDeltaDegrees, "Alpha")
+		entry.AssertionResult.Beta = InDelta(allowedDeltaDegrees, "Beta")
+		entry.AssertionResult.Lambda = InDelta(allowedDeltaDegrees, "Lambda")
+		entry.AssertionResult.Lambda_theta = InDelta(allowedDeltaDegrees, "Lambda_theta")
+		entry.AssertionResult.Beta_deriv = InDelta(allowedDeltaDegrees, "Beta_deriv")
+		entry.AssertionResult.Inc = InDelta(allowedDeltaDegrees, "Inc")
+		entry.AssertionResult.Wmega = InDelta(allowedDeltaDegrees, "Wmega")
+		entry.AssertionResult.Omega = InDelta(allowedDeltaDegrees, "Omega")
+		entry.AssertionResult.V_g = InDelta(allowedDeltaSpeed, "V_g")
+		entry.AssertionResult.V_h = InDelta(allowedDeltaSpeed, "V_h")
+		entry.AssertionResult.Axis = InDelta(allowedDeltaDegrees, "Axis")
+		entry.AssertionResult.Exc = InDelta(allowedDeltaDegrees, "Exc")
+		entry.AssertionResult.Nu = InDelta(allowedDeltaDegrees, "Nu")
 		result = append(result, entry)
 	}
 	return

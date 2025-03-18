@@ -8,12 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var (
-	allowedDeltaRadians float64 = 0.07 // ~4 deg
-	allowedDeltaSpeed   float64 = 2
-)
-
-func CheckOrbit(assert *assert.Assertions, input *Input, expected *Movement[float64]) {
+func CheckOrbit(assert *assert.Assertions, input *Input, expected *Movement) {
 	var actual, err = NewMovement(*input)
 	if !assert.NoError(err) {
 		return
@@ -62,7 +57,7 @@ func TestOrbit3(t *testing.T) {
 			V_avg: Average([]float64{33.858, 33.832, 33.965}),
 			Date:  date,
 		},
-		&Movement[float64]{
+		&Movement{
 			Lambda_apex:  RadiansFromDegrees(213.99),
 			A:            RadiansFromDegrees(59.827),
 			Z_avg:        RadiansFromDegrees(27.004),
@@ -98,7 +93,7 @@ func TestOrbit4(t *testing.T) {
 			V_avg: Average([]float64{56.36, 60.91, 55.40}),
 			Date:  date,
 		},
-		&Movement[float64]{
+		&Movement{
 			Lambda_apex:  RadiansFromDegrees(214.00),
 			A:            RadiansFromDegrees(21.17),
 			Z_avg:        RadiansFromDegrees(42.30),
@@ -134,7 +129,7 @@ func TestOrbit8(t *testing.T) {
 			V_avg: Average([]float64{32.61, 33.58, 32.22}),
 			Date:  date,
 		},
-		&Movement[float64]{
+		&Movement{
 			Lambda_apex:  RadiansFromDegrees(214.03),
 			A:            RadiansFromDegrees(37.42),
 			Z_avg:        RadiansFromDegrees(32.53),
@@ -170,7 +165,7 @@ func TestOrbit9(t *testing.T) {
 			V_avg: Average([]float64{64.16, 67.17, 48.93}),
 			Date:  date,
 		},
-		&Movement[float64]{
+		&Movement{
 			Lambda_apex:  RadiansFromDegrees(214.04),
 			A:            RadiansFromDegrees(10.48),
 			Z_avg:        RadiansFromDegrees(39.83),
@@ -206,7 +201,7 @@ func TestOrbit11(t *testing.T) {
 			V_avg: Average([]float64{28.31, 27.21, 28.37}),
 			Date:  date,
 		},
-		&Movement[float64]{
+		&Movement{
 			Lambda_apex:  RadiansFromDegrees(214.06),
 			A:            RadiansFromDegrees(102.60),
 			Z_avg:        RadiansFromDegrees(68.56),
