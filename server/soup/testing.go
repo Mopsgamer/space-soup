@@ -8,6 +8,7 @@ import (
 )
 
 type MovementTest struct {
+	Input    Input
 	Expected *Movement
 	Actual   *Movement
 	// 0 - Success, 1 - Acceptable, 2 - Not acceptable
@@ -38,8 +39,9 @@ func CheckOrbitList() (result []MovementTest, err error) {
 		dt := strings.Split(fields[2], ".")
 		date := time.Date(1900+Int(dt[2]), time.Month(Int(dt[0])), Int(dt[1]), Int(fields[4]), Int(fields[5]), 0, 0, time.UTC)
 
+		id := Int(fields[0])
 		input := Input{
-			Dist:  Int(fields[1]),
+			Id:    &id,
 			Tau1:  Float64(fields[9]),
 			Tau2:  Float64(fields[10]),
 			Date:  date,
@@ -64,6 +66,7 @@ func CheckOrbitList() (result []MovementTest, err error) {
 		}
 
 		entry := MovementTest{
+			Input:           input,
 			Actual:          &Movement{},
 			Expected:        &Movement{},
 			AssertionResult: &MovementAssertion{},

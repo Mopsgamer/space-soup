@@ -5,7 +5,6 @@ import (
 )
 
 type OrbitInput struct {
-	Dist int     `form:"dist"`
 	Tau1 float64 `form:"tau1"`
 	Tau2 float64 `form:"tau2"`
 	V1   float64 `form:"v1"`
@@ -21,7 +20,7 @@ func (p *OrbitInput) Movement() (*soup.Movement, error) {
 	}
 
 	return soup.NewMovement(soup.Input{
-		Dist:  p.Dist,
+		Id:    nil,
 		Tau1:  p.Tau1,
 		Tau2:  p.Tau2,
 		V_avg: soup.Average([]float64{p.V1, p.V2, p.V3}),

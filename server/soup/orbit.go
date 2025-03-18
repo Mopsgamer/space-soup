@@ -125,7 +125,7 @@ type Movement = MovementGeneric[float64]
 type MovementAssertion = MovementGeneric[uint]
 
 type Input struct {
-	Dist int
+	Id *int
 	// Временная задержка
 	Tau1 float64
 	// Временная задержка
