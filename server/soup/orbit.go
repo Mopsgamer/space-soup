@@ -144,6 +144,7 @@ func NewMovement(inp Input) (*Movement, error) {
 
 	// Главное значение азимута
 	A_gl := math.Atan2((cos_phi1 - k*cos_phi2), (k*sin_phi2 - sin_phi1))
+	A_gl = LoopNumber(A_gl, -math.Pi/2, math.Pi/2)
 
 	if inp.Tau1 <= 0 && inp.Tau2 < 0 {
 		if A_gl > 0 {
@@ -175,8 +176,8 @@ func NewMovement(inp Input) (*Movement, error) {
 	sin_z1 := -(_0_9252 * 1e-3 * inp.V_avg * inp.Tau1) / (cos_A_substract_phi1)
 	sin_z2 := -(_0_4749 * 1e-3 * inp.V_avg * inp.Tau2) / (cos_A_substract_phi2)
 
-	z1 := math.Asin(sin_z1)
-	z2 := math.Asin(sin_z2)
+	z1 := math.Asin(sin_z1) // NaN if sin_z1 < -1 or sin_z1 > 1, sin_z1 == 5.82...
+	z2 := math.Asin(sin_z2) // sin_z2 == 5.82
 	if z1 < 0 || z2 < 0 {
 		return &mov, fmt.Errorf("z1 (%v) or z2 (%v) less than 0", z1, z2)
 	}
