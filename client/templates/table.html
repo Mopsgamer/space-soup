@@ -1,8 +1,11 @@
 <div class="p-page">
     <div class="h-[70svh] overflow-auto">
-        <table>
+        <table id="test-pass-table">
             <tr>
                 <th rowspan="2">#</th>
+                <th rowspan="2">Tau1</th>
+                <th rowspan="2">Tau2</th>
+                <th rowspan="2">V_avg</th>
                 <th colspan="2">Lambda_apex</th>
                 <th colspan="2">A</th>
                 <th colspan="2">Z_avg</th>
@@ -31,6 +34,9 @@
             {{if eq $i 21}}{{break}}{{end}}
             <tr>
                 <td>{{$entry.Input.Id}}</td>
+                <td>{{printf "%.2f" $entry.Input.Tau1}}</td>
+                <td>{{printf "%.2f" $entry.Input.Tau2}}</td>
+                <td>{{printf "%.2f" $entry.Input.V_avg}}</td>
                 <td>{{printf "%.2f" $entry.Expected.Lambda_apex}}</td><td class="danger-level-{{$entry.AssertionResult.Lambda_apex}}">{{printf "%.2f" $entry.Actual.Lambda_apex}}</td>
                 <td>{{printf "%.2f" $entry.Expected.A}}</td><td class="danger-level-{{$entry.AssertionResult.A}}">{{printf "%.2f" $entry.Actual.A}}</td>
                 <td>{{printf "%.2f" $entry.Expected.Z_avg}}</td><td class="danger-level-{{$entry.AssertionResult.Z_avg}}">{{printf "%.2f" $entry.Actual.Z_avg}}</td>
