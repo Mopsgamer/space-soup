@@ -275,6 +275,7 @@ func NewMovement(inp Input) (*Movement, error) {
 
 	cos_lambda := (cos_delta_fix * cos_alpha_fix) / cos_beta
 	mov.Lambda = math.Acos(cos_lambda)
+	mov.Lambda = LoopNumber(mov.Lambda, 0, 2*math.Pi)
 
 	// step 16
 
