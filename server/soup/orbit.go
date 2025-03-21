@@ -173,11 +173,12 @@ func NewMovement(inp Input) (*Movement, error) {
 
 	cos_A_substract_phi1 := math.Cos(mov.A - phi1)
 	cos_A_substract_phi2 := math.Cos(mov.A - phi2)
-	sin_z1 := -(_0_9252 * 1e-3 * inp.V_avg * inp.Tau1) / (cos_A_substract_phi1)
-	sin_z2 := -(_0_4749 * 1e-3 * inp.V_avg * inp.Tau2) / (cos_A_substract_phi2)
+	e3 := 1e-3
+	sin_z1 := -(_0_9252 * e3 * inp.V_avg * inp.Tau1) / (cos_A_substract_phi1)
+	sin_z2 := -(_0_4749 * e3 * inp.V_avg * inp.Tau2) / (cos_A_substract_phi2)
 
-	z1 := math.Asin(sin_z1) // NaN if sin_z1 < -1 or sin_z1 > 1, sin_z1 == 5.82...
-	z2 := math.Asin(sin_z2) // sin_z2 == 5.82
+	z1 := math.Asin(sin_z1)
+	z2 := math.Asin(sin_z2)
 	if z1 < 0 || z2 < 0 {
 		return &mov, fmt.Errorf("z1 (%v) or z2 (%v) less than 0", z1, z2)
 	}
