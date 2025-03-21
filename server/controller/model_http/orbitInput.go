@@ -19,11 +19,19 @@ func (p *OrbitInput) Movement() (*soup.Movement, error) {
 		return nil, err
 	}
 
+	speedList := []float64{}
+	for _, v := range []float64{p.V1, p.V2, p.V3} {
+		if v > 999. {
+			continue
+		}
+		speedList = append(speedList, v)
+	}
+
 	return soup.NewMovement(soup.Input{
 		Id:    nil,
 		Tau1:  p.Tau1,
 		Tau2:  p.Tau2,
-		V_avg: soup.Average([]float64{p.V1, p.V2, p.V3}),
+		V_avg: soup.Average(speedList),
 		Date:  date,
 	})
 }

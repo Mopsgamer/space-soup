@@ -40,13 +40,21 @@ func CheckOrbitList() (result []MovementTest, err error) {
 		dt := strings.Split(fields[2], ".")
 		date := time.Date(1900+Int(dt[2]), time.Month(Int(dt[0])), Int(dt[1]), Int(fields[4]), Int(fields[5]), 0, 0, time.UTC)
 
+		speedList := []float64{}
+		for _, v := range []float64{Float64(fields[6]), Float64(fields[7]), Float64(fields[8])} {
+			if v > 999. {
+				continue
+			}
+			speedList = append(speedList, v)
+		}
+
 		id := Int(fields[0])
 		input := Input{
 			Id:    &id,
 			Tau1:  Float64(fields[9]),
 			Tau2:  Float64(fields[10]),
 			Date:  date,
-			V_avg: Average([]float64{Float64(fields[6]), Float64(fields[7]), Float64(fields[8])}),
+			V_avg: Average(speedList),
 		}
 		inputList[Int(fields[0])] = input
 	}

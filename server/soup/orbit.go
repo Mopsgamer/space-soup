@@ -291,7 +291,12 @@ func NewMovement(inp Input) (*Movement, error) {
 
 	// step 18
 
-	mov.E_apex = math.Acos(cos_beta * math.Cos(mov.Lambda-mov.Lambda_apex))
+	E_gl := cos_beta * math.Cos(mov.Lambda-mov.Lambda_apex)
+	if E_gl > 0 {
+		mov.E_apex = math.Cos(E_gl)
+	} else if E_gl < 0 {
+		mov.E_apex = math.Cos(E_gl) + math.Pi
+	}
 
 	// step 19
 
