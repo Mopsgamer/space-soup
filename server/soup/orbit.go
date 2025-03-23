@@ -285,7 +285,6 @@ func NewMovement(inp Input) (*Movement, error) {
 	mMod = 0.0000097
 	lambdaMod := 0.034435
 	mov.Lambda_theta = dMod*d + hMod*h + mMod*m + lambdaMod*math.Sin(dMod*(d-2)) - c3
-	mov.Lambda_theta = LoopNumber(mov.Lambda, 0, 2*math.Pi)
 
 	// step 17
 
