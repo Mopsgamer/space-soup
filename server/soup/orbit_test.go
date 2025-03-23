@@ -72,8 +72,8 @@ func TestOrbit3(t *testing.T) {
 			Omega:        RadiansFromDegrees(304.344),
 			V_g:          34.236,
 			V_h:          29.737,
-			Axis:         0.9662,
-			Exc:          0.7571,
+			Axis:         DegreesFromRadians(0.9662),
+			Exc:          DegreesFromRadians(0.7571),
 			Nu:           RadiansFromDegrees(219.870),
 		},
 	)
@@ -108,8 +108,8 @@ func TestOrbit4(t *testing.T) {
 			Omega:        RadiansFromDegrees(304.357),
 			V_g:          57.938,
 			V_h:          33.412,
-			Axis:         1.2931,
-			Exc:          0.6391,
+			Axis:         DegreesFromRadians(1.2931),
+			Exc:          DegreesFromRadians(0.6391),
 			Nu:           RadiansFromDegrees(249.585),
 		},
 	)

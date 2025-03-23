@@ -113,8 +113,8 @@ func CheckOrbitList() (result []MovementTest, err error) {
 		entry.Expected.Omega = Float64(fields[20])
 		entry.Expected.V_g = Float64(fields[21])
 		entry.Expected.V_h = Float64(fields[22])
-		entry.Expected.Axis = Float64(fields[23])
-		entry.Expected.Exc = Float64(fields[24])
+		entry.Expected.Axis = DegreesFromRadians(Float64(fields[23]))
+		entry.Expected.Exc = DegreesFromRadians(Float64(fields[24]))
 		entry.Expected.Nu = Float64(fields[25])
 
 		valueOfExpected := reflect.ValueOf(entry.Expected)
