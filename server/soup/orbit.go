@@ -275,7 +275,8 @@ func NewMovement(inp Input) (*Movement, error) {
 	// step 15
 
 	cos_lambda := cos_delta_fix * cos_alpha_fix / cos_beta // FIXME: broken Lambda
-	mov.Lambda = math.Acos(cos_lambda)
+	sin_lambda := (cos_delta_fix*sin_alpha_fix*cos_e + sin_delta_fix*sin_e) / cos_beta
+	mov.Lambda = math.Atan2(sin_lambda, cos_lambda)
 	mov.Lambda = LoopNumber(mov.Lambda, 0, 2*math.Pi)
 
 	// step 16
