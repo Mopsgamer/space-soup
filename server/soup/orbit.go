@@ -291,6 +291,7 @@ func NewMovement(inp Input) (*Movement, error) {
 	mov.Lambda_apex = mov.Lambda_theta + delta_theta - (math.Pi / 2)
 	mov.Lambda_apex = LoopNumber(mov.Lambda_apex, 0, 2*math.Pi)
 	mov.Diff_lambda = mov.Lambda - mov.Lambda_apex
+	mov.Diff_lambda = LoopNumber(mov.Diff_lambda, 0, 2*math.Pi)
 
 	// step 18
 
