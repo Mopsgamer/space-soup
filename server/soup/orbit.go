@@ -24,7 +24,6 @@ var (
 	_0_65      = 0.65
 	_1_0398    = 1.0398
 	_123_2     = 123.2
-	_0_958     = 0.958
 
 	e    = RadiansFromRich(23, 26, 40)
 	e0   = 0.01675
@@ -274,7 +273,7 @@ func NewMovement(inp Input) (*Movement, error) {
 
 	// step 15
 
-	cos_lambda := (cos_delta_fix * cos_alpha_fix) / cos_beta
+	cos_lambda := (cos_delta_fix * cos_alpha_fix) / cos_beta // FIXME: broken Lambda
 	mov.Lambda = math.Acos(cos_lambda)
 	mov.Lambda = LoopNumber(mov.Lambda, 0, 2*math.Pi)
 
@@ -288,8 +287,9 @@ func NewMovement(inp Input) (*Movement, error) {
 
 	// step 17
 
-	delta_theta := RadiansFromDegrees(_0_958) * math.Sin(mov.Lambda_theta-Pi0)
+	delta_theta := 0.01677 * math.Sin(mov.Lambda_theta-Pi0)
 	mov.Lambda_apex = mov.Lambda_theta + delta_theta - (math.Pi / 2)
+	mov.Lambda_apex = LoopNumber(mov.Lambda_apex, 0, 2*math.Pi)
 	mov.Diff_lambda = mov.Lambda - mov.Lambda_apex
 
 	// step 18
