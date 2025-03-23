@@ -274,7 +274,7 @@ func NewMovement(inp Input) (*Movement, error) {
 
 	// step 15
 
-	cos_lambda := cos_delta_fix * cos_alpha_fix / cos_beta // FIXME: broken Lambda
+	cos_lambda := cos_delta_fix * cos_alpha_fix / cos_beta
 	sin_lambda := (cos_delta_fix*sin_alpha_fix*cos_e + sin_delta_fix*sin_e) / cos_beta
 	mov.Lambda = math.Atan2(sin_lambda, cos_lambda)
 	mov.Lambda = LoopNumber(mov.Lambda, 0, 2*math.Pi)
@@ -297,12 +297,7 @@ func NewMovement(inp Input) (*Movement, error) {
 
 	// step 18
 
-	E_gl := cos_beta * math.Cos(mov.Diff_lambda)
-	if E_gl > 0 {
-		mov.E_apex = math.Cos(E_gl)
-	} else if E_gl < 0 {
-		mov.E_apex = math.Cos(E_gl) + math.Pi
-	}
+	mov.E_apex = math.Acos(cos_beta * math.Cos(mov.Diff_lambda))
 
 	// step 19
 
@@ -317,12 +312,7 @@ func NewMovement(inp Input) (*Movement, error) {
 	temp := mov.Lambda_theta + delta_theta - mov.Lambda
 	sin_temp, cos_temp := math.Sincos(temp)
 	temp_deriv_gl := math.Atan2(sin_temp-(mov.V_t/(mov.V_g*cos_beta)), cos_temp)
-	temp_deriv := temp_deriv_gl
-	if cos_temp > 0 {
-		temp_deriv = temp_deriv_gl
-	} else if cos_temp < 0 {
-		temp_deriv = temp_deriv_gl + math.Pi
-	}
+	temp_deriv := LoopNumber(temp_deriv_gl, 0, 2*math.Pi)
 	mov.Lambda_deriv = mov.Lambda_theta + delta_theta - temp_deriv
 	mov.Lambda_deriv = LoopNumber(mov.Lambda_deriv, 0, 2*math.Pi)
 
