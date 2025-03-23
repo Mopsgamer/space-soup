@@ -331,7 +331,6 @@ func NewMovement(inp Input) (*Movement, error) {
 
 	// step 23
 
-	// FIXME: deriv V_h
 	mov.Beta_deriv = math.Asin((mov.V_g / mov.V_h) * sin_beta)
 	mov.Beta_deriv = LoopNumber(mov.Beta_deriv, -math.Pi/2, math.Pi/2)
 	cos_beta_deriv := math.Cos(mov.Beta_deriv)
