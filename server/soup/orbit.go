@@ -393,6 +393,7 @@ func NewMovement(inp Input) (*Movement, error) {
 	cos_v := (p - mov.R) / (mov.R * e)
 	sin_v := p / (mov.R * e) * math.Cos(mov.Inc) * Ctg(mov.Lambda_deriv-mov.Lambda_theta)
 	mov.Nu = math.Atan2(sin_v, cos_v)
+	mov.Nu = LoopNumber(mov.Nu, 0, 2*math.Pi)
 
 	// step 34
 
