@@ -243,6 +243,7 @@ func NewMovement(inp Input) (*Movement, error) {
 		return &mov, fmt.Errorf("alpha_fix (%v) should be greater than 0", mov.Alpha_fix)
 	}
 	sin_alpha_fix, cos_alpha_fix := math.Sincos(mov.Alpha_fix)
+
 	mov.Delta_fix = mov.Delta + mov.Delta_delta
 	sin_delta_fix, cos_delta_fix := math.Sincos(mov.Delta_fix)
 
@@ -279,9 +280,12 @@ func NewMovement(inp Input) (*Movement, error) {
 
 	// step 16
 
-	lambdaMod := 1.973
-	// FIXME: mov.Lambda_theta test fails
-	mov.Lambda_theta = RadiansFromDegrees(dMod)*d + RadiansFromDegrees(lambdaMod*math.Sin(dMod*(d-2))) - c3
+	dMod = 0.017202
+	hMod = 0.000717
+	mMod = 0.0000097
+	lambdaMod := 0.034435
+	mov.Lambda_theta = dMod*d + hMod*h + mMod*m + lambdaMod*math.Sin(dMod*(d-2)) - c3
+	mov.Lambda_theta = LoopNumber(mov.Lambda, 0, 2*math.Pi)
 
 	// step 17
 
