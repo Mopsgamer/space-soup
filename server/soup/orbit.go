@@ -267,13 +267,14 @@ func NewMovement(inp Input) (*Movement, error) {
 
 	// step 14
 
-	mov.Beta = math.Asin(-sin_e*sin_alpha_fix*cos_delta_fix + cos_e*sin_delta_fix)
+	sin_beta := -sin_e*sin_alpha_fix*cos_delta_fix + cos_e*sin_delta_fix
+	mov.Beta = math.Asin(sin_beta)
 	mov.Beta = LoopNumber(mov.Beta, -math.Pi/2, math.Pi/2)
-	sin_beta, cos_beta := math.Sincos(mov.Beta)
+	cos_beta := math.Cos(mov.Beta)
 
 	// step 15
 
-	cos_lambda := (cos_delta_fix * cos_alpha_fix) / cos_beta // FIXME: broken Lambda
+	cos_lambda := cos_delta_fix * cos_alpha_fix / cos_beta // FIXME: broken Lambda
 	mov.Lambda = math.Acos(cos_lambda)
 	mov.Lambda = LoopNumber(mov.Lambda, 0, 2*math.Pi)
 
@@ -332,7 +333,8 @@ func NewMovement(inp Input) (*Movement, error) {
 
 	// step 23
 
-	mov.Beta_deriv = math.Asin((mov.V_g / mov.V_h) * sin_beta)
+	sin_beta_deriv := (mov.V_g / mov.V_h) * sin_beta
+	mov.Beta_deriv = math.Asin(sin_beta_deriv)
 	mov.Beta_deriv = LoopNumber(mov.Beta_deriv, -math.Pi/2, math.Pi/2)
 	cos_beta_deriv := math.Cos(mov.Beta_deriv)
 
