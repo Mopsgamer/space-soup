@@ -7,14 +7,16 @@ import (
 )
 
 var (
-	allowedDeltaDegrees float64 = 4
-	allowedDeltaRadians float64 = RadiansFromDegrees(4) // 0.06981317007977318
-	allowedDeltaSpeed   float64 = 2
+	allowedDeltaDegrees = 4.
+	allowedDeltaRadians = RadiansFromDegrees(4) // 0.06981317007977318
+	allowedDeltaSpeed   = 2.
 )
 
 var (
 	c2 = 1.61667
 	c3 = 1.40042
+
+	EarthRadius = 6371.
 
 	_360deg = 2 * math.Pi
 	_90deg  = math.Pi / 2
@@ -128,16 +130,20 @@ type Movement = MovementGeneric[float64]
 // 0 - Success, 1 - Acceptable, 2 - Not acceptable
 type MovementAssertion = MovementGeneric[uint]
 
-type Input struct {
+type InputGeneric[T any] struct {
 	Id *int
+	// Наклонная дальность
+	Dist T
 	// Временная задержка
-	Tau1 float64
+	Tau1 T
 	// Временная задержка
-	Tau2  float64
-	V_avg float64
+	Tau2  T
+	V_avg T
 	// Время и дата появления метеороида
 	Date time.Time
 }
+
+type Input = InputGeneric[float64]
 
 func NewMovement(inp Input) (*Movement, error) {
 	mov := Movement{}
@@ -404,5 +410,7 @@ func NewMovement(inp Input) (*Movement, error) {
 
 	mov.Wmega = LoopNumber(-mov.Nu+math.Pi, 0, _360deg)
 
+	//mov.H = inp.Dist*sin_e + math.Pow(inp.Dist, 2)*math.Pow(cos_e, 2)/(2*EarthRadius)
+	//mov.H = _90deg - mov.Z_fix
 	return &mov, nil
 }

@@ -25,6 +25,7 @@ func CheckOrbit(assert *assert.Assertions, input *Input, expected *Movement) {
 		))
 	}
 	InDelta(allowedDeltaRadians, "Lambda_apex")
+	InDelta(allowedDeltaRadians, "H")
 	InDelta(allowedDeltaRadians, "A")
 	InDelta(allowedDeltaRadians, "Z_avg")
 	InDelta(allowedDeltaRadians, "Delta")
@@ -52,6 +53,7 @@ func TestOrbit3(t *testing.T) {
 	CheckOrbit(
 		assert,
 		&Input{
+			Dist:  200,
 			Tau1:  -12.7572,
 			Tau2:  -17.5536,
 			V_avg: Average([]float64{33.858, 33.832, 33.965}),
@@ -59,6 +61,7 @@ func TestOrbit3(t *testing.T) {
 		},
 		&Movement{
 			Lambda_apex:  RadiansFromDegrees(213.991),
+			H:            RadiansFromDegrees(78.15),
 			A:            RadiansFromDegrees(59.827),
 			Z_avg:        RadiansFromDegrees(27.004),
 			Delta:        RadiansFromDegrees(31.756),
@@ -88,6 +91,7 @@ func TestOrbit4(t *testing.T) {
 	CheckOrbit(
 		assert,
 		&Input{
+			Dist:  261,
 			Tau1:  -12.5536,
 			Tau2:  -0.3927,
 			V_avg: Average([]float64{56.3600, 60.9080, 55.3980}),
@@ -95,6 +99,7 @@ func TestOrbit4(t *testing.T) {
 		},
 		&Movement{
 			Lambda_apex:  RadiansFromDegrees(214.004),
+			H:            RadiansFromDegrees(81.17),
 			A:            RadiansFromDegrees(21.169),
 			Z_avg:        RadiansFromDegrees(42.302),
 			Delta:        RadiansFromDegrees(8.810),
