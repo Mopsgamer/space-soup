@@ -67,6 +67,8 @@ type MovementGeneric[T any] struct {
 	Beta_deriv T
 	// Часовой угол
 	T T
+	// Высота
+	H T
 	// Долгота апекса
 	Lambda_apex T
 	// Долгота радианта относительно апекса
