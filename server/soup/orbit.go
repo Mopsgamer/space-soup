@@ -402,11 +402,7 @@ func NewMovement(inp Input) (*Movement, error) {
 
 	// step 34
 
-	if mov.Beta_deriv > 0 {
-		mov.Wmega = math.Pi - mov.Nu
-	} else {
-		mov.Wmega = -mov.Nu
-	}
+	mov.Wmega = LoopNumber(-mov.Nu+math.Pi, 0, _360deg)
 
 	return &mov, nil
 }
