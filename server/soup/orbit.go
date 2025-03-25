@@ -10,6 +10,8 @@ var (
 	allowedDeltaDegrees = 4.
 	allowedDeltaRadians = RadiansFromDegrees(4) // 0.06981317007977318
 	allowedDeltaSpeed   = 2.
+	allowedDeltaAxis    = 0.1
+	allowedDeltaExc     = 0.1
 )
 
 var (

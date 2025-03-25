@@ -97,8 +97,8 @@ func CheckOrbitList() (result []MovementTest, err error) {
 		entry.Actual.Omega = DegreesFromRadians(actual.Omega)
 		entry.Actual.V_g = actual.V_g
 		entry.Actual.V_h = actual.V_h
-		entry.Actual.Axis = DegreesFromRadians(actual.Axis)
-		entry.Actual.Exc = DegreesFromRadians(actual.Exc)
+		entry.Actual.Axis = actual.Axis
+		entry.Actual.Exc = actual.Exc
 		entry.Actual.Nu = DegreesFromRadians(actual.Nu)
 
 		entry.Expected.Lambda_apex = Float64(fields[5])
@@ -116,8 +116,8 @@ func CheckOrbitList() (result []MovementTest, err error) {
 		entry.Expected.Omega = Float64(fields[20])
 		entry.Expected.V_g = Float64(fields[21])
 		entry.Expected.V_h = Float64(fields[22])
-		entry.Expected.Axis = DegreesFromRadians(Float64(fields[23]))
-		entry.Expected.Exc = DegreesFromRadians(Float64(fields[24]))
+		entry.Expected.Axis = Float64(fields[23])
+		entry.Expected.Exc = Float64(fields[24])
 		entry.Expected.Nu = Float64(fields[25])
 
 		valueOfExpected := reflect.ValueOf(entry.Expected)
@@ -143,8 +143,8 @@ func CheckOrbitList() (result []MovementTest, err error) {
 		entry.AssertionResult.Omega = InDelta(allowedDeltaDegrees, "Omega")
 		entry.AssertionResult.V_g = InDelta(allowedDeltaSpeed, "V_g")
 		entry.AssertionResult.V_h = InDelta(allowedDeltaSpeed, "V_h")
-		entry.AssertionResult.Axis = InDelta(allowedDeltaDegrees, "Axis")
-		entry.AssertionResult.Exc = InDelta(allowedDeltaDegrees, "Exc")
+		entry.AssertionResult.Axis = InDelta(allowedDeltaAxis, "Axis")
+		entry.AssertionResult.Exc = InDelta(allowedDeltaExc, "Exc")
 		entry.AssertionResult.Nu = InDelta(allowedDeltaDegrees, "Nu")
 		result = append(result, entry)
 	}
