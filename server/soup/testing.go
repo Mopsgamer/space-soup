@@ -83,7 +83,7 @@ func CheckOrbitList() (result []MovementTest, err error) {
 		}
 
 		entry.Actual.Lambda_apex = DegreesFromRadians(actual.Lambda_apex)
-		entry.Actual.H = DegreesFromRadians(actual.H)
+		entry.Actual.H = actual.H
 		entry.Actual.A = DegreesFromRadians(actual.A)
 		entry.Actual.Z_avg = DegreesFromRadians(actual.Z_avg)
 		entry.Actual.Delta = DegreesFromRadians(actual.Delta)

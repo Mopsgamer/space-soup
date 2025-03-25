@@ -18,7 +18,7 @@ var (
 	c2 = 1.61667
 	c3 = 1.40042
 
-	EarthRadius = 6371.
+	EarthRadius = 6371.12
 
 	_360deg = 2 * math.Pi
 	_90deg  = math.Pi / 2
@@ -412,7 +412,7 @@ func NewMovement(inp Input) (*Movement, error) {
 
 	mov.Wmega = LoopNumber(-mov.Nu+math.Pi, 0, _360deg)
 
-	//mov.H = inp.Dist*sin_e + math.Pow(inp.Dist, 2)*math.Pow(cos_e, 2)/(2*EarthRadius)
-	//mov.H = _90deg - mov.Z_fix
+	mov.H = inp.Dist*sin_e + math.Pow(inp.Dist, 2)*math.Pow(cos_e, 2)/(2*EarthRadius)
+	// mov.H = _90deg - mov.Z_fix
 	return &mov, nil
 }

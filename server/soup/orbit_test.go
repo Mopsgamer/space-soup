@@ -61,7 +61,7 @@ func TestOrbit3(t *testing.T) {
 		},
 		&Movement{
 			Lambda_apex:  RadiansFromDegrees(213.991),
-			H:            RadiansFromDegrees(78.15),
+			H:            78.15,
 			A:            RadiansFromDegrees(59.827),
 			Z_avg:        RadiansFromDegrees(27.004),
 			Delta:        RadiansFromDegrees(31.756),
@@ -99,7 +99,7 @@ func TestOrbit4(t *testing.T) {
 		},
 		&Movement{
 			Lambda_apex:  RadiansFromDegrees(214.004),
-			H:            RadiansFromDegrees(81.17),
+			H:            81.17,
 			A:            RadiansFromDegrees(21.169),
 			Z_avg:        RadiansFromDegrees(42.302),
 			Delta:        RadiansFromDegrees(8.810),
