@@ -4,6 +4,13 @@
     ],
     "deno.enable": true,
     "files.associations": {
-        "**/tailwind*/**/*.css": "tailwindcss"
+        "**/tailwind*/**/*.css": "tailwindcss",
+        "**/templates/**/*.html": "gotmpl"
+    },
+    "gopls": {
+        "ui.semanticTokens": true
+    },
+    "[go]": {
+        "editor.semanticHighlighting.enabled": true
     }
 }
