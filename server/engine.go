@@ -1,6 +1,8 @@
 package internal
 
 import (
+	"io/fs"
+	"net/http"
 	"time"
 
 	"github.com/Mopsgamer/space-soup/server/environment"
@@ -10,10 +12,16 @@ import (
 )
 
 // Initialize the view engine.
-func NewAppHtmlEngine() *html.Engine {
-	engine := html.New("./client/templates", ".html")
+func NewAppHtmlEngine(embedFS fs.FS, directory string) *html.Engine {
+	var engine *html.Engine
+	if embedFS == nil {
+		engine = html.New(directory, ".html")
+	} else {
+		embedTemplates, _ := fs.Sub(embedFS, directory)
+		engine = html.NewFileSystem(http.FS(embedTemplates), ".html")
+	}
 
-	if environment.Environment == environment.EnvironmentDevelopment {
+	if environment.BuildModeValue == environment.BuildModeDevelopment {
 		engine.Reload(true)
 	}
 

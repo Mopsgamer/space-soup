@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"io/fs"
 
 	"github.com/Mopsgamer/space-soup/server/controller"
 	"github.com/Mopsgamer/space-soup/server/controller/controller_http"
@@ -14,8 +15,8 @@ import (
 )
 
 // Initialize gofiber application, including DB and view engine.
-func NewApp() (app *fiber.App, err error) {
-	engine := NewAppHtmlEngine()
+func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
+	engine := NewAppHtmlEngine(embedFS, "client/templates")
 	app = fiber.New(fiber.Config{
 		Views:             engine,
 		PassLocalsToViews: true,

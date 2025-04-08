@@ -1,18 +1,16 @@
+//go:build !lite
+
 package main
 
 import (
-	internal "github.com/Mopsgamer/space-soup/server"
-	"github.com/Mopsgamer/space-soup/server/environment"
+	"embed"
 
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/gofiber/fiber/v3/log"
+	server "github.com/Mopsgamer/space-soup/server"
 )
 
+//go:embed client/static/** client/templates/**
+var embedFS embed.FS
+
 func main() {
-	environment.Load()
-	if app, err := internal.NewApp(); err == nil {
-		log.Fatal(app.Listen(":" + environment.Port))
-	} else {
-		log.Fatal(err)
-	}
+	server.Serve(embedFS)
 }
