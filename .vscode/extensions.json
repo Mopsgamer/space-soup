@@ -4,7 +4,6 @@
         "denoland.vscode-deno",
         "otovo-oss.htmx-tags",
         "bradlc.vscode-tailwindcss",
-        "gruntfuggly.todo-tree",
-        "hbenl.vscode-test-explorer"
+        "cweijan.vscode-mysql-client2"
     ]
 }
