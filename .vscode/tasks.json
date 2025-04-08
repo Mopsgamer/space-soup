@@ -9,7 +9,7 @@
                 "task",
                 "init"
             ],
-            "detail": "Initialize the ./.env file, then database tables.",
+            "detail": "Initialize the ./.env file.",
             "icon": {
                 "id": "gear",
                 "color": "terminal.ansiBlue"

@@ -25,6 +25,7 @@
         "esbuild-plugin-tailwindcss": "npm:esbuild-plugin-tailwindcss@^1.2.1",
         "htmx-ext-debug": "npm:htmx-ext-debug@^2.0.1",
         "htmx.org": "npm:htmx.org@^1.9.12",
+        "mysql2": "npm:mysql2@^3.14.0",
         "tailwindcss": "npm:tailwindcss@^3.4.17",
         "tree-kill": "npm:tree-kill@^1.2.2"
     },

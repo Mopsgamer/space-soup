@@ -5,7 +5,6 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
-	"time"
 
 	"github.com/gofiber/fiber/v3/log"
 	"github.com/joho/godotenv"
@@ -26,22 +25,12 @@ const (
 // TODO: Should be configurable using database.
 // App settings.
 var (
-	JWTKey                  string
-	UserAuthTokenExpiration time.Duration
-	ChatMessageMaxLength    int
-
 	Port string
 
 	DenoJson    DenoConfig
 	GoMod       modfile.File
 	GitHash     string
 	GitHashLong string
-
-	DBUser     string
-	DBPassword string
-	DBName     string
-	DBHost     string
-	DBPort     string
 )
 
 type DenoConfig struct {
@@ -56,22 +45,12 @@ func Load() {
 		log.Fatal(err)
 	}
 
-	JWTKey = os.Getenv("JWT_KEY")
-	UserAuthTokenExpiration = time.Duration(getenvInt("USER_AUTH_TOKEN_EXPIRATION")) * time.Minute
-	ChatMessageMaxLength = int(getenvInt("CHAT_MESSAGE_MAX_LENGTH"))
-
 	Port = os.Getenv("PORT")
 
 	DenoJson = getJson[DenoConfig]("deno.json")
 	GoMod = getGoMod()
 	GitHash, _ = commandOutput("git", "log", "-n1", `--format="%h"`)
 	GitHashLong, _ = commandOutput("git", "log", "-n1", `--format="%H"`)
-
-	DBHost = os.Getenv("DB_HOST")
-	DBName = os.Getenv("DB_NAME")
-	DBPassword = os.Getenv("DB_PASSWORD")
-	DBPort = os.Getenv("DB_PORT")
-	DBUser = os.Getenv("DB_USER")
 }
 
 func commandOutput(name string, arg ...string) (string, error) {
