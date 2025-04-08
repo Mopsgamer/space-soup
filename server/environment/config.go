@@ -11,8 +11,8 @@ import (
 	"golang.org/x/mod/modfile"
 )
 
-const AppName string = "Draqun"
-const GitHubRepo string = "https://github.com/Mopsgamer/draqun"
+const AppName string = "Space soup"
+const GitHubRepo string = "https://github.com/Mopsgamer/space-soup"
 
 type BuildMode int
 
