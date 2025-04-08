@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"os"
 	"os/exec"
-	"strconv"
 
 	"github.com/gofiber/fiber/v3/log"
 	"github.com/joho/godotenv"
@@ -63,15 +62,15 @@ func commandOutput(name string, arg ...string) (string, error) {
 	return string(bytes)[1 : len(bytes)-2], nil
 }
 
-func getenvInt(key string) int64 {
-	val := os.Getenv(key)
-	result, err := strconv.ParseInt(val, 0, 64)
-	if err != nil {
-		log.Fatalf(key+" can not be '%v'. Should be an integer.", os.Getenv(key))
-	}
+// func getenvInt(key string) int64 {
+// 	val := os.Getenv(key)
+// 	result, err := strconv.ParseInt(val, 0, 64)
+// 	if err != nil {
+// 		log.Fatalf(key+" can not be '%v'. Should be an integer.", os.Getenv(key))
+// 	}
 
-	return result
-}
+// 	return result
+// }
 
 // func getenvBool(key string) bool {
 // 	val := strings.ToLower(os.Getenv(key))
