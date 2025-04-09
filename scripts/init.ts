@@ -1,13 +1,6 @@
 import dotenv from "dotenv";
-// @deno-types="npm:@types/mysql"
-import mysql from "mysql2";
 import { existsSync } from "@std/fs";
-import {
-    decoder,
-    encoder,
-    envKeys,
-    logInitFiles,
-} from "./tool/index.ts";
+import { decoder, encoder, envKeys, logInitFiles } from "./tool/index.ts";
 
 function initEnvFile(): void {
     type EnvKeyEntry = {
