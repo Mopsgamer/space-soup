@@ -3,8 +3,6 @@
 ## First setup
 
 1. Install required tools.
-   - Recommended db name: `mysql`.
-   - Recommended user: `admin`.
    - Go@^1.23 ([Installation](https://go.dev/doc/install))
    - Deno@^2.0 ([Installation](https://deno.com/))
 2. [Fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo)
