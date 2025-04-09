@@ -26,11 +26,12 @@ var (
 
 	_29_76     = 29.76
 	_26_948deg = RadiansFromDegrees(26.948) // 0.47033132682743195
-	_0_9252    = 0.9252
-	_0_4749    = 0.4749
+	_0_9252    = 9252e-7
+	_0_4749    = 4749e-7
 	_0_65      = 0.65
 	_1_0398    = 1.0398
-	_123_2     = 123.2
+
+	_123_2 = 123.2
 
 	e    = RadiansFromRich(23, 26, 40) // 0.4091827468564484
 	e0   = 0.01675
@@ -185,9 +186,8 @@ func NewMovement(inp Input) (*Movement, error) {
 
 	cos_A_substract_phi1 := math.Cos(mov.A - phi1)
 	cos_A_substract_phi2 := math.Cos(mov.A - phi2)
-	e3 := 1e-3
-	sin_z1 := -(_0_9252 * e3 * inp.V_avg * inp.Tau1) / (cos_A_substract_phi1)
-	sin_z2 := -(_0_4749 * e3 * inp.V_avg * inp.Tau2) / (cos_A_substract_phi2)
+	sin_z1 := -(_0_9252 * inp.V_avg * inp.Tau1) / cos_A_substract_phi1
+	sin_z2 := -(_0_4749 * inp.V_avg * inp.Tau2) / cos_A_substract_phi2
 
 	z1 := math.Asin(sin_z1)
 	z2 := math.Asin(sin_z2)
