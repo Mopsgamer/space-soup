@@ -3,7 +3,7 @@
 package main
 
 import (
-	server "github.com/Mopsgamer/draqun/server"
+	server "github.com/Mopsgamer/space-soup/server"
 )
 
 func main() {
