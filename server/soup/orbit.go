@@ -380,15 +380,16 @@ func NewMovement(inp Input) (*Movement, error) {
 	var c float64
 	if mov.Axis > 0 {
 		c = math.Sqrt(math.Pow(mov.Axis, 2) - math.Pow(b, 2))
-	} else {
+	} else if mov.Axis < 0 {
 		c = math.Sqrt(math.Pow(mov.Axis, 2) + math.Pow(b, 2))
 	}
 	mov.Exc = math.Abs(c / mov.Axis)
 
 	// крок 31
 
-	mov.DistPer = mov.Axis - c
-	if mov.Axis < 0 {
+	if mov.Axis > 0 {
+		mov.DistPer = mov.Axis - c
+	} else if mov.Axis < 0 {
 		mov.DistPer = c - math.Abs(mov.Axis)
 	}
 
@@ -412,7 +413,9 @@ func NewMovement(inp Input) (*Movement, error) {
 
 	mov.Wmega = LoopNumber(-mov.Nu+math.Pi, 0, _360deg)
 
-	mov.H = inp.Dist*sin_e + math.Pow(inp.Dist, 2)*math.Pow(cos_e, 2)/(2*EarthRadius)
-	// mov.H = _90deg - mov.Z_fix
+	// eps := math.Atan(math.Tan(mov.Z_fix) * math.Cos(mov.A-mov.Axis))
+	// sin_eps, cos_eps := math.Sincos(eps)
+	// mov.H = inp.Dist*sin_eps + math.Pow(inp.Dist, 2)*math.Pow(cos_eps, 2)/(2*EarthRadius)
+	// mov.H = DegreesFromRadians(_90deg - mov.Axis)
 	return &mov, nil
 }
