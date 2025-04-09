@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import { existsSync } from "@std/fs";
 import { decoder, encoder, envKeys, logInitFiles } from "./tool/index.ts";
 
-function initEnvFile(): void {
+function initEnvFile(path: string): void {
     type EnvKeyEntry = {
         value?: string | number | boolean;
         comment?: string;
@@ -14,7 +14,6 @@ function initEnvFile(): void {
         comment: "application port",
     });
 
-    const path = ".env";
     const env = existsSync(path)
         ? dotenv.parse(decoder.decode(Deno.readFileSync(path)))
         : {};
@@ -40,12 +39,13 @@ function initEnvFile(): void {
             ).join(""),
         ),
     );
-
-    logInitFiles.success("Writed " + path);
 }
 
 try {
-    initEnvFile();
+    const path = ".env";
+    logInitFiles.start(`Initializing '${path}'`);
+    initEnvFile(path);
+    logInitFiles.end(true);
 } catch (error) {
     logInitFiles.error(error);
     Deno.exit(1);
