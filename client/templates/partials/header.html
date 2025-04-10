@@ -11,6 +11,22 @@
                         </sl-menu-item>
                     </a>
                 {{end}}
+                {{if not .IsCalc}}
+                    <a href="/calc">
+                        <sl-menu-item>
+                            <sl-icon name="calculator" slot="prefix"></sl-icon>
+                            Calc
+                        </sl-menu-item>
+                    </a>
+                {{end}}
+                {{if not .Table}}
+                    <a href="/table">
+                        <sl-menu-item>
+                            <sl-icon name="table" slot="prefix"></sl-icon>
+                            Table
+                        </sl-menu-item>
+                    </a>
+                {{end}}
                 <a href="#footer">
                     <sl-menu-item>
                         <sl-icon name="three-dots" slot="prefix"></sl-icon>
