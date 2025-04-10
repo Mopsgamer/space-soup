@@ -15,6 +15,8 @@ function start() {
 async function watchAndRestart() {
     start();
     const watcher = Deno.watchFs(paths, { recursive: true });
+    let prevKind = ""
+    let prevTime = 0
     for await (const event of watcher) {
         if (
             !(
@@ -22,12 +24,16 @@ async function watchAndRestart() {
                 event.kind === "remove"
             )
         ) continue;
+        const nowTime = Date.now()
+        if (event.kind == prevKind && (nowTime - prevTime < 300)) continue;
 
         tryToKill();
         logClientComp.info(
             "File change detected: %s. Restarting...",
             event.kind,
         );
+        prevKind = event.kind
+        prevTime = nowTime
         start();
     }
 }
