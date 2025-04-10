@@ -20,8 +20,8 @@ var (
 
 	EarthRadius = 6371.12
 
-	_360deg = 2 * math.Pi
-	_90deg  = math.Pi / 2
+	_2Pi    = 2 * math.Pi
+	_halfPi = math.Pi / 2
 	Pi0     = RadiansFromRich(102, 21, 14) // 1.7864123633315516
 
 	_29_76     = 29.76                      // V_t?
@@ -157,7 +157,7 @@ func NewMovement(inp Input) (*Movement, error) {
 
 	// Головне значення азимута
 	A_gl := math.Atan2((cos_phi1 - k*cos_phi2), (k*sin_phi2 - sin_phi1))
-	A_gl = LoopNumber(A_gl, -_90deg, _90deg)
+	A_gl = LoopNumber(A_gl, -_halfPi, _halfPi)
 
 	if inp.Tau1 <= 0 && inp.Tau2 < 0 {
 		if A_gl > 0 {
@@ -169,7 +169,7 @@ func NewMovement(inp Input) (*Movement, error) {
 		if A_gl > 0 {
 			mov.A = A_gl
 		} else if A_gl < 0 {
-			mov.A = A_gl + _360deg
+			mov.A = A_gl + _2Pi
 		}
 	} else if inp.Tau1 > 0 && inp.Tau2 <= 0 {
 		mov.A = A_gl + math.Pi
@@ -177,7 +177,7 @@ func NewMovement(inp Input) (*Movement, error) {
 		if A_gl > 0 {
 			mov.A = A_gl + math.Pi
 		} else if A_gl < 0 {
-			mov.A = A_gl + _360deg
+			mov.A = A_gl + _2Pi
 		}
 	}
 	sin_A, cos_A := math.Sincos(mov.A)
@@ -225,14 +225,14 @@ func NewMovement(inp Input) (*Movement, error) {
 	// крок 5
 
 	mov.Delta = math.Asin(sin_phi*cos_Z_fix - cos_phi*sin_Z_fix_cos_A)
-	mov.Delta = LoopNumber(mov.Delta, -_90deg, _90deg)
+	mov.Delta = LoopNumber(mov.Delta, -_halfPi, _halfPi)
 	sin_delta, cos_delta := math.Sincos(mov.Delta)
 
 	// крок 6
 
 	sin_t := (sin_Z_fix_sin_A) / cos_delta
 	mov.Angle = math.Asin(sin_t)
-	mov.Angle = LoopNumber(mov.Angle, 0, _360deg)
+	mov.Angle = LoopNumber(mov.Angle, 0, _2Pi)
 	cos_t := (math.Cos(phi)*math.Cos(mov.Z_fix) + math.Sin(phi)*math.Sin(mov.Z_fix)*math.Cos(mov.A)) / mov.Angle
 
 	// крок 7
@@ -248,7 +248,7 @@ func NewMovement(inp Input) (*Movement, error) {
 	// крок 8
 
 	mov.Alpha = mov.S - mov.Angle
-	mov.Alpha = LoopNumber(mov.Alpha, 0, _360deg)
+	mov.Alpha = LoopNumber(mov.Alpha, 0, _2Pi)
 
 	// крок 9
 
@@ -289,7 +289,7 @@ func NewMovement(inp Input) (*Movement, error) {
 
 	sin_beta := -sin_e*sin_alpha_fix*cos_delta_fix + cos_e*sin_delta_fix
 	mov.Beta = math.Asin(sin_beta)
-	mov.Beta = LoopNumber(mov.Beta, -_90deg, _90deg)
+	mov.Beta = LoopNumber(mov.Beta, -_halfPi, _halfPi)
 	cos_beta := math.Cos(mov.Beta)
 
 	// крок 15
@@ -297,7 +297,7 @@ func NewMovement(inp Input) (*Movement, error) {
 	cos_lambda := cos_delta_fix * cos_alpha_fix / cos_beta
 	sin_lambda := (cos_delta_fix*sin_alpha_fix*cos_e + sin_delta_fix*sin_e) / cos_beta
 	mov.Lambda = math.Atan2(sin_lambda, cos_lambda)
-	mov.Lambda = LoopNumber(mov.Lambda, 0, _360deg)
+	mov.Lambda = LoopNumber(mov.Lambda, 0, _2Pi)
 
 	// крок 16
 
@@ -310,14 +310,15 @@ func NewMovement(inp Input) (*Movement, error) {
 	// крок 17
 
 	delta_theta := 0.01677 * math.Sin(mov.Lambda_theta-Pi0)
-	mov.Lambda_apex = mov.Lambda_theta + delta_theta - _90deg
-	mov.Lambda_apex = LoopNumber(mov.Lambda_apex, 0, _360deg)
+	mov.Lambda_apex = mov.Lambda_theta + delta_theta - _halfPi
+	mov.Lambda_apex = LoopNumber(mov.Lambda_apex, 0, _2Pi)
 	mov.Diff_lambda = mov.Lambda - mov.Lambda_apex
-	mov.Diff_lambda = LoopNumber(mov.Diff_lambda, 0, _360deg)
+	mov.Diff_lambda = LoopNumber(mov.Diff_lambda, 0, _2Pi)
 
 	// крок 18
 
 	mov.E_apex = math.Acos(cos_beta * math.Cos(mov.Diff_lambda))
+	mov.E_apex = LoopNumber(mov.E_apex, 0, math.Pi)
 
 	// крок 19
 
@@ -332,9 +333,9 @@ func NewMovement(inp Input) (*Movement, error) {
 	temp := mov.Lambda_theta + delta_theta - mov.Lambda
 	sin_temp, cos_temp := math.Sincos(temp)
 	temp_deriv_gl := math.Atan2(sin_temp-(mov.V_t/(mov.V_g*cos_beta)), cos_temp)
-	temp_deriv := LoopNumber(temp_deriv_gl, 0, _360deg)
+	temp_deriv := LoopNumber(temp_deriv_gl, 0, _2Pi)
 	mov.Lambda_deriv = mov.Lambda_theta + delta_theta - temp_deriv
-	mov.Lambda_deriv = LoopNumber(mov.Lambda_deriv, 0, _360deg)
+	mov.Lambda_deriv = LoopNumber(mov.Lambda_deriv, 0, _2Pi)
 
 	sin_lambda_diff, cos_lambda_diff := math.Sincos(mov.Lambda_theta - mov.Lambda_deriv)
 
@@ -346,7 +347,7 @@ func NewMovement(inp Input) (*Movement, error) {
 
 	sin_beta_deriv := (mov.V_g / mov.V_h) * sin_beta
 	mov.Beta_deriv = math.Asin(sin_beta_deriv)
-	mov.Beta_deriv = LoopNumber(mov.Beta_deriv, -_90deg, _90deg)
+	mov.Beta_deriv = LoopNumber(mov.Beta_deriv, -_halfPi, _halfPi)
 	cos_beta_deriv := math.Cos(mov.Beta_deriv)
 
 	// крок 24
@@ -409,18 +410,18 @@ func NewMovement(inp Input) (*Movement, error) {
 	} else if mov.Beta_deriv < 0 {
 		mov.Omega = mov.Lambda_theta + math.Pi
 	}
-	mov.Omega = LoopNumber(mov.Omega, 0, _360deg)
+	mov.Omega = LoopNumber(mov.Omega, 0, _2Pi)
 
 	// крок 33
 
 	cos_v := (p - mov.R) / (mov.R * e)
 	sin_v := p / (mov.R * e) * math.Cos(mov.Inc) * Ctg(mov.Lambda_deriv-mov.Lambda_theta)
 	mov.Nu = math.Atan2(sin_v, cos_v)
-	mov.Nu = LoopNumber(mov.Nu, 0, _360deg)
+	mov.Nu = LoopNumber(mov.Nu, 0, _2Pi)
 
 	// крок 34
 
-	mov.Wmega = LoopNumber(-mov.Nu+math.Pi, 0, _360deg)
+	mov.Wmega = LoopNumber(-mov.Nu+math.Pi, 0, _2Pi)
 
 	// eps := math.Atan(math.Tan(mov.Z_fix) * math.Cos(mov.A-mov.Axis))
 	// sin_eps, cos_eps := math.Sincos(eps)
