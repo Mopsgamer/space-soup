@@ -24,7 +24,7 @@ var (
 	_90deg  = math.Pi / 2
 	Pi0     = RadiansFromRich(102, 21, 14) // 1.7864123633315516
 
-	_29_76     = 29.76
+	_29_76     = 29.76                      // V_t?
 	_26_948deg = RadiansFromDegrees(26.948) // 0.47033132682743195
 	_0_9252    = 9252e-7
 	_0_4749    = 4749e-7
@@ -198,7 +198,13 @@ func NewMovement(inp Input) (*Movement, error) {
 		return &mov, fmt.Errorf("z1 (%v) and z2 (%v) delta (%v) greater than 4 deg (%v)", z1, z2, RadiansFromDegrees(delta), RadiansFromDegrees(4))
 	}
 
-	mov.Z_avg = (z1 + z2) / 2
+	if inp.Tau1 == 0 {
+		mov.Z_avg = z2
+	} else if inp.Tau2 == 0 {
+		mov.Z_avg = z2
+	} else {
+		mov.Z_avg = (z1 + z2) / 2
+	}
 
 	// крок 3
 
@@ -226,7 +232,8 @@ func NewMovement(inp Input) (*Movement, error) {
 
 	sin_t := (sin_Z_fix_sin_A) / cos_delta
 	mov.Angle = math.Asin(sin_t)
-	cos_t := math.Cos(mov.Angle)
+	mov.Angle = LoopNumber(mov.Angle, 0, _360deg)
+	cos_t := (math.Cos(phi)*math.Cos(mov.Z_fix) + math.Sin(phi)*math.Sin(mov.Z_fix)*math.Cos(mov.A)) / mov.Angle
 
 	// крок 7
 
@@ -358,15 +365,17 @@ func NewMovement(inp Input) (*Movement, error) {
 
 	// крок 26
 
-	mov.Q = math.Pow(mov.V_h/mov.V_t, 2)
+	mov.Q = math.Pow(mov.V_h/_29_76, 2)
 
 	// крок 27
 
-	mov.Axis = 1 / ((2 - mov.Q) / mov.R)
+	// mov.Axis = 1 / ((2 - mov.Q) / mov.R)
+	mov.Axis = mov.R / (2 - mov.R*mov.Q)
 
 	// крок 28
 
 	mov.Psi = math.Acos(-cos_beta_deriv * cos_lambda_diff)
+	mov.Psi = LoopNumber(mov.Psi, 0, math.Pi)
 	mov.E_theta_deriv = math.Pi - mov.Psi
 
 	// крок 29
