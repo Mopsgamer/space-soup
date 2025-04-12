@@ -189,22 +189,9 @@ func NewMovement(inp Input) (*Movement, error) {
 	sin_z1 := -(_0_9252 * inp.V_avg * inp.Tau1) / cos_A_substract_phi1
 	sin_z2 := -(_0_4749 * inp.V_avg * inp.Tau2) / cos_A_substract_phi2
 
-	z1 := math.Asin(sin_z1)
-	z2 := math.Asin(sin_z2)
-	if z1 < 0 || z2 < 0 {
-		return &mov, fmt.Errorf("z1 (%v) or z2 (%v) less than 0", z1, z2)
-	}
-	if delta := z1 - z2; DegreesFromRadians(delta) >= 4 {
-		return &mov, fmt.Errorf("z1 (%v) and z2 (%v) delta (%v) greater than 4 deg (%v)", z1, z2, RadiansFromDegrees(delta), RadiansFromDegrees(4))
-	}
-
-	if inp.Tau1 == 0 {
-		mov.Z_avg = z2
-	} else if inp.Tau2 == 0 {
-		mov.Z_avg = z2
-	} else {
-		mov.Z_avg = (z1 + z2) / 2
-	}
+	W1 := math.Abs(math.Cos(mov.A - phi1))
+	W2 := m * math.Abs(math.Cos(mov.A-phi2))
+	mov.Z_avg = math.Asin((W1*sin_z1 + W2*sin_z2) / (W1 + W2))
 
 	// крок 3
 
