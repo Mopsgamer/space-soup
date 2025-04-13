@@ -135,8 +135,6 @@ type MovementAssertion = MovementGeneric[uint]
 
 type InputGeneric[T any] struct {
 	Id *int
-	// Нахилена дальність
-	Dist T
 	// Часова затримка
 	Tau1 T
 	// Часова затримка

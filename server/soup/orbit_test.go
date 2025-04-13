@@ -53,7 +53,6 @@ func TestOrbit3(t *testing.T) {
 	CheckOrbit(
 		assert,
 		&Input{
-			Dist:  200,
 			Tau1:  -12.7572,
 			Tau2:  -17.5536,
 			V_avg: Average([]float64{33.858, 33.832, 33.965}),
@@ -91,7 +90,6 @@ func TestOrbit4(t *testing.T) {
 	CheckOrbit(
 		assert,
 		&Input{
-			Dist:  261,
 			Tau1:  -12.5536,
 			Tau2:  -0.3927,
 			V_avg: Average([]float64{56.3600, 60.9080, 55.3980}),

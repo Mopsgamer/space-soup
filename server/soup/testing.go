@@ -51,7 +51,6 @@ func CheckOrbitList() (result []MovementTest, err error) {
 		id := Int(fields[0])
 		input := Input{
 			Id:    &id,
-			Dist:  Float64(fields[1]),
 			Tau1:  Float64(fields[9]),
 			Tau2:  Float64(fields[10]),
 			Date:  date,
