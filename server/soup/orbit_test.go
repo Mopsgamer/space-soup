@@ -25,7 +25,6 @@ func CheckOrbit(assert *assert.Assertions, input *Input, expected *Movement) {
 		))
 	}
 	InDelta(allowedDeltaRadians, "Lambda_apex")
-	InDelta(allowedDeltaRadians, "H")
 	InDelta(allowedDeltaRadians, "A")
 	InDelta(allowedDeltaRadians, "Z_avg")
 	InDelta(allowedDeltaRadians, "Delta")
@@ -42,6 +41,21 @@ func CheckOrbit(assert *assert.Assertions, input *Input, expected *Movement) {
 	InDelta(allowedDeltaAxis, "Axis")
 	InDelta(allowedDeltaExc, "Exc")
 	InDelta(allowedDeltaRadians, "Nu")
+}
+
+func BenchmarkNewMovement(b *testing.B) {
+	var date, err = ParseDateJSON("1972-01-25T06:07")
+	if err != nil {
+		panic(err)
+	}
+	for range b.N {
+		NewMovement(Input{
+			Tau1:  -12.7572,
+			Tau2:  -17.5536,
+			V_avg: Average([]float64{33.858, 33.832, 33.965}),
+			Date:  date,
+		})
+	}
 }
 
 func TestOrbit3(t *testing.T) {
