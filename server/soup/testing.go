@@ -6,6 +6,8 @@ import (
 	"reflect"
 	"strings"
 	"time"
+
+	"github.com/gofiber/fiber/v3/log"
 )
 
 type MovementTest struct {
@@ -18,19 +20,33 @@ type MovementTest struct {
 
 func CheckOrbitList() (result []MovementTest, err error) {
 	result = []MovementTest{}
+
+	start := time.Now()
+	fnStart := start
+	var sinceStart, sincefnStart, sincefnStart2 time.Duration
+	stop := func() {
+		sinceStart = time.Since(start)
+		sincefnStart2 += sinceStart
+	}
+
 	bytes, err := os.ReadFile("ORB_72.txt")
 	if err != nil {
 		return
 	}
-
 	linesOut := strings.Split(string(bytes), "\n")
+	stop()
+	log.Infof("Read answers file and split %d lines: %v", len(linesOut), sinceStart)
 
+	start = time.Now()
 	bytes, err = os.ReadFile("orb-72.txt")
 	if err != nil {
 		return
 	}
-
 	linesIn := strings.Split(string(bytes), "\n")[1:]
+	stop()
+	log.Infof("Read input file and split %d lines: %v", len(linesOut), sinceStart)
+
+	start = time.Now()
 	inputList := map[int]Input{}
 	for _, line := range linesIn {
 		fields := strings.Fields(line)
@@ -58,22 +74,45 @@ func CheckOrbitList() (result []MovementTest, err error) {
 		}
 		inputList[Int(fields[0])] = input
 	}
+	stop()
+	log.Infof("Parse input %d lines: %v", len(linesIn), sinceStart)
 
+	start = time.Now()
+	fieldsOut := [][]string{}
+	validInputList := []Input{}
 	for _, line := range linesOut {
 		fields := strings.Fields(line)
 		if len(fields) == 0 {
 			continue
 		}
+		fieldsOut = append(fieldsOut, fields)
 		n := Int(fields[0]) - 200000
 		input, ok := inputList[n]
 		if !ok {
 			continue
 		}
+		validInputList = append(validInputList, input)
+	}
+	stop()
+	log.Infof("Parse answers %d lines: %v", len(linesOut), sinceStart)
+
+	start = time.Now()
+	actualList := []*Movement{}
+	for _, input := range validInputList {
 		actual, err := NewMovement(input)
 		if err != nil && *input.Id < 50 {
 			fmt.Printf("%d-th got error: %s\n", 200000+*input.Id, err)
+			continue
 		}
+		actualList = append(actualList, actual)
+	}
+	stop()
+	log.Infof("Calculate %d orbits: %v (%v/1)", len(validInputList), sinceStart, time.Duration(float64(sinceStart)/float64(len(validInputList))))
 
+	start = time.Now()
+	for n, actual := range actualList {
+		input := inputList[n]
+		fields := fieldsOut[n]
 		entry := MovementTest{
 			Input:           input,
 			Actual:          &Movement{},
@@ -147,5 +186,10 @@ func CheckOrbitList() (result []MovementTest, err error) {
 		entry.AssertionResult.Nu = InDelta(allowedDeltaDegrees, "Nu")
 		result = append(result, entry)
 	}
+	stop()
+	sincefnStart = time.Since(fnStart)
+	log.Infof("Test %d orbits: %v (%v/1)", len(actualList), sinceStart, time.Duration(float64(sinceStart)/float64(len(validInputList))))
+
+	log.Infof("Summary: %v (%v/print all)", sincefnStart, (sincefnStart - sincefnStart2).Abs())
 	return
 }

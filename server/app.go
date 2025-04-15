@@ -65,6 +65,7 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 	if err != nil {
 		return
 	}
+
 	app.Get("/", UseHttpPage("homepage", &fiber.Map{"Title": "Home", "IsHomePage": true}, noRedirect, "partials/main"))
 	app.Get("/calc", UseHttpPage("calc", &fiber.Map{"Title": "Calculate", "IsCalc": true}, noRedirect, "partials/main"))
 	app.Get("/table", UseHttpPage("table", &fiber.Map{"Title": "Test table", "Table": table}, noRedirect, "partials/main"))
