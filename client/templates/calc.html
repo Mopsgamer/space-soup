@@ -1,18 +1,27 @@
 <div class="p-page">
-    <h4 class="aligned">Input</h4>
-    <form id="calc" hx-post="/process" hx-target="#output">
+    <div class="grid grid-cols-3 gap-page">
+    <div>
+        <h4 class="aligned">Input</h4>
+        <form id="calc" hx-post="/process" hx-target="#output">
         <sl-input label="date" name="date" type="datetime-local" value="1972-01-25T05:23"></sl-input>
         <sl-input label="tau1" name="tau1" step="any" type="number" value=""></sl-input>
         <sl-input label="tau2" name="tau2" step="any" type="number" value=""></sl-input>
         <sl-input label="v1" name="v1" step="any" type="number" value=""></sl-input>
         <sl-input label="v2" name="v2" step="any" type="number" value=""></sl-input>
         <sl-input label="v3" name="v3" step="any" type="number" value=""></sl-input>
-    </form>
-    <h4 class="aligned">
-        Output
-        <sl-button form="calc" type="submit" variant="text">
-            <sl-icon-button name="calculator"></sl-icon>
-        </sl-button>
-    </h4>
-    <div id="output"></div>
+        <div class="dialog-footer">
+            <sl-button form="calc" type="submit" variant="primary">
+                <sl-icon slot="prefix" name="calculator"></sl-icon>
+                Calculate
+            </sl-button>
+        </div>
+        </form>
+    </div>
+    <div>
+        <h4 class="aligned">
+            Output
+        </h4>
+        <div id="output"></div>
+    </div>
+    </div>
 </div>

@@ -4,7 +4,7 @@ import kill from "tree-kill";
 const paths = ["server", "main.go"];
 
 const serverCommand = new Deno.Command("go", {
-    args: ["run", "."],
+    args: ["run", "lite.go", "-tags=lite"],
 });
 let goRunProcess: Deno.ChildProcess | undefined = undefined;
 
