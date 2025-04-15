@@ -1,1 +1,41 @@
-{{printf "%+v\n" .Meteor}}
+<ul>
+<li>Azimuth: {{printf "%g" .Meteor.A}}</li>
+<li>Zenith Angle of Radiant: {{printf "%g" .Meteor.Z_avg}}</li>
+<li>Zenith Distance of Radiant: {{printf "%g" .Meteor.Z_fix}}</li>
+<li>Speed (V0): {{printf "%g" .Meteor.V0}}</li>
+<li>Declination of Radiant: {{printf "%g" .Meteor.Delta}}</li>
+<li>Right Ascension of Radiant: {{printf "%g" .Meteor.Alpha}}</li>
+<li>Ecliptic Latitude of Radiant: {{printf "%g" .Meteor.Beta}}</li>
+<li>Ecliptic Longitude of Radiant: {{printf "%g" .Meteor.Lambda}}</li>
+<li>Longitude of the Sun: {{printf "%g" .Meteor.Lambda_theta}}</li>
+<li>Heliocentric Speed: {{printf "%g" .Meteor.V_h}}</li>
+<li>Latitude of True Radiant: {{printf "%g" .Meteor.Beta_deriv}}</li>
+<li>Hour Angle: {{printf "%g" .Meteor.T}}</li>
+<li>Height: {{printf "%g" .Meteor.H}}</li>
+<li>Apex Longitude: {{printf "%g" .Meteor.Lambda_apex}}</li>
+<li>Longitude of Radiant Relative to Apex: {{printf "%g" .Meteor.Diff_lambda}}</li>
+<li>Longitude of True Radiant: {{printf "%g" .Meteor.Lambda_deriv}}</li>
+<li>Sidereal Time at Observation: {{printf "%g" .Meteor.S}}</li>
+<li>Corrected Right Ascension: {{printf "%g" .Meteor.Alpha_fix}}</li>
+<li>Corrected Declination: {{printf "%g" .Meteor.Delta_fix}}</li>
+<li>Daily Aberration Correction (RA): {{printf "%g" .Meteor.Delta_alpha}}</li>
+<li>Daily Aberration Correction (Dec): {{printf "%g" .Meteor.Delta_delta}}</li>
+<li>Elongation: {{printf "%g" .Meteor.Psi_E}}</li>
+<li>Geocentric Speed: {{printf "%g" .Meteor.V_g}}</li>
+<li>Orbital Speed of Earth: {{printf "%g" .Meteor.V_t}}</li>
+<li>Aphhelion Distance: {{printf "%g" .Meteor.Q}}</li>
+<li>Semi-Major Axis: {{printf "%g" .Meteor.Axis}}</li>
+<li>Angle Between Radius Vector and Speed Vector: {{printf "%g" .Meteor.Psi}}</li>
+<li>Elongation of Radiant from Sun: {{printf "%g" .Meteor.E_theta_deriv}}</li>
+<li>Extraterrestrial Speed: {{printf "%g" .Meteor.V_inf}}</li>
+<li>Orbital Inclination: {{printf "%g" .Meteor.Inc}}</li>
+<li>Elongation of True Radiant from Apex: {{printf "%g" .Meteor.E_deriv}}</li>
+<li>Perihelion Distance: {{printf "%g" .Meteor.DistPer}}</li>
+<li>Longitude of Ascending Node: {{printf "%g" .Meteor.Omega}}</li>
+<li>Argument of Perihelion: {{printf "%g" .Meteor.Wmega}}</li>
+<li>True Anomaly: {{printf "%g" .Meteor.Nu}}</li>
+<li>Eccentricity: {{printf "%g" .Meteor.Exc}}</li>
+<li>Hour Angle of Radiant: {{printf "%g" .Meteor.Angle}}</li>
+<li>Orbital Radius Vector: {{printf "%g" .Meteor.R}}</li>
+<li>Elongation Angle of Visible Radiant from Apex: {{printf "%g" .Meteor.E_apex}}</li>
+</ul>
