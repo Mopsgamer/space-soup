@@ -44,7 +44,7 @@ func CheckOrbitList() (result []MovementTest, err error) {
 	}
 	linesIn := strings.Split(string(bytes), "\n")[1:]
 	stop()
-	log.Infof("Read input file and split %d lines: %v", len(linesOut), sinceStart)
+	log.Infof("Read input file and split %d lines: %v", len(linesIn), sinceStart)
 
 	start = time.Now()
 	inputList := map[int]Input{}
