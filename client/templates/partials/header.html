@@ -36,5 +36,23 @@
             </sl-menu>
         </sl-dropdown>
     </nav>
-    <nav></nav>
+    <nav>
+        <sl-dropdown class="theme-menu">
+            <sl-icon-button slot="trigger" name="stars"></sl-icon-button>
+            <sl-menu>
+                <sl-menu-item type="checkbox" value="sl-theme-dark">
+                    <sl-icon slot="prefix" name="moon"></sl-icon>
+                    Dark
+                </sl-menu-item>
+                <sl-menu-item type="checkbox" value="sl-theme-light">
+                    <sl-icon slot="prefix" name="sun"></sl-icon>
+                    Light
+                </sl-menu-item>
+                <sl-menu-item type="checkbox" value="system">
+                    <sl-icon slot="prefix" name="display"></sl-icon>
+                    System
+                </sl-menu-item>
+            </sl-menu>
+        </sl-dropdown>
+    </nav>
 </header>
