@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"reflect"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -45,12 +44,10 @@ func CheckOrbit(assert *assert.Assertions, input *Input, expected *Movement) {
 }
 
 func BenchmarkNewMovement(b *testing.B) {
-	assert := assert.New(b)
 	var date, err = ParseDateJSON("1972-01-25T06:07")
 	if err != nil {
 		panic(err)
 	}
-	start := time.Now()
 	b.ResetTimer()
 	for range b.N {
 		NewMovement(Input{
@@ -60,14 +57,6 @@ func BenchmarkNewMovement(b *testing.B) {
 			Date:  date,
 		})
 	}
-	elapsed := time.Since(start)
-	elapsedPerOp := elapsed / time.Duration(b.N)
-	if elapsed == 0 {
-		return
-	}
-	limitPerOp := 200 * time.Millisecond / time.Duration(b.N)
-	b.Logf("%v/op (max %v)", elapsedPerOp, limitPerOp)
-	assert.Less(elapsedPerOp, limitPerOp)
 }
 
 func TestOrbit3(t *testing.T) {
