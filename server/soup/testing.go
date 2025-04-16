@@ -111,7 +111,7 @@ func CheckOrbitList() (result []MovementTest, err error) {
 
 	start = time.Now()
 	for n, actual := range actualList {
-		input := inputList[n]
+		input := validInputList[n]
 		fields := fieldsOut[n]
 		entry := MovementTest{
 			Input:           input,
