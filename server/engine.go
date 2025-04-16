@@ -26,9 +26,15 @@ func NewAppHtmlEngine(embedFS fs.FS, directory string) *html.Engine {
 	}
 
 	engine.AddFuncMap(map[string]interface{}{
+		"add": func(n ...int) (result int) {
+			for _, v := range n {
+				result += v
+			}
+			return
+		},
 		"seq": func(n int) []int {
 			result := make([]int, n)
-			for i := 0; i < n; i++ {
+			for i := range n {
 				result[i] = i
 			}
 			return result
@@ -47,7 +53,7 @@ func NewAppHtmlEngine(embedFS fs.FS, directory string) *html.Engine {
 		"isMap":    satisfies[fiber.Map],
 		"newMap": func(args ...any) fiber.Map {
 			result := fiber.Map{}
-			for i := 0; i < len(args)-1; i = i + 2 {
+			for i := 0; i < len(args)-1; i += 2 {
 				k := args[i].(string)
 				v := args[i+1]
 				result[k] = v

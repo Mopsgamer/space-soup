@@ -124,6 +124,7 @@ func CheckOrbitList() (result []MovementTest, err error) {
 		// entry.Actual.H = actual.H
 		entry.Actual.A = DegreesFromRadians(actual.A)
 		entry.Actual.Z_avg = DegreesFromRadians(actual.Z_avg)
+		entry.Actual.Z_fix = DegreesFromRadians(actual.Z_fix)
 		entry.Actual.Delta = DegreesFromRadians(actual.Delta)
 		entry.Actual.Alpha = DegreesFromRadians(actual.Alpha)
 		entry.Actual.Beta = DegreesFromRadians(actual.Beta)
@@ -138,6 +139,7 @@ func CheckOrbitList() (result []MovementTest, err error) {
 		entry.Actual.Axis = actual.Axis
 		entry.Actual.Exc = actual.Exc
 		entry.Actual.Nu = DegreesFromRadians(actual.Nu)
+		entry.Actual.Angle = DegreesFromRadians(actual.Angle)
 
 		entry.Expected.Lambda_apex = Float64(fields[5])
 		// entry.Expected.H = Float64(fields[9])
