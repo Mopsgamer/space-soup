@@ -4,23 +4,40 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+	"slices"
 	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v3/log"
+	"gonum.org/v1/plot"
+	"gonum.org/v1/plot/plotter"
+	"gonum.org/v1/plot/vg"
 )
 
 type MovementTest struct {
 	Input    Input
-	Expected *Movement
-	Actual   *Movement
+	Expected Movement
+	Actual   Movement
 	// 0 - Success, 1 - Acceptable, 2 - Not acceptable
 	AssertionResult *MovementAssertion
 }
 
-func CheckOrbitList() (result []MovementTest, err error) {
-	result = []MovementTest{}
+func Visualize(movementList []*Movement) {
+	p := plot.New()
+	points := make(plotter.XYs, len(movementList))
+	for i, m := range movementList {
+		points[i].X, points[i].Y = DegreesFromRadians(m.Alpha), DegreesFromRadians(m.Delta)
+	}
+	scatter, err := plotter.NewScatter(points)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	p.Add(scatter)
+	p.Save(8*vg.Inch, 6*vg.Inch, "graph.jpg")
+}
 
+func CheckOrbitList() (result [][]MovementTest, err error) {
 	start := time.Now()
 	fnStart := start
 	var sinceStart, sincefnStart, sincefnStart2 time.Duration
@@ -66,7 +83,7 @@ func CheckOrbitList() (result []MovementTest, err error) {
 
 		id := Int(fields[0])
 		input := Input{
-			Id:    &id,
+			Id:    id,
 			Tau1:  Float64(fields[9]),
 			Tau2:  Float64(fields[10]),
 			Date:  date,
@@ -100,9 +117,8 @@ func CheckOrbitList() (result []MovementTest, err error) {
 	actualList := []*Movement{}
 	for _, input := range validInputList {
 		actual, err := NewMovement(input)
-		if err != nil && *input.Id < 50 {
-			fmt.Printf("%d-th got error: %s\n", 200000+*input.Id, err)
-			continue
+		if err != nil {
+			fmt.Printf("%d-th got error: %s\n", 200000+input.Id, err)
 		}
 		actualList = append(actualList, actual)
 	}
@@ -110,13 +126,19 @@ func CheckOrbitList() (result []MovementTest, err error) {
 	log.Infof("Calculate %d orbits: %v (%v/1)", len(validInputList), sinceStart, time.Duration(float64(sinceStart)/float64(len(validInputList))))
 
 	start = time.Now()
+	Visualize(actualList)
+	stop()
+	log.Infof("Visualized in %v", sinceStart)
+
+	start = time.Now()
+	r := make([]MovementTest, len(actualList))
 	for n, actual := range actualList {
 		input := validInputList[n]
 		fields := fieldsOut[n]
 		entry := MovementTest{
 			Input:           input,
-			Actual:          &Movement{},
-			Expected:        &Movement{},
+			Actual:          Movement{},
+			Expected:        Movement{},
 			AssertionResult: &MovementAssertion{},
 		}
 
@@ -186,7 +208,11 @@ func CheckOrbitList() (result []MovementTest, err error) {
 		entry.AssertionResult.Axis = InDelta(allowedDeltaAxis, "Axis")
 		entry.AssertionResult.Exc = InDelta(allowedDeltaExc, "Exc")
 		entry.AssertionResult.Nu = InDelta(allowedDeltaDegrees, "Nu")
-		result = append(result, entry)
+		r[n] = entry
+	}
+	result = [][]MovementTest{}
+	for v := range slices.Chunk(r, 50) {
+		result = append(result, v)
 	}
 	stop()
 	sincefnStart = time.Since(fnStart)

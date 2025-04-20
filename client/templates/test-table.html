@@ -31,7 +31,6 @@
                 {{end}}
             </tr>
             {{range $i, $entry := .Table}}
-            {{if eq $i 21}}{{break}}{{end}}
             <tr>
                 <td>{{$entry.Input.Id}}</td>
                 <td>{{printf "%.4f" $entry.Input.V_avg}}</td>
@@ -58,5 +57,18 @@
             {{end}}
         </table>
     </div>
-    <sl-button href="/table">open normal table</sl-button>
+    <div class="dialog-footer mt-page aligned">
+        <div>
+            {{$pagePrev := add .Page -1}}
+            {{$pageNext := add .Page 1}}
+            {{if gt $pagePrev 0}}
+            <sl-icon-button href="/test-table/{{$pagePrev}}" name="arrow-left"></sl-icon-button>
+            {{end}}
+            Page {{.Page}} of <a class="underline" href="/test-table/{{.PageMax}}">{{.PageMax}}</a>
+            {{if lt $pageNext .PageMax}}
+            <sl-icon-button href="/test-table/{{$pageNext}}" name="arrow-right"></sl-icon-button>
+            {{end}}
+            <sl-button href="/table/{{.PageMax}}">Open normal table</sl-button>
+        </div>
+    </div>
 </div>

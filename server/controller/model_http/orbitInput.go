@@ -28,7 +28,6 @@ func (p *OrbitInput) Movement() (*soup.Movement, error) {
 	}
 
 	return soup.NewMovement(soup.Input{
-		Id:    nil,
 		Tau1:  p.Tau1,
 		Tau2:  p.Tau2,
 		V_avg: soup.Average(speedList),

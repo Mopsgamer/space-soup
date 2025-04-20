@@ -21,9 +21,8 @@
                 <th>Angle</th>
             </tr>
             {{range $i, $entry := .Table}}
-            {{if eq $i 21}}{{break}}{{end}}
             <tr>
-                <td>{{add 1 $i}}</td>
+                <td>{{$entry.Input.Id}}</td>
                 <td>{{printf "%.4f" $entry.Input.V_avg}}</td>
                 <td>{{printf "%.4f" $entry.Input.Tau1}}</td>
                 <td>{{printf "%.4f" $entry.Input.Tau2}}</td>
@@ -44,5 +43,18 @@
             {{end}}
         </table>
     </div>
-    <sl-button href="/test-table">Open test-table</sl-button>
+    <div class="dialog-footer mt-page aligned">
+        <div>
+            {{$pagePrev := add .Page -1}}
+            {{$pageNext := add .Page 1}}
+            {{if gt $pagePrev 0}}
+            <sl-icon-button href="/table/{{$pagePrev}}" name="arrow-left"></sl-icon-button>
+            {{end}}
+            Page {{.Page}} of <a class="underline" href="/table/{{.PageMax}}">{{.PageMax}}</a>
+            {{if lt $pageNext .PageMax}}
+            <sl-icon-button href="/table/{{$pageNext}}" name="arrow-right"></sl-icon-button>
+            {{end}}
+            <sl-button href="/test-table/{{.Page}}">Open testing table</sl-button>
+        </div>
+    </div>
 </div>

@@ -1,6 +1,7 @@
 package soup
 
 import (
+	"errors"
 	"fmt"
 	"math"
 	"time"
@@ -130,7 +131,7 @@ type Movement = MovementGeneric[float64]
 type MovementAssertion = MovementGeneric[uint]
 
 type InputGeneric[T any] struct {
-	Id *int
+	Id int
 	// Часова затримка
 	Tau1 T
 	// Часова затримка
@@ -186,6 +187,10 @@ func NewMovement(inp Input) (*Movement, error) {
 	W1 := math.Abs(math.Cos(mov.A - phi1))
 	W2 := m * math.Abs(math.Cos(mov.A-phi2))
 	mov.Z_avg = math.Asin((W1*sin_z1 + W2*sin_z2) / (W1 + W2))
+
+	if math.IsNaN(mov.Z_avg) {
+		return &mov, errors.New("bad calc: Z_avg is NaN")
+	}
 
 	// крок 3
 
