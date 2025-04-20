@@ -8,9 +8,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func CheckOrbit(assert *assert.Assertions, input *Input, expected *Movement) {
-	var actual, err = NewMovement(*input)
-	if !assert.NoError(err) {
+func CheckOrbit(assert *assert.Assertions, input Input, expected Movement) {
+	actual := NewMovement(input)
+	if !assert.NoError(actual.Fail) {
 		return
 	}
 
@@ -67,13 +67,13 @@ func TestOrbit3(t *testing.T) {
 	}
 	CheckOrbit(
 		assert,
-		&Input{
+		Input{
 			Tau1:  -12.7572,
 			Tau2:  -17.5536,
 			V_avg: Average([]float64{33.858, 33.832, 33.965}),
 			Date:  date,
 		},
-		&Movement{
+		Movement{
 			Lambda_apex: RadiansFromDegrees(213.991),
 			// H:            78.15,
 			A:            RadiansFromDegrees(59.827),
@@ -104,13 +104,13 @@ func TestOrbit4(t *testing.T) {
 	}
 	CheckOrbit(
 		assert,
-		&Input{
+		Input{
 			Tau1:  -12.5536,
 			Tau2:  -0.3927,
 			V_avg: Average([]float64{56.3600, 60.9080, 55.3980}),
 			Date:  date,
 		},
-		&Movement{
+		Movement{
 			Lambda_apex: RadiansFromDegrees(214.004),
 			// H:            81.17,
 			A:            RadiansFromDegrees(21.169),

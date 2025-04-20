@@ -49,6 +49,8 @@ var (
 )
 
 type MovementGeneric[T any] struct {
+	Fail error
+
 	// Азимут
 	A T
 	// Зенітний кут радіанта
@@ -143,9 +145,7 @@ type InputGeneric[T any] struct {
 
 type Input = InputGeneric[float64]
 
-func NewMovement(inp Input) (*Movement, error) {
-	mov := Movement{}
-
+func NewMovement(inp Input) (mov Movement) {
 	// крок 1
 
 	k := m * (inp.Tau1 / (inp.Tau2 + 1e-5))
@@ -189,7 +189,8 @@ func NewMovement(inp Input) (*Movement, error) {
 	mov.Z_avg = math.Asin((W1*sin_z1 + W2*sin_z2) / (W1 + W2))
 
 	if math.IsNaN(mov.Z_avg) {
-		return &mov, errors.New("bad calc: Z_avg is NaN")
+		mov.Fail = errors.New("bad calc: Z_avg is NaN")
+		return
 	}
 
 	// крок 3
@@ -245,7 +246,8 @@ func NewMovement(inp Input) (*Movement, error) {
 
 	mov.Alpha_fix = mov.Alpha + mov.Delta_alpha
 	if mov.Alpha_fix <= 0 {
-		return &mov, fmt.Errorf("alpha_fix (%v) should be greater than 0", mov.Alpha_fix)
+		mov.Fail = fmt.Errorf("alpha_fix (%v) should be greater than 0", mov.Alpha_fix)
+		return
 	}
 	sin_alpha_fix, cos_alpha_fix := math.Sincos(mov.Alpha_fix)
 
@@ -413,5 +415,5 @@ func NewMovement(inp Input) (*Movement, error) {
 	// sin_eps, cos_eps := math.Sincos(eps)
 	// mov.H = inp.Dist*sin_eps + math.Pow(inp.Dist, 2)*math.Pow(cos_eps, 2)/(2*EarthRadius)
 	// mov.H = DegreesFromRadians(_90deg - mov.Axis)
-	return &mov, nil
+	return
 }

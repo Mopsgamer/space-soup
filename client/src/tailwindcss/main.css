@@ -140,8 +140,9 @@
 
     .dialog-footer {
         @apply flex flex-col gap-2;
-        div {
-            @apply aligned flex justify-end items-center gap-2;
-        }
+    }
+
+    .dialog-footer div {
+        @apply aligned flex justify-end items-center gap-2;
     }
 }
