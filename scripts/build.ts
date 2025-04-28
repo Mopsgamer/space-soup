@@ -7,13 +7,14 @@ import { dirname } from "node:path";
 import process from "node:process";
 
 const folder = "client";
-const isWatch = process.argv.includes("watch");
+const args = process.argv.slice(2)
+const isWatch = args.includes("watch");
 
 type BuildOptions = esbuild.BuildOptions & {
     whenChange?: string[];
 };
 
-const minify = process.argv.includes("min");
+const minify = args.includes("min");
 
 const options: esbuild.BuildOptions = {
     bundle: true,
@@ -131,8 +132,10 @@ async function build(
 
         watcher.addListener("change", (kind) => {
             if (
-                kind === "modify" || kind === "create" ||
-                kind === "remove"
+                !(
+                    kind === "modify" || kind === "create" ||
+                    kind === "remove"
+                )
             ) return;
 
             rebuild();
@@ -206,7 +209,7 @@ const existingGroups = Array.from(new Set(calls.flatMap((c) => c[2])));
 const extraGroups = ["min", "watch", "all", "help"];
 const availableGroups = [...extraGroups, ...existingGroups];
 
-if (process.argv.includes("help")) {
+if (args.includes("help")) {
     logClientComp.info(
         "Available options: %s.",
         availableGroups.join(", "),
@@ -217,7 +220,7 @@ if (process.argv.includes("help")) {
     process.exit();
 }
 
-const unknownGroups = process.argv.filter(
+const unknownGroups = args.filter(
     (a) => !availableGroups.includes(a),
 );
 if (unknownGroups.length > 0) {
@@ -232,8 +235,8 @@ logClientComp.info(
     `Starting bundling "./${folder}" ${isWatch ? " in watch mode" : ""}...`,
 );
 
-const existingGroupsUsed = !process.argv.includes("all") &&
-    existingGroups.some((g) => process.argv.includes(g));
+const existingGroupsUsed = !args.includes("all") &&
+    existingGroups.some((g) => args.includes(g));
 
 if (existingGroupsUsed) {
     calls.splice(
@@ -242,7 +245,7 @@ if (existingGroupsUsed) {
         ...calls.filter(
             ([, , groups]) => {
                 return groups.some((g) => {
-                    const includes = process.argv.includes(g);
+                    const includes = args.includes(g);
                     return includes;
                 });
             },
