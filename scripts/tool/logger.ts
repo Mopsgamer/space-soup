@@ -1,4 +1,5 @@
 import { sprintf } from "@std/fmt/printf";
+import process from "node:process";
 import { blue, green, magenta, red, yellow } from "@std/fmt/colors";
 
 export class Logger {
@@ -25,7 +26,7 @@ export class Logger {
             this.end(true);
         }
 
-        Deno.stdout.write(
+        process.stdout.write(
             new TextEncoder().encode(message),
         );
     }
@@ -80,6 +81,6 @@ export class Logger {
 
     inline(...args: unknown[]) {
         const message = this.format(...args);
-        Deno.stdout.write(new TextEncoder().encode(message));
+        process.stdout.write(new TextEncoder().encode(message));
     }
 }

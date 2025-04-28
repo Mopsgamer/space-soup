@@ -1,0 +1,30 @@
+{
+    "name": "@m234/space-soup",
+    "version": "0.0.0-alpha",
+    "scripts": {
+        "init": "bun run scripts/init.ts && bun install --allow-scripts",
+        "init:build": "deno task init && deno task compile:client",
+        "serve": "bun run scripts/serve.ts",
+        "compile:client": "bun run scripts/build.ts",
+        "compile:server": "go build -o ./dist/server main.go",
+        "compile:server:lite": "go build -tags lite -o ./dist/server lite.go",
+        "compile:server:prod": "go build -tags prod -o ./dist/server lite.go",
+        "compile:server:test": "go build -tags lite,test -o ./dist/server lite.go"
+    },
+    "dependencies": {
+        "@shoelace-style/shoelace": "^2.20.1",
+        "htmx-ext-debug": "^2.0.1",
+        "htmx.org": "^1.9.12"
+    },
+    "devDependencies": {
+        "tailwindcss": "^3.4.17",
+        "@types/bun": "^1.2.10",
+        "@types/node": "^22.15.3",
+        "consola": "^3.4.2",
+        "dotenv": "^16.4.7",
+        "esbuild": "^0.24.2",
+        "esbuild-plugin-copy": "^2.1.1",
+        "esbuild-plugin-tailwindcss": "^1.2.1",
+        "tree-kill": "^1.2.2"
+    }
+}

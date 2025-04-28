@@ -1,19 +1,19 @@
 import * as esbuild from "esbuild";
 import { copy as copyPlugin } from "esbuild-plugin-copy";
-import { denoPlugins } from "@luca/esbuild-deno-loader";
-import { existsSync } from "@std/fs";
+import { existsSync, FSWatcher, watch } from "node:fs";
 import { logClientComp } from "./tool/index.ts";
 import tailwindcssPlugin from "esbuild-plugin-tailwindcss";
-import { dirname } from "@std/path/dirname";
+import { dirname } from "node:path";
+import process from "node:process";
 
 const folder = "client";
-const isWatch = Deno.args.includes("watch");
+const isWatch = process.argv.includes("watch");
 
 type BuildOptions = esbuild.BuildOptions & {
     whenChange?: string[];
 };
 
-const minify = Deno.args.includes("min");
+const minify = process.argv.includes("min");
 
 const options: esbuild.BuildOptions = {
     bundle: true,
@@ -119,30 +119,28 @@ async function build(
         return;
     }
 
-    let watcher: Deno.FsWatcher;
-    try {
-        watcher = Deno.watchFs(whenChange, { recursive: true });
-    } catch (error) {
-        logClientComp.error(error);
-        logClientComp.error(
-            "Bad paths, can not add watcher: " + whenChange.join(", ") + ".",
-        );
-        return;
-    }
+    for (const p of whenChange) {
+        let watcher: FSWatcher;
+        try {
+            watcher = watch(p, { recursive: true });
+        } catch (error) {
+            logClientComp.error(error);
+            logClientComp.error("Bad paths, can not add watcher: " + p + ".");
+            continue;
+        }
 
-    // this callback won't block the process.
-    // buildTask will return while ignoring loop
-    (async () => {
-        for await (const event of watcher) {
+        watcher.addListener("change", (kind) => {
             if (
-                event.kind === "modify" || event.kind === "create" ||
-                event.kind === "remove"
+                kind === "modify" || kind === "create" ||
+                kind === "remove"
             ) return;
 
-            await rebuild();
-        }
-        await ctx.dispose();
-    })();
+            rebuild();
+        });
+        watcher.addListener("close", (kind) => {
+            ctx.dispose();
+        });
+    }
 }
 
 function copy(from: string, to: string): Promise<void> {
@@ -187,7 +185,6 @@ const calls: (Call<typeof copy> | Call<typeof build>)[] = [
         whenChange: [
             `./${folder}/static/js`,
         ],
-        plugins: [...denoPlugins()],
     }], ["js", ...slAlias]],
 
     [build, [{
@@ -209,7 +206,7 @@ const existingGroups = Array.from(new Set(calls.flatMap((c) => c[2])));
 const extraGroups = ["min", "watch", "all", "help"];
 const availableGroups = [...extraGroups, ...existingGroups];
 
-if (Deno.args.includes("help")) {
+if (process.argv.includes("help")) {
     logClientComp.info(
         "Available options: %s.",
         availableGroups.join(", "),
@@ -217,10 +214,10 @@ if (Deno.args.includes("help")) {
     logClientComp.info(
         "Usage example:\n\n\tdeno task compile:client js css min watch\n",
     );
-    Deno.exit();
+    process.exit();
 }
 
-const unknownGroups = Deno.args.filter(
+const unknownGroups = process.argv.filter(
     (a) => !availableGroups.includes(a),
 );
 if (unknownGroups.length > 0) {
@@ -235,8 +232,8 @@ logClientComp.info(
     `Starting bundling "./${folder}" ${isWatch ? " in watch mode" : ""}...`,
 );
 
-const existingGroupsUsed = !Deno.args.includes("all") &&
-    existingGroups.some((g) => Deno.args.includes(g));
+const existingGroupsUsed = !process.argv.includes("all") &&
+    existingGroups.some((g) => process.argv.includes(g));
 
 if (existingGroupsUsed) {
     calls.splice(
@@ -245,7 +242,7 @@ if (existingGroupsUsed) {
         ...calls.filter(
             ([, , groups]) => {
                 return groups.some((g) => {
-                    const includes = Deno.args.includes(g);
+                    const includes = process.argv.includes(g);
                     return includes;
                 });
             },
@@ -270,5 +267,5 @@ if (isWatch) {
         logClientComp.success("Watching for file changes...");
     }
 } else if (logClientComp.someFailed) {
-    Deno.exit(1);
+    process.exit(1);
 }
