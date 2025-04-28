@@ -2,7 +2,7 @@
     "name": "@m234/space-soup",
     "version": "0.0.0-alpha",
     "scripts": {
-        "init": "bun run scripts/init.ts && bun install --allow-scripts",
+        "init": "bun run scripts/init.ts && bun install",
         "init:build": "deno task init && deno task compile:client",
         "serve": "bun run scripts/serve.ts",
         "compile:client": "bun run scripts/build.ts",

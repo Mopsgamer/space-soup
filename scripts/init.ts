@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
-import { existsSync } from "@std/fs";
 import { decoder, encoder, envKeys, logInitFiles } from "./tool/index.ts";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import process from "node:process";
 
 function initEnvFile(path: string): void {
     type EnvKeyEntry = {
@@ -15,16 +16,16 @@ function initEnvFile(path: string): void {
     });
 
     const env = existsSync(path)
-        ? dotenv.parse(decoder.decode(Deno.readFileSync(path)))
+        ? dotenv.parse(decoder.decode(readFileSync(path)))
         : {};
 
-    Deno.writeFileSync(
+    writeFileSync(
         path,
         encoder.encode(
             Array.from(defaultEnv.entries()).map(
                 ([key, { value, comment }]) => {
                     env[key] ||= value === undefined ? "" : String(value);
-                    Deno.env.set(key, env[key]);
+                    process.env[key] = env[key];
                     if (value == undefined) {
                         comment += "\ndefault: <empty>";
                     } else {
@@ -48,5 +49,5 @@ try {
     logInitFiles.end(true);
 } catch (error) {
     logInitFiles.error(error);
-    Deno.exit(1);
+    process.exit(1);
 }
