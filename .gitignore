@@ -1,6 +1,6 @@
 **/node_modules
+**/dist
+**/coverage
+**/out
 .env
-*debug*.exe
-client/assets
 client/static
-.air.toml
