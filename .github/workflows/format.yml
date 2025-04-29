@@ -17,12 +17,11 @@ jobs:
                   deno-version: v2.x
             - name: Checking Deno
               run: |
+                  deno install --allow-scripts
+                  deno run -A scripts/init.ts
                   deno lint
-                  deno fmt
                   deno fmt --check
                   deno check .
-                  deno run -A scripts/init.ts nodb
-                  deno install --allow-scripts
                   deno task compile:client
             - name: Checking Go
               run: |
@@ -32,9 +31,3 @@ jobs:
                   deno task compile:server:lite
                   deno task compile:server:prod
                   deno task compile:server:test
-            - name: Push formatting changes (if any)
-              run: |
-                  git config --global user.name "github-actions"
-                  git config --global user.email "github-actions@github.com"
-                  git add .
-                  git diff --quiet || (git commit -m "style: code formatting" && git push)
