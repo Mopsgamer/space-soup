@@ -59,6 +59,17 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 		})
 	}
 
+	UseImageTable := func() fiber.Handler {
+		return UseHttp(func(ctl controller_http.ControllerHttp) error {
+			writerTo, err := soup.Visualize(slices.Concat(table...), "") // TODO: add optional description
+			if err != nil {
+				return err
+			}
+			_, err = writerTo.WriteTo(ctl.Ctx.RequestCtx().Response.BodyWriter())
+			return err
+		})
+	}
+
 	UseDownloadTablePage := func() fiber.Handler {
 		return UseHttp(func(ctl controller_http.ControllerHttp) error {
 			req := new(model_http.TablePage)
@@ -72,6 +83,25 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 			ctl.Ctx.Set("Content-Type", "application/octet-stream")
 			ctl.Ctx.Set("Content-Disposition", "attachment; filename=orbits-page-"+ctl.Ctx.Params("page")+".png")
 
+			writerTo, err := soup.Visualize(table[req.Page], "") // TODO: add optional description
+			if err != nil {
+				return err
+			}
+			_, err = writerTo.WriteTo(ctl.Ctx.RequestCtx().Response.BodyWriter())
+			return err
+		})
+	}
+
+	UseImageTablePage := func() fiber.Handler {
+		return UseHttp(func(ctl controller_http.ControllerHttp) error {
+			req := new(model_http.TablePage)
+			err := ctl.BindAll(req)
+			if err != nil {
+				return err
+			}
+			if req.Page > len(table) || req.Page < 1 {
+				return ErrInvalidPageRange
+			}
 			writerTo, err := soup.Visualize(table[req.Page], "") // TODO: add optional description
 			if err != nil {
 				return err
@@ -144,6 +174,10 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 	app.Get("/calc", UseHttpPage("calc", &fiber.Map{"Title": "Calculate", "IsCalc": true}, noRedirect, "partials/main"))
 	app.Get("/table/:page", UseHttpPageTable("table", &fiber.Map{"Title": "Table"}, noRedirect, "partials/main"))
 	app.Get("/table", func(ctx fiber.Ctx) error { return ctx.Redirect().To("/table/1") })
+	app.Get("/table/image", UseImageTable())
+	app.Get("/table/image/:page", UseImageTablePage())
+	app.Get("/table/image/download", UseDownloadTable())
+	app.Get("/table/image/download/:page", UseDownloadTablePage())
 	app.Post("/table/expand", UseHttp(func(ctl controller_http.ControllerHttp) error {
 		req := new(model_http.TablePage)
 		err := ctl.BindAll(req)
@@ -167,8 +201,6 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 		ctl.HTMXRefresh()
 		return nil
 	}))
-	app.Get("/download-image", UseDownloadTable())
-	app.Get("/download-image/:page", UseDownloadTablePage())
 	app.Get("/terms", UseHttpPage("terms", &fiber.Map{"Title": "Terms", "CenterContent": true}, noRedirect, "partials/main"))
 	app.Get("/privacy", UseHttpPage("privacy", &fiber.Map{"Title": "Privacy", "CenterContent": true}, noRedirect, "partials/main"))
 	app.Get("/acknowledgements", UseHttpPage("acknowledgements", &fiber.Map{"Title": "Acknowledgements"}, noRedirect, "partials/main"))
