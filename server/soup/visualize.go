@@ -2,7 +2,9 @@ package soup
 
 import (
 	"fmt"
+	"image/color"
 	"io"
+	"math"
 	"time"
 
 	"gonum.org/v1/plot"
@@ -59,6 +61,17 @@ func Visualize(tests []MovementTest, description string) (io.WriterTo, error) {
 	scatter.Shape = draw.CircleGlyph{}
 	scatter.GlyphStyle.Radius = vg.Points(.4)
 	p.Add(scatter)
+
+	ecliptic := plotter.NewFunction(func(x float64) float64 {
+		amplitude := 23.5
+		frequency := 2 * math.Pi / 360
+		phase := 0.0
+
+		return amplitude * math.Sin(frequency*x+phase)
+	})
+	ecliptic.Color = color.RGBA{R: 255, G: 0, B: 0, A: 255}
+	ecliptic.Width = vg.Points(1)
+	p.Add(ecliptic)
 	// scatter2, err := plotter.NewScatter(pointsExpected)
 	// if err != nil {
 	// 	return err
