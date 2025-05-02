@@ -26,7 +26,7 @@ func (t AngleTicker) Ticks(min, max float64) []plot.Tick {
 func Visualize(tests []MovementTest, description string) (io.WriterTo, error) {
 	p := plot.New()
 	p.Title.Text = fmt.Sprintf(
-		"Generation date: %s | Quantity: %d",
+		"Generation Date: %s | Orbit Count: %d",
 		time.Now().Format("2006-01-02 15:04:05"), len(tests),
 	)
 	if description != "" {
