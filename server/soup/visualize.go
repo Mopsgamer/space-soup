@@ -72,6 +72,7 @@ func Visualize(tests []MovementTest, description string) (io.WriterTo, error) {
 	ecliptic.Color = color.RGBA{R: 255, G: 0, B: 0, A: 255}
 	ecliptic.Width = vg.Points(1)
 	p.Add(ecliptic)
+	p.Legend.Add("Ecliptic", ecliptic)
 	// scatter2, err := plotter.NewScatter(pointsExpected)
 	// if err != nil {
 	// 	return err
