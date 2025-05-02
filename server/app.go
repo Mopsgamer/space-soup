@@ -50,7 +50,7 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 			ctl.Ctx.Set("Content-Type", "application/octet-stream")
 			ctl.Ctx.Set("Content-Disposition", "attachment; filename=orbits-all.png")
 
-			writerTo, err := soup.Visualize(slices.Concat(table...))
+			writerTo, err := soup.Visualize(slices.Concat(table...), "") // TODO: add optional description
 			if err != nil {
 				return err
 			}
@@ -72,7 +72,7 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 			ctl.Ctx.Set("Content-Type", "application/octet-stream")
 			ctl.Ctx.Set("Content-Disposition", "attachment; filename=orbits-page-"+ctl.Ctx.Params("page")+".png")
 
-			writerTo, err := soup.Visualize(table[req.Page])
+			writerTo, err := soup.Visualize(table[req.Page], "") // TODO: add optional description
 			if err != nil {
 				return err
 			}

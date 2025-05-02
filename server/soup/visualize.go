@@ -3,6 +3,7 @@ package soup
 import (
 	"fmt"
 	"io"
+	"time"
 
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
@@ -22,8 +23,15 @@ func (t AngleTicker) Ticks(min, max float64) []plot.Tick {
 	return ticks
 }
 
-func Visualize(tests []MovementTest) (io.WriterTo, error) {
+func Visualize(tests []MovementTest, description string) (io.WriterTo, error) {
 	p := plot.New()
+	p.Title.Text = fmt.Sprintf(
+		"Generation date: %s | Quantity: %d",
+		time.Now().Format("2006-01-02 15:04:05"), len(tests),
+	)
+	if description != "" {
+		p.Title.Text += " | " + description
+	}
 	p.X.Label.Text = "Right Ascension"
 	p.Y.Label.Text = "Declination"
 	p.X.Tick.Length = 5

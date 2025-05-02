@@ -196,7 +196,7 @@ func CheckOrbitList() (result [][]MovementTest, err error) {
 	log.Infof("Test %d orbits: %v (%v/1)", len(actualList), sinceStart, time.Duration(float64(sinceStart)/float64(len(validInputList))))
 
 	start = time.Now()
-	Visualize(r)
+	Visualize(r, "")
 	stop()
 	log.Infof("Visualized in %v", sinceStart)
 
