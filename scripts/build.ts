@@ -154,7 +154,7 @@ function copy(from: string, to: string): Promise<void> {
         plugins: [copyPlugin({
             once: isWatch,
             resolveFrom: "cwd",
-            assets: { to: to + "/**/*", from },
+            assets: { to, from: from + "/**/*" },
             copyOnStart: true,
         })],
     });

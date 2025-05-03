@@ -16,7 +16,6 @@
    [VSC terminal](https://code.visualstudio.com/docs/terminal/getting-started).
 5. Run `deno task init:build` to create required files.
 6. Change the `.env` file.
-   - Set up server connection with MySQL.
    - Set up JWT secret.
 7. Run `deno task serve` to start the server.
 

@@ -6,8 +6,6 @@ import (
 	"os/signal"
 	"syscall"
 
-	_ "github.com/go-sql-driver/mysql"
-
 	"github.com/Mopsgamer/space-soup/server/environment"
 	"github.com/gofiber/fiber/v3/log"
 )

@@ -19,7 +19,7 @@ type MovementTest struct {
 	AssertionResult MovementAssertion
 }
 
-func CheckOrbitList() (result [][]MovementTest, err error) {
+func CheckOrbitList() (tests []MovementTest, testsPaginated [][]MovementTest, err error) {
 	start := time.Now()
 	fnStart := start
 	var sinceStart, sincefnStart, sincefnStart2 time.Duration
@@ -108,7 +108,7 @@ func CheckOrbitList() (result [][]MovementTest, err error) {
 	log.Infof("Calculate %d orbits: %v (%v/1)", len(validInputList), sinceStart, time.Duration(float64(sinceStart)/float64(len(validInputList))))
 
 	start = time.Now()
-	r := make([]MovementTest, len(actualList))
+	tests = make([]MovementTest, len(actualList))
 	for n, actual := range actualList {
 		input := validInputList[n]
 		fields := fieldsOut[n]
@@ -185,11 +185,11 @@ func CheckOrbitList() (result [][]MovementTest, err error) {
 		entry.AssertionResult.Axis = InDelta(allowedDeltaAxis, "Axis")
 		entry.AssertionResult.Exc = InDelta(allowedDeltaExc, "Exc")
 		entry.AssertionResult.Nu = InDelta(allowedDeltaDegrees, "Nu")
-		r[n] = entry
+		tests[n] = entry
 	}
-	result = [][]MovementTest{}
-	for v := range slices.Chunk(r, 50) {
-		result = append(result, v)
+	testsPaginated = [][]MovementTest{}
+	for v := range slices.Chunk(tests, 50) {
+		testsPaginated = append(testsPaginated, v)
 	}
 	stop()
 	sincefnStart = time.Since(fnStart)

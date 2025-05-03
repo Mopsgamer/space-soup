@@ -25,29 +25,29 @@ func (t AngleTicker) Ticks(min, max float64) []plot.Tick {
 	return ticks
 }
 
-func Visualize(tests []MovementTest, description string) (io.WriterTo, error) {
+type VisualizeConfig struct {
+	Tests       []MovementTest
+	Description string
+}
+
+func VisualizeDeclRasc(config VisualizeConfig) (io.WriterTo, error) {
 	p := plot.New()
 	p.Title.Text = fmt.Sprintf(
 		"Generation Date: %s | Orbit Count: %d",
-		time.Now().Format("2006-01-02 15:04:05"), len(tests),
+		time.Now().Format("2006-01-02 15:04:05"), len(config.Tests),
 	)
-	if description != "" {
-		p.Title.Text += " | " + description
+	if config.Description != "" {
+		p.Title.Text += " | " + config.Description
 	}
-	p.X.Label.Text = "Right Ascension"
-	p.Y.Label.Text = "Declination"
-	p.X.Tick.Length = 5
-	p.Y.Tick.Length = 5
-	p.X.Tick.Marker = AngleTicker{Step: 45}
-	p.Y.Tick.Marker = AngleTicker{Step: 10}
-	p.X.Min = 0
-	p.X.Max = 360
-	p.Y.Min = -90
-	p.Y.Max = 90
+	p.X.Label.Text, p.Y.Label.Text = "Right Ascension", "Declination"
+	p.X.Tick.Length, p.Y.Tick.Length = 5, 5
+	p.X.Tick.Marker, p.Y.Tick.Marker = AngleTicker{Step: 45}, AngleTicker{Step: 10}
+	p.X.Min, p.X.Max = 0, 360
+	p.Y.Min, p.Y.Max = -90, 90
 
 	pointsActual := plotter.XYs{}
 	// pointsExpected := plotter.XYs{}
-	for _, m := range tests {
+	for _, m := range config.Tests {
 		if m.Actual.Fail != nil {
 			continue
 		}
@@ -72,6 +72,7 @@ func Visualize(tests []MovementTest, description string) (io.WriterTo, error) {
 	ecliptic.Color = color.RGBA{R: 255, G: 0, B: 0, A: 255}
 	ecliptic.Width = vg.Points(1)
 	p.Add(ecliptic)
+	p.Title.Padding = 10
 	p.Legend.Add("Ecliptic", ecliptic)
 	// scatter2, err := plotter.NewScatter(pointsExpected)
 	// if err != nil {

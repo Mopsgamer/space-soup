@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
-	"slices"
+	"strings"
 	"time"
 
 	"github.com/Mopsgamer/space-soup/server/controller"
@@ -15,16 +15,18 @@ import (
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/logger"
 	"github.com/gofiber/fiber/v3/middleware/static"
+	expandrange "github.com/n0madic/expand-range"
 )
 
 var (
-	ErrInvalidPageRange = errors.New("invalid page range")
+	ErrInvalidIndiceRange = errors.New("invalid indice range")
+	ErrInvalidPageRange   = errors.New("invalid page range")
 )
 
 // Initialize gofiber application, including DB and view engine.
 func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 	engine := NewAppHtmlEngine(embedFS, "client/templates")
-	table, err := soup.CheckOrbitList()
+	tests, testsPaginated, err := soup.CheckOrbitList()
 	if err != nil {
 		return
 	}
@@ -45,67 +47,43 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 		}
 	}
 
-	UseDownloadTable := func() fiber.Handler {
+	UseVisualDeclRasc := func() fiber.Handler {
 		return UseHttp(func(ctl controller_http.ControllerHttp) error {
-			ctl.Ctx.Set("Content-Type", "application/octet-stream")
-			ctl.Ctx.Set("Content-Disposition", "attachment; filename=orbits-all.png")
-
-			writerTo, err := soup.Visualize(slices.Concat(table...), "") // TODO: add optional description
-			if err != nil {
-				return err
-			}
-			_, err = writerTo.WriteTo(ctl.Ctx.RequestCtx().Response.BodyWriter())
-			return err
-		})
-	}
-
-	UseImageTable := func() fiber.Handler {
-		return UseHttp(func(ctl controller_http.ControllerHttp) error {
-			writerTo, err := soup.Visualize(slices.Concat(table...), "") // TODO: add optional description
-			if err != nil {
-				return err
-			}
-			_, err = writerTo.WriteTo(ctl.Ctx.RequestCtx().Response.BodyWriter())
-			return err
-		})
-	}
-
-	UseDownloadTablePage := func() fiber.Handler {
-		return UseHttp(func(ctl controller_http.ControllerHttp) error {
-			req := new(model_http.TablePage)
+			req := new(model_http.TableImage)
 			err := ctl.BindAll(req)
 			if err != nil {
 				return err
 			}
-			if req.Page > len(table) || req.Page < 1 {
-				return ErrInvalidPageRange
-			}
-			ctl.Ctx.Set("Content-Type", "application/octet-stream")
-			ctl.Ctx.Set("Content-Disposition", "attachment; filename=orbits-page-"+ctl.Ctx.Params("page")+".png")
 
-			writerTo, err := soup.Visualize(table[req.Page], "") // TODO: add optional description
-			if err != nil {
-				return err
+			testsRanged := []soup.MovementTest{}
+			if rangeList, err := expandrange.Parse(req.Range); err != nil {
+				return errors.Join(ErrInvalidIndiceRange, err)
+			} else if req.Range == "" {
+				testsRanged = tests
+			} else {
+				for _, i := range rangeList {
+					testsRanged = append(testsRanged, tests[i])
+				}
 			}
-			_, err = writerTo.WriteTo(ctl.Ctx.RequestCtx().Response.BodyWriter())
-			return err
-		})
-	}
 
-	UseImageTablePage := func() fiber.Handler {
-		return UseHttp(func(ctl controller_http.ControllerHttp) error {
-			req := new(model_http.TablePage)
-			err := ctl.BindAll(req)
+			if req.IsDownload {
+				ctl.Ctx.Set("Content-Type", "application/octet-stream")
+				ctl.Ctx.Set("Content-Disposition", "attachment; filename=orbits-decl-rasc.png")
+			}
+
+			if len(req.Description) > 400 {
+				req.Description = req.Description[:400]
+			}
+			description := strings.ReplaceAll(req.Description, "\n", " | ")
+
+			writerTo, err := soup.VisualizeDeclRasc(soup.VisualizeConfig{
+				Tests:       testsRanged,
+				Description: description,
+			})
 			if err != nil {
 				return err
 			}
-			if req.Page > len(table) || req.Page < 1 {
-				return ErrInvalidPageRange
-			}
-			writerTo, err := soup.Visualize(table[req.Page], "") // TODO: add optional description
-			if err != nil {
-				return err
-			}
+
 			_, err = writerTo.WriteTo(ctl.Ctx.RequestCtx().Response.BodyWriter())
 			return err
 		})
@@ -147,13 +125,13 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 			if err != nil {
 				return err
 			}
-			if req.Page > len(table) || req.Page < 1 {
+			if req.Page > len(testsPaginated) || req.Page < 1 {
 				return ErrInvalidPageRange
 			}
 			bindx["ExpandTable"] = req.Expanded
-			bindx["Table"] = table[req.Page-1]
+			bindx["Table"] = testsPaginated[req.Page-1]
 			bindx["Page"] = req.Page
-			bindx["PageMax"] = len(table)
+			bindx["PageMax"] = len(testsPaginated)
 			return ctl.RenderPage(
 				templatePath,
 				&bindx,
@@ -172,12 +150,9 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 
 	app.Get("/", UseHttpPage("homepage", &fiber.Map{"Title": "Home", "IsHomePage": true}, noRedirect, "partials/main"))
 	app.Get("/calc", UseHttpPage("calc", &fiber.Map{"Title": "Calculate", "IsCalc": true}, noRedirect, "partials/main"))
+	app.Get("/table/image", UseVisualDeclRasc())
 	app.Get("/table/:page", UseHttpPageTable("table", &fiber.Map{"Title": "Table"}, noRedirect, "partials/main"))
 	app.Get("/table", func(ctx fiber.Ctx) error { return ctx.Redirect().To("/table/1") })
-	app.Get("/table/image", UseImageTable())
-	app.Get("/table/image/:page", UseImageTablePage())
-	app.Get("/table/image/download", UseDownloadTable())
-	app.Get("/table/image/download/:page", UseDownloadTablePage())
 	app.Post("/table/expand", UseHttp(func(ctl controller_http.ControllerHttp) error {
 		req := new(model_http.TablePage)
 		err := ctl.BindAll(req)
