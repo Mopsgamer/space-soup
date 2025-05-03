@@ -197,7 +197,7 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 
 		movementList, err := req.MovementList(*pFile)
 		if err != nil {
-			return ctl.RenderInternalError(err.Error(), "err-calc")
+			return ctl.RenderDanger(err.Error(), "err-calc")
 		}
 
 		return ctl.Ctx.Render("partials/table", fiber.Map{

@@ -33,7 +33,7 @@ func (p *OrbitInputFile) MovementList(pFile multipart.FileHeader) ([]soup.Moveme
 		case ".xlsx":
 			p.FileType = "xlsx"
 		default:
-			log.Info("can not decide for ext", ext)
+			log.Info("can not decide file type for extension", ext)
 		}
 	}
 
@@ -73,7 +73,7 @@ func (p *OrbitInputFile) MovementList(pFile multipart.FileHeader) ([]soup.Moveme
 			return nil, err
 		}
 	default:
-		log.Info("ubknown file type", p.FileType)
+		log.Info("unknown file type", p.FileType)
 		return nil, ErrUnsupportedFileType
 	}
 
