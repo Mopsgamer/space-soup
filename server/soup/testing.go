@@ -2,14 +2,21 @@ package soup
 
 import (
 	"fmt"
-	"os"
 	"reflect"
 	"slices"
 	"strings"
 	"time"
 
+	_ "embed"
+
 	"github.com/gofiber/fiber/v3/log"
 )
+
+//go:embed ORB_72.txt
+var ORB_72 string
+
+//go:embed orb-72.txt
+var orb_72 string
 
 type MovementTest struct {
 	Input    Input
@@ -28,20 +35,12 @@ func CheckOrbitList() (tests []MovementTest, testsPaginated [][]MovementTest, er
 		sincefnStart2 += sinceStart
 	}
 
-	bytes, err := os.ReadFile("ORB_72.txt")
-	if err != nil {
-		return
-	}
-	linesOut := strings.Split(string(bytes), "\n")
+	linesOut := strings.Split(ORB_72, "\n")
 	stop()
 	log.Infof("Read answers file and split %d lines: %v", len(linesOut), sinceStart)
 
 	start = time.Now()
-	bytes, err = os.ReadFile("orb-72.txt")
-	if err != nil {
-		return
-	}
-	linesIn := strings.Split(string(bytes), "\n")[1:]
+	linesIn := strings.Split(orb_72, "\n")[1:]
 	stop()
 	log.Infof("Read input file and split %d lines: %v", len(linesIn), sinceStart)
 

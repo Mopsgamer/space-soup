@@ -1,6 +1,7 @@
 package soup
 
 import (
+	"errors"
 	"math"
 	"strconv"
 	"strings"
@@ -78,6 +79,15 @@ func ParseDateJSON(date string) (time.Time, error) {
 func Float64(str string) float64 {
 	str = strings.Replace(str, ",", ".", -1)
 	result, _ := strconv.ParseFloat(str, 64)
+	return result
+}
+
+func Float64Err(str string, error *error) float64 {
+	str = strings.Replace(str, ",", ".", -1)
+	result, err := strconv.ParseFloat(str, 64)
+	if err != nil {
+		*error = errors.Join(*error, err)
+	}
 	return result
 }
 

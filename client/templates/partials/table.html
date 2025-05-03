@@ -1,0 +1,197 @@
+<div class="max-h-[50svh] overflow-auto">
+    {{if .ExpandTable}}
+    <table id="test-pass-table">
+        <tr>
+            <th rowspan="2">#</th>
+            <th rowspan="2">V_avg</th>
+            <th rowspan="2">Tau1</th>
+            <th rowspan="2">Tau2</th>
+            <th colspan="2">Lambda_apex</th>
+            <th colspan="2">A</th>
+            <th colspan="2">Z_avg</th>
+            <th colspan="2">Delta</th>
+            <th colspan="2">Alpha</th>
+            <th colspan="2">Beta</th>
+            <th colspan="2">Lambda</th>
+            <th colspan="2">Lambda_deriv</th>
+            <th colspan="2">Beta_deriv</th>
+            <th colspan="2">Inc</th>
+            <th colspan="2">Wmega</th>
+            <th colspan="2">Omega</th>
+            <th colspan="2">V_g</th>
+            <th colspan="2">V_h</th>
+            <th colspan="2">Axis</th>
+            <th colspan="2">Exc</th>
+            <th colspan="2">Nu</th>
+        </tr>
+        <tr>
+            {{range seq 18}}
+            <th>Excpected</th>
+            <th>Actual</th>
+            {{end}}
+        </tr>
+        {{range $i, $entry := .Table}}
+        <tr>
+            <td>{{$entry.Input.Id}}</td>
+            <td>{{printf "%.4f" $entry.Input.V_avg}}</td>
+            <td>{{printf "%.4f" $entry.Input.Tau1}}</td>
+            <td>{{printf "%.4f" $entry.Input.Tau2}}</td>
+            <td>{{printf "%.4f°" $entry.Expected.Lambda_apex}}</td>
+            <td class="danger-level-{{$entry.AssertionResult.Lambda_apex}}">
+                {{printf "%.4f°" $entry.Actual.Lambda_apex}}
+            </td>
+            <td>{{printf "%.4f°" $entry.Expected.A}}</td>
+            <td class="danger-level-{{$entry.AssertionResult.A}}">
+                {{printf "%.4f°" $entry.Actual.A}}
+            </td>
+            <td>{{printf "%.4f°" $entry.Expected.Z_avg}}</td>
+            <td class="danger-level-{{$entry.AssertionResult.Z_avg}}">
+                {{printf "%.4f°" $entry.Actual.Z_avg}}
+            </td>
+            <td>{{printf "%.4f°" $entry.Expected.Delta}}</td>
+            <td class="danger-level-{{$entry.AssertionResult.Delta}}">
+                {{printf "%.4f°" $entry.Actual.Delta}}
+            </td>
+            <td>{{printf "%.4f°" $entry.Expected.Alpha}}</td>
+            <td class="danger-level-{{$entry.AssertionResult.Alpha}}">
+                {{printf "%.4f°" $entry.Actual.Alpha}}
+            </td>
+            <td>{{printf "%.4f°" $entry.Expected.Beta}}</td>
+            <td class="danger-level-{{$entry.AssertionResult.Beta}}">
+                {{printf "%.4f°" $entry.Actual.Beta}}
+            </td>
+            <td>{{printf "%.4f°" $entry.Expected.Lambda}}</td>
+            <td class="danger-level-{{$entry.AssertionResult.Lambda}}">
+                {{printf "%.4f°" $entry.Actual.Lambda}}
+            </td>
+            <td>{{printf "%.4f°" $entry.Expected.Lambda_deriv}}</td>
+            <td class="danger-level-{{$entry.AssertionResult.Lambda_deriv}}">
+                {{printf "%.4f°" $entry.Actual.Lambda_deriv}}
+            </td>
+            <td>{{printf "%.4f°" $entry.Expected.Beta_deriv}}</td>
+            <td class="danger-level-{{$entry.AssertionResult.Beta_deriv}}">
+                {{printf "%.4f°" $entry.Actual.Beta_deriv}}
+            </td>
+            <td>{{printf "%.4f°" $entry.Expected.Inc}}</td>
+            <td class="danger-level-{{$entry.AssertionResult.Inc}}">
+                {{printf "%.4f°" $entry.Actual.Inc}}
+            </td>
+            <td>{{printf "%.4f°" $entry.Expected.Wmega}}</td>
+            <td class="danger-level-{{$entry.AssertionResult.Wmega}}">
+                {{printf "%.4f°" $entry.Actual.Wmega}}
+            </td>
+            <td>{{printf "%.4f°" $entry.Expected.Omega}}</td>
+            <td class="danger-level-{{$entry.AssertionResult.Omega}}">
+                {{printf "%.4f°" $entry.Actual.Omega}}
+            </td>
+            <td>{{printf "%.4f" $entry.Expected.V_g}}</td>
+            <td class="danger-level-{{$entry.AssertionResult.V_g}}">
+                {{printf "%.4f" $entry.Actual.V_g}}
+            </td>
+            <td>{{printf "%.4f" $entry.Expected.V_h}}</td>
+            <td class="danger-level-{{$entry.AssertionResult.V_h}}">
+                {{printf "%.4f" $entry.Actual.V_h}}
+            </td>
+            <td>{{printf "%.4f" $entry.Expected.Axis}}</td>
+            <td class="danger-level-{{$entry.AssertionResult.Axis}}">
+                {{printf "%.4f" $entry.Actual.Axis}}
+            </td>
+            <td>{{printf "%.4f" $entry.Expected.Exc}}</td>
+            <td class="danger-level-{{$entry.AssertionResult.Exc}}">
+                {{printf "%.4f" $entry.Actual.Exc}}
+            </td>
+            <td>{{printf "%.4f°" $entry.Expected.Nu}}</td>
+            <td class="danger-level-{{$entry.AssertionResult.Nu}}">
+                {{printf "%.4f°" $entry.Actual.Nu}}
+            </td>
+        </tr>
+        {{end}}
+    </table>
+    {{else}}
+    <table id="data-table">
+        <tr>
+            <th>#</th>
+            <th>V_avg</th>
+            <th>Tau1</th>
+            <th>Tau2</th>
+            <th>Az</th>
+            <th>Zen</th>
+            <th>Zen g</th>
+            <th>Declination</th>
+            <th>Right Ascension</th>
+            <th>V_g</th>
+            <th>V_h</th>
+            <th>Latitude</th>
+            <th>Longitude</th>
+            <th>Inc</th>
+            <th>Axis</th>
+            <th>Ecc</th>
+            <th>Angle</th>
+        </tr>
+        {{range $i, $entry := .Table}}
+        <tr>
+            <td>{{$entry.Input.Id}}</td>
+            <td>{{printf "%.4f" $entry.Input.V_avg}}</td>
+            <td>{{printf "%.4f" $entry.Input.Tau1}}</td>
+            <td>{{printf "%.4f" $entry.Input.Tau2}}</td>
+            <td>{{printf "%.4f°" $entry.Actual.A}}</td>
+            <td>{{printf "%.4f°" $entry.Actual.Z_avg}}</td>
+            <td>{{printf "%.4f°" $entry.Actual.Z_fix}}</td>
+            <td>{{printf "%.4f°" $entry.Actual.Delta}}</td>
+            <td>{{printf "%.4f°" $entry.Actual.Alpha}}</td>
+            <td>{{printf "%.4f" $entry.Actual.V_g}}</td>
+            <td>{{printf "%.4f" $entry.Actual.V_h}}</td>
+            <td>{{printf "%.4f°" $entry.Actual.Beta_deriv}}</td>
+            <td>{{printf "%.4f°" $entry.Actual.Lambda_deriv}}</td>
+            <td>{{printf "%.4f" $entry.Actual.Axis}}</td>
+            <td>{{printf "%.4f°" $entry.Actual.Inc}}</td>
+            <td>{{printf "%.4f" $entry.Actual.Exc}}</td>
+            <td>{{printf "%.4f°" $entry.Actual.Angle}}</td>
+        </tr>
+        {{end}}
+    </table>
+    {{end}}
+</div>
+{{if lt .PageMax 1}}
+<div class="flex flex-col relative gap-2 mt-page justify-center">
+    <div class="flex items-center gap-2 justify-center">
+        {{$pagePrev := add .Page -1}} {{$pageNext := add .Page 1}} {{if gt .Page
+        2}}
+        <sl-button pill href="/table/1" variant="default">1</sl-button>
+        <sl-icon name="three-dots"></sl-icon>
+        {{end}} {{if gt .Page 1}}
+        <sl-button
+            pill
+            href="/table/{{$pagePrev}}"
+            variant="default"
+        ><sl-icon name="caret-left"></sl-icon></sl-button>
+        {{end}}
+        <sl-button pill variant="primary" disabled>{{.Page}}</sl-button>
+
+        {{if lt .Page .PageMax}}
+        <sl-button
+            pill
+            href="/table/{{$pageNext}}"
+            variant="default"
+        ><sl-icon name="caret-right"></sl-icon></sl-button>
+        {{end}} {{if lt .Page (add .PageMax -1)}}
+        <sl-icon name="three-dots"></sl-icon>
+        <sl-button pill href="/table/{{.PageMax}}" variant="default"
+        >{{.PageMax}}</sl-button>
+        {{end}}
+    </div>
+    <div class="flex items-center gap-2 justify-center">
+        <sl-button href="/table/image" target="_blank"><sl-icon
+                slot="prefix"
+                name="magic"
+            ></sl-icon>Visualize</sl-button>
+        <sl-button hx-post="/table/expand" hx-swap="none" class="ml-4">
+            {{if .ExpandTable}}
+            <sl-icon slot="prefix" name="cup-straw"></sl-icon>
+            Open normal table {{else}}
+            <sl-icon slot="prefix" name="bug"></sl-icon>
+            Open testing table {{end}}
+        </sl-button>
+    </div>
+</div>
+{{end}}

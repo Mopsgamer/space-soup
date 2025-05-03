@@ -9,9 +9,7 @@ import { dirname } from "@std/path/dirname";
 const folder = "client";
 const isWatch = Deno.args.includes("watch");
 
-type BuildOptions = esbuild.BuildOptions & {
-    whenChange?: string[];
-};
+type BuildOptions = esbuild.BuildOptions;
 
 const minify = Deno.args.includes("min");
 
@@ -36,7 +34,7 @@ let buildCalls = 0;
 async function build(
     options: BuildOptions,
 ): Promise<void> {
-    const { outdir, outfile, entryPoints = [], whenChange = [] } = options;
+    const { outdir, outfile, entryPoints = [] } = options;
     buildCalls++;
 
     const directory = outdir || dirname(outfile!);
@@ -86,9 +84,7 @@ async function build(
         return;
     }
 
-    const safeOptions = options;
-    delete safeOptions.whenChange;
-    const ctx = await esbuild.context(safeOptions as esbuild.BuildOptions);
+    const ctx = await esbuild.context(options as esbuild.BuildOptions);
 
     async function rebuild() {
         try {
@@ -112,37 +108,6 @@ async function build(
         logClientComp.error(error);
         return;
     }
-
-    if (whenChange.length === 0) {
-        logClientComp.error("Nothing to watch: " + whenChange.join(", ") + ".");
-        await ctx.dispose();
-        return;
-    }
-
-    let watcher: Deno.FsWatcher;
-    try {
-        watcher = Deno.watchFs(whenChange, { recursive: true });
-    } catch (error) {
-        logClientComp.error(error);
-        logClientComp.error(
-            "Bad paths, can not add watcher: " + whenChange.join(", ") + ".",
-        );
-        return;
-    }
-
-    // this callback won't block the process.
-    // buildTask will return while ignoring loop
-    (async () => {
-        for await (const event of watcher) {
-            if (
-                event.kind === "modify" || event.kind === "create" ||
-                event.kind === "remove"
-            ) return;
-
-            await rebuild();
-        }
-        await ctx.dispose();
-    })();
 }
 
 function copy(from: string, to: string): Promise<void> {
@@ -150,7 +115,6 @@ function copy(from: string, to: string): Promise<void> {
         ...options,
         outdir: to,
         entryPoints: [],
-        whenChange: [to],
         plugins: [copyPlugin({
             once: isWatch,
             resolveFrom: "cwd",
@@ -184,23 +148,22 @@ const calls: (Call<typeof copy> | Call<typeof build>)[] = [
         ...options,
         outdir: `./${folder}/static/js`,
         entryPoints: [`./${folder}/src/ts/**/*`],
-        whenChange: [
-            `./${folder}/static/js`,
-        ],
         plugins: [...denoPlugins()],
     }], ["js", ...slAlias]],
 
     [build, [{
         ...options,
         outdir: `./${folder}/static/css`,
-        entryPoints: [`./${folder}/src/tailwindcss/**/*.css`],
-        whenChange: [
-            `./${folder}/templates`,
-            `./${folder}/src/tailwindcss`,
+        entryPoints: [
+            `./${folder}/src/tailwindcss/**/*.css`,
+            `./${folder}/templates/**/*.html`,
         ],
         external: ["/static/assets/*"],
+        loader: {
+            ".html": "empty",
+        },
         plugins: [
-            tailwindcssPlugin(),
+            tailwindcssPlugin({}),
         ],
     }], ["css", ...slAlias]],
 ];

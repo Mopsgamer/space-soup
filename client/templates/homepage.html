@@ -1,9 +1,14 @@
 <section class="super-sect sl-theme-light relative flex items-center justify-center text-center py-16 h-svh">
     <div class="relative">
         <span class="text-primary-600 text-6xl title">{{.AppName}}</span>
-        <p class="text-primary-800 description">Calculate orbital parameters based on time delays, date, and speed.</p>
-        <sl-button href="/calc" pill variant="primary" class="px-6 py-3">
-            Calculate
+        <p class="text-primary-800 description">
+            Calculate orbital parameters based on time delays, date, and speed.
+        </p>
+        <sl-button href="/manually" pill variant="primary" class="px-6 py-3">
+            Calculate manually
+        </sl-button>
+        <sl-button href="/file" pill variant="primary" class="px-6 py-3">
+            Upload file
         </sl-button>
     </div>
 </section>
@@ -11,21 +16,29 @@
     <sl-icon name="lightning-charge" class="text-yellow-500"></sl-icon>
     <div class="text">
         <span class="title">Orbital Parameters</span>
-        <p class="text-yellow-400 description">{{.AppName}} allows you to calculate azimuth, zenith angle of the radiant, eccentricity, and many other parameters...</p>
+        <p class="text-yellow-400 description">
+            {{.AppName}} allows you to calculate azimuth, zenith angle of the
+            radiant, eccentricity, and many other parameters...
+        </p>
     </div>
 </section>
 <section class="super-sect-2">
     <div class="text">
         <span class="title">Visualization</span>
-        <p class="text-blue-400 description">Get graphs and charts for your data.</p>
+        <p class="text-blue-400 description">
+            Get graphs and charts for your data.
+        </p>
     </div>
     <sl-icon name="bar-chart-line" class="text-blue-500"></sl-icon>
 </section>
 <section class="super-sect sl-theme-light pt-28">
     <div class="relative">
         <p class="text-primary-800 description">Try calculating now!</p>
-        <sl-button href="/calc" pill variant="primary" class="px-6 py-3">
-            Calculate
+        <sl-button href="/manually" pill variant="primary" class="px-6 py-3">
+            Calculate manually
+        </sl-button>
+        <sl-button href="/file" pill variant="primary" class="px-6 py-3">
+            Upload file
         </sl-button>
     </div>
 </section>

@@ -5,6 +5,7 @@ import (
 	"github.com/Mopsgamer/space-soup/server/environment"
 
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/log"
 )
 
 // Should return redirect path or empty string.
@@ -49,9 +50,9 @@ func wrapRenderNotice(r ControllerHttp, template, message, id string) error {
 }
 
 // Renders the danger message html element.
-func (ctl ControllerHttp) RenderInternalError(id string) error {
-	ctl.Ctx.Status(fiber.StatusInternalServerError)
-	return ctl.RenderDanger(fiber.ErrInternalServerError.Message, id)
+func (ctl ControllerHttp) RenderInternalError(message string, id string) error {
+	log.Error(message)
+	return ctl.RenderDanger(message, id)
 }
 
 // Renders the danger message html element.

@@ -13,6 +13,7 @@ import (
 	"github.com/Mopsgamer/space-soup/server/soup"
 
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/log"
 	"github.com/gofiber/fiber/v3/middleware/logger"
 	"github.com/gofiber/fiber/v3/middleware/static"
 	expandrange "github.com/n0madic/expand-range"
@@ -128,7 +129,7 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 			if req.Page > len(testsPaginated) || req.Page < 1 {
 				return ErrInvalidPageRange
 			}
-			bindx["ExpandTable"] = req.Expanded
+			bindx["ExpandTable"] = req.ExpandTable
 			bindx["Table"] = testsPaginated[req.Page-1]
 			bindx["Page"] = req.Page
 			bindx["PageMax"] = len(testsPaginated)
@@ -149,7 +150,8 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 	var noRedirect controller_http.RedirectCompute = func(ctl controller_http.ControllerHttp, bind *fiber.Map) string { return "" }
 
 	app.Get("/", UseHttpPage("homepage", &fiber.Map{"Title": "Home", "IsHomePage": true}, noRedirect, "partials/main"))
-	app.Get("/calc", UseHttpPage("calc", &fiber.Map{"Title": "Calculate", "IsCalc": true}, noRedirect, "partials/main"))
+	app.Get("/manually", UseHttpPage("manually", &fiber.Map{"Title": "Calculate manually", "IsManually": true}, noRedirect, "partials/main"))
+	app.Get("/file", UseHttpPage("file", &fiber.Map{"Title": "Upload file", "IsFile": true}, noRedirect, "partials/main"))
 	app.Get("/table/image", UseVisualDeclRasc())
 	app.Get("/table/:page", UseHttpPageTable("table", &fiber.Map{"Title": "Table"}, noRedirect, "partials/main"))
 	app.Get("/table", func(ctx fiber.Ctx) error { return ctx.Redirect().To("/table/1") })
@@ -159,7 +161,7 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 		if err != nil {
 			return err
 		}
-		if req.Expanded {
+		if req.ExpandTable {
 			ctl.Ctx.Cookie(&fiber.Cookie{
 				Name:    "expanded",
 				Expires: time.Now(),
@@ -181,19 +183,50 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 	app.Get("/acknowledgements", UseHttpPage("acknowledgements", &fiber.Map{"Title": "Acknowledgements"}, noRedirect, "partials/main"))
 
 	// calc
+	app.Post("/process/file", UseHttp(func(ctl controller_http.ControllerHttp) error {
+		req := new(model_http.OrbitInputFile)
+		if err := ctl.BindAll(req); err != nil {
+			return ctl.RenderInternalError(err.Error(), "err-request")
+		}
+
+		pFile, err := ctl.Ctx.FormFile("document")
+		if err != nil {
+			log.Info(string(ctl.Ctx.BodyRaw()))
+			return ctl.RenderInternalError(err.Error(), "err-calc")
+		}
+
+		movementList, err := req.MovementList(*pFile)
+		if err != nil {
+			return ctl.RenderInternalError(err.Error(), "err-calc")
+		}
+
+		return ctl.Ctx.Render("partials/table", fiber.Map{
+			"ExpandTable": false,
+			"Table":       movementList,
+			"Page":        1,
+			"PageMax":     1,
+		})
+	}))
 	app.Post("/process", UseHttp(func(ctl controller_http.ControllerHttp) error {
 		req := new(model_http.OrbitInput)
 		if err := ctl.BindAll(req); err != nil {
-			return ctl.RenderInternalError("err-request")
+			return ctl.RenderInternalError(err.Error(), "err-request")
 		}
 
-		meteor, err := req.Movement()
+		input, err := req.Input()
 		if err != nil {
 			return ctl.RenderDanger(err.Error(), "err-calc")
 		}
+		result := soup.NewMovement(input)
 
-		return ctl.Ctx.Render("partials/meteoroid_movement", fiber.Map{
-			"Meteor": meteor,
+		return ctl.Ctx.Render("partials/table", fiber.Map{
+			"ExpandTable": false,
+			"Table": []soup.MovementTest{{
+				Input:  input,
+				Actual: result,
+			}},
+			"Page":    1,
+			"PageMax": 1,
 		})
 	}))
 

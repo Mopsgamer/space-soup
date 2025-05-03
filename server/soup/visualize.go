@@ -32,13 +32,24 @@ type VisualizeConfig struct {
 
 func VisualizeDeclRasc(config VisualizeConfig) (io.WriterTo, error) {
 	p := plot.New()
+	p.Title.TextStyle.Color = color.White
 	p.Title.Text = fmt.Sprintf(
 		"Generation Date: %s | Orbit Count: %d",
 		time.Now().Format("2006-01-02 15:04:05"), len(config.Tests),
 	)
+	p.Title.Padding = 10
+
 	if config.Description != "" {
 		p.Title.Text += " | " + config.Description
 	}
+	p.X.Label.TextStyle.Color = color.White
+	p.Y.Label.TextStyle.Color = color.White
+	p.X.Tick.Label.Color = color.White
+	p.Y.Tick.Label.Color = color.White
+	p.X.Tick.Color = color.White
+	p.Y.Tick.Color = color.White
+	p.X.Color = color.White
+	p.Y.Color = color.White
 	p.X.Label.Text, p.Y.Label.Text = "Right Ascension", "Declination"
 	p.X.Tick.Length, p.Y.Tick.Length = 5, 5
 	p.X.Tick.Marker, p.Y.Tick.Marker = AngleTicker{Step: 45}, AngleTicker{Step: 10}
@@ -58,9 +69,9 @@ func VisualizeDeclRasc(config VisualizeConfig) (io.WriterTo, error) {
 	if err != nil {
 		return nil, err
 	}
+	scatter.Color = color.White
 	scatter.Shape = draw.CircleGlyph{}
 	scatter.GlyphStyle.Radius = vg.Points(.4)
-	p.Add(scatter)
 
 	ecliptic := plotter.NewFunction(func(x float64) float64 {
 		amplitude := 23.5
@@ -72,8 +83,17 @@ func VisualizeDeclRasc(config VisualizeConfig) (io.WriterTo, error) {
 	ecliptic.Color = color.RGBA{R: 255, G: 0, B: 0, A: 255}
 	ecliptic.Width = vg.Points(1)
 	p.Add(ecliptic)
-	p.Title.Padding = 10
+	p.BackgroundColor = color.RGBA{R: 0, G: 0, B: 0, A: 255}
+	p.Legend.TextStyle.Color = color.White
+	p.X.Padding = vg.Centimeter
+
+	grid := plotter.NewGrid()
+	grid.Horizontal.Color = color.RGBA{0, 0, 255, 50}
+	grid.Vertical.Color = grid.Horizontal.Color
+
+	p.Add(grid)
 	p.Legend.Add("Ecliptic", ecliptic)
+	p.Add(scatter)
 	// scatter2, err := plotter.NewScatter(pointsExpected)
 	// if err != nil {
 	// 	return err
@@ -83,11 +103,6 @@ func VisualizeDeclRasc(config VisualizeConfig) (io.WriterTo, error) {
 	// scatter2.GlyphStyle.Color = color.RGBA{255, 0, 0, 255}
 	// p.Add(scatter2)
 
-	// Add a grid
-	grid := plotter.NewGrid()
-	p.Add(grid)
-
-	scale := 1
-	w, h := 4*80*scale, 3*80*scale
-	return p.WriterTo(vg.Length(w*scale), vg.Length(h*scale), "png")
+	w, h := 16*45, 9*45
+	return p.WriterTo(vg.Length(w), vg.Length(h), "png")
 }

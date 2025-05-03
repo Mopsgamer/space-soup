@@ -13,10 +13,10 @@ type OrbitInput struct {
 	Date string  `form:"date"`
 }
 
-func (p *OrbitInput) Movement() (soup.Movement, error) {
+func (p *OrbitInput) Input() (soup.Input, error) {
 	date, err := soup.ParseDateJSON(p.Date)
 	if err != nil {
-		return soup.Movement{}, err
+		return soup.Input{}, err
 	}
 
 	speedList := []float64{}
@@ -27,12 +27,10 @@ func (p *OrbitInput) Movement() (soup.Movement, error) {
 		speedList = append(speedList, v)
 	}
 
-	inp := soup.Input{
+	return soup.Input{
 		Tau1:  p.Tau1,
 		Tau2:  p.Tau2,
 		V_avg: soup.Average(speedList),
 		Date:  date,
-	}
-	mov := soup.NewMovement(inp)
-	return mov, mov.Fail
+	}, nil
 }

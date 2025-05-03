@@ -4,28 +4,36 @@
             <sl-icon-button name="list" slot="trigger"></sl-icon-button>
             <sl-menu>
                 {{if not .IsHomePage}}
-                    <a href="/">
-                        <sl-menu-item>
-                            <sl-icon name="house-heart" slot="prefix"></sl-icon>
-                            Home
-                        </sl-menu-item>
-                    </a>
-                {{end}}
-                {{if not .IsCalc}}
-                    <a href="/calc">
-                        <sl-menu-item>
-                            <sl-icon name="calculator" slot="prefix"></sl-icon>
-                            Calculator
-                        </sl-menu-item>
-                    </a>
-                {{end}}
-                {{if not .Table}}
-                    <a href="/table">
-                        <sl-menu-item>
-                            <sl-icon name="table" slot="prefix"></sl-icon>
-                            Table
-                        </sl-menu-item>
-                    </a>
+                <a href="/">
+                    <sl-menu-item>
+                        <sl-icon name="house-heart" slot="prefix"></sl-icon>
+                        Home
+                    </sl-menu-item>
+                </a>
+                {{end}} {{if not .IsManually}}
+                <a href="/manually">
+                    <sl-menu-item>
+                        <sl-icon name="calculator" slot="prefix"></sl-icon>
+                        Calculate manually
+                    </sl-menu-item>
+                </a>
+                {{end}} {{if not .IsFile}}
+                <a href="/file">
+                    <sl-menu-item>
+                        <sl-icon
+                            name="file-earmark-spreadsheet"
+                            slot="prefix"
+                        ></sl-icon>
+                        Upload file
+                    </sl-menu-item>
+                </a>
+                {{end}} {{if not .Table}}
+                <a href="/table">
+                    <sl-menu-item>
+                        <sl-icon name="table" slot="prefix"></sl-icon>
+                        Table
+                    </sl-menu-item>
+                </a>
                 {{end}}
                 <a href="#footer">
                     <sl-menu-item>

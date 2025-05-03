@@ -28,7 +28,17 @@
     },
     "exports": {},
     "fmt": {
-        "indentWidth": 4
+        "indentWidth": 4,
+        "exclude": [
+            "client/src/*tailwind*",
+            "client/static"
+        ]
+    },
+    "lint": {
+        "exclude": [
+            "client/src/*tailwind*",
+            "client/static"
+        ]
     },
     "compilerOptions": {
         "lib": [
@@ -37,11 +47,5 @@
             "dom.asynciterable",
             "deno.ns"
         ]
-    },
-    "exclude": [
-        "websocket/**/*",
-        "client/templates/**/*",
-        "client/**/*.css",
-        "client/static/**/*"
-    ]
+    }
 }

@@ -11,7 +11,7 @@
         }
     }
     sl-button {
-        &:not([variant=text]):is(.sl-theme-light *)::part(base) {
+        &:not([variant="text"]):is(.sl-theme-light *)::part(base) {
             @apply text-neutral-900;
         }
         &.no-end::part(base) {
