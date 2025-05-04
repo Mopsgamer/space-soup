@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/Mopsgamer/space-soup/server/environment"
+	"github.com/Mopsgamer/space-soup/server/soup"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/template/html/v2"
@@ -26,6 +27,8 @@ func NewAppHtmlEngine(embedFS fs.FS, directory string) *html.Engine {
 	}
 
 	engine.AddFuncMap(map[string]interface{}{
+		"degrees": soup.DegreesFromRadians,
+		"radians": soup.RadiansFromDegrees,
 		"add": func(n ...int) (result int) {
 			for _, v := range n {
 				result += v

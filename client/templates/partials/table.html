@@ -25,7 +25,7 @@
             <th colspan="2">Nu</th>
         </tr>
         <tr>
-            {{range seq 18}}
+            {{range seq 17}}
             <th>Excpected</th>
             <th>Actual</th>
             {{end}}
@@ -36,53 +36,53 @@
             <td>{{printf "%.4f" $entry.Input.V_avg}}</td>
             <td>{{printf "%.4f" $entry.Input.Tau1}}</td>
             <td>{{printf "%.4f" $entry.Input.Tau2}}</td>
-            <td>{{printf "%.4f°" $entry.Expected.Lambda_apex}}</td>
+            <td>{{printf "%.4f°" (degrees $entry.Expected.Lambda_apex)}}</td>
             <td class="danger-level-{{$entry.AssertionResult.Lambda_apex}}">
-                {{printf "%.4f°" $entry.Actual.Lambda_apex}}
+                {{printf "%.4f°" (degrees $entry.Actual.Lambda_apex)}}
             </td>
-            <td>{{printf "%.4f°" $entry.Expected.A}}</td>
+            <td>{{printf "%.4f°" (degrees $entry.Expected.A)}}</td>
             <td class="danger-level-{{$entry.AssertionResult.A}}">
-                {{printf "%.4f°" $entry.Actual.A}}
+                {{printf "%.4f°" (degrees $entry.Actual.A)}}
             </td>
-            <td>{{printf "%.4f°" $entry.Expected.Z_avg}}</td>
+            <td>{{printf "%.4f°" (degrees $entry.Expected.Z_avg)}}</td>
             <td class="danger-level-{{$entry.AssertionResult.Z_avg}}">
-                {{printf "%.4f°" $entry.Actual.Z_avg}}
+                {{printf "%.4f°" (degrees $entry.Actual.Z_avg)}}
             </td>
-            <td>{{printf "%.4f°" $entry.Expected.Delta}}</td>
+            <td>{{printf "%.4f°" (degrees $entry.Expected.Delta)}}</td>
             <td class="danger-level-{{$entry.AssertionResult.Delta}}">
-                {{printf "%.4f°" $entry.Actual.Delta}}
+                {{printf "%.4f°" (degrees $entry.Actual.Delta)}}
             </td>
-            <td>{{printf "%.4f°" $entry.Expected.Alpha}}</td>
+            <td>{{printf "%.4f°" (degrees $entry.Expected.Alpha)}}</td>
             <td class="danger-level-{{$entry.AssertionResult.Alpha}}">
-                {{printf "%.4f°" $entry.Actual.Alpha}}
+                {{printf "%.4f°" (degrees $entry.Actual.Alpha)}}
             </td>
-            <td>{{printf "%.4f°" $entry.Expected.Beta}}</td>
+            <td>{{printf "%.4f°" (degrees $entry.Expected.Beta)}}</td>
             <td class="danger-level-{{$entry.AssertionResult.Beta}}">
-                {{printf "%.4f°" $entry.Actual.Beta}}
+                {{printf "%.4f°" (degrees $entry.Actual.Beta)}}
             </td>
-            <td>{{printf "%.4f°" $entry.Expected.Lambda}}</td>
+            <td>{{printf "%.4f°" (degrees $entry.Expected.Lambda)}}</td>
             <td class="danger-level-{{$entry.AssertionResult.Lambda}}">
-                {{printf "%.4f°" $entry.Actual.Lambda}}
+                {{printf "%.4f°" (degrees $entry.Actual.Lambda)}}
             </td>
-            <td>{{printf "%.4f°" $entry.Expected.Lambda_deriv}}</td>
+            <td>{{printf "%.4f°" (degrees $entry.Expected.Lambda_deriv)}}</td>
             <td class="danger-level-{{$entry.AssertionResult.Lambda_deriv}}">
-                {{printf "%.4f°" $entry.Actual.Lambda_deriv}}
+                {{printf "%.4f°" (degrees $entry.Actual.Lambda_deriv)}}
             </td>
-            <td>{{printf "%.4f°" $entry.Expected.Beta_deriv}}</td>
+            <td>{{printf "%.4f°" (degrees $entry.Expected.Beta_deriv)}}</td>
             <td class="danger-level-{{$entry.AssertionResult.Beta_deriv}}">
-                {{printf "%.4f°" $entry.Actual.Beta_deriv}}
+                {{printf "%.4f°" (degrees $entry.Actual.Beta_deriv)}}
             </td>
-            <td>{{printf "%.4f°" $entry.Expected.Inc}}</td>
+            <td>{{printf "%.4f°" (degrees $entry.Expected.Inc)}}</td>
             <td class="danger-level-{{$entry.AssertionResult.Inc}}">
-                {{printf "%.4f°" $entry.Actual.Inc}}
+                {{printf "%.4f°" (degrees $entry.Actual.Inc)}}
             </td>
-            <td>{{printf "%.4f°" $entry.Expected.Wmega}}</td>
+            <td>{{printf "%.4f°" (degrees $entry.Expected.Wmega)}}</td>
             <td class="danger-level-{{$entry.AssertionResult.Wmega}}">
-                {{printf "%.4f°" $entry.Actual.Wmega}}
+                {{printf "%.4f°" (degrees $entry.Actual.Wmega)}}
             </td>
-            <td>{{printf "%.4f°" $entry.Expected.Omega}}</td>
+            <td>{{printf "%.4f°" (degrees $entry.Expected.Omega)}}</td>
             <td class="danger-level-{{$entry.AssertionResult.Omega}}">
-                {{printf "%.4f°" $entry.Actual.Omega}}
+                {{printf "%.4f°" (degrees $entry.Actual.Omega)}}
             </td>
             <td>{{printf "%.4f" $entry.Expected.V_g}}</td>
             <td class="danger-level-{{$entry.AssertionResult.V_g}}">
@@ -100,9 +100,9 @@
             <td class="danger-level-{{$entry.AssertionResult.Exc}}">
                 {{printf "%.4f" $entry.Actual.Exc}}
             </td>
-            <td>{{printf "%.4f°" $entry.Expected.Nu}}</td>
+            <td>{{printf "%.4f°" (degrees $entry.Expected.Nu)}}</td>
             <td class="danger-level-{{$entry.AssertionResult.Nu}}">
-                {{printf "%.4f°" $entry.Actual.Nu}}
+                {{printf "%.4f°" (degrees $entry.Actual.Nu)}}
             </td>
         </tr>
         {{end}}
@@ -134,19 +134,19 @@
             <td>{{printf "%.4f" $entry.Input.V_avg}}</td>
             <td>{{printf "%.4f" $entry.Input.Tau1}}</td>
             <td>{{printf "%.4f" $entry.Input.Tau2}}</td>
-            <td>{{printf "%.4f°" $entry.Actual.A}}</td>
-            <td>{{printf "%.4f°" $entry.Actual.Z_avg}}</td>
-            <td>{{printf "%.4f°" $entry.Actual.Z_fix}}</td>
-            <td>{{printf "%.4f°" $entry.Actual.Delta}}</td>
-            <td>{{printf "%.4f°" $entry.Actual.Alpha}}</td>
+            <td>{{printf "%.4f°" (degrees $entry.Actual.A)}}</td>
+            <td>{{printf "%.4f°" (degrees $entry.Actual.Z_avg)}}</td>
+            <td>{{printf "%.4f°" (degrees $entry.Actual.Z_fix)}}</td>
+            <td>{{printf "%.4f°" (degrees $entry.Actual.Delta)}}</td>
+            <td>{{printf "%.4f°" (degrees $entry.Actual.Alpha)}}</td>
             <td>{{printf "%.4f" $entry.Actual.V_g}}</td>
             <td>{{printf "%.4f" $entry.Actual.V_h}}</td>
-            <td>{{printf "%.4f°" $entry.Actual.Beta_deriv}}</td>
-            <td>{{printf "%.4f°" $entry.Actual.Lambda_deriv}}</td>
+            <td>{{printf "%.4f°" (degrees $entry.Actual.Beta_deriv)}}</td>
+            <td>{{printf "%.4f°" (degrees $entry.Actual.Lambda_deriv)}}</td>
             <td>{{printf "%.4f" $entry.Actual.Axis}}</td>
-            <td>{{printf "%.4f°" $entry.Actual.Inc}}</td>
+            <td>{{printf "%.4f°" (degrees $entry.Actual.Inc)}}</td>
             <td>{{printf "%.4f" $entry.Actual.Exc}}</td>
-            <td>{{printf "%.4f°" $entry.Actual.Angle}}</td>
+            <td>{{printf "%.4f°" (degrees $entry.Actual.Angle)}}</td>
         </tr>
         {{end}}
     </table>
