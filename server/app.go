@@ -72,7 +72,7 @@ func useHttpPageTable(
 		}
 		bindx["ExpandTable"] = req.ExpandTable
 		bindx["Table"] = testsPaginated[req.Page-1]
-		bindx["Page"] = req.Page
+		bindx["Page"] = int(req.Page)
 		bindx["PageMax"] = len(testsPaginated)
 		return ctl.RenderPage(
 			templatePath,
@@ -285,7 +285,7 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 			"IsFile":      true,
 			"ExpandTable": false,
 			"Table":       movementList,
-			"Page":        req.Page,
+			"Page":        int(req.Page),
 			"PageMax":     len(movementTestListPaginated),
 		})
 	}))
