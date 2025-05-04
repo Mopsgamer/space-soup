@@ -61,8 +61,8 @@
                             id="visualize-file"
                             form="form-file"
                             variant="primary"
-                            href="/alg/parse/image"
-                            target="_blank"
+                            hx-post="/alg/parse/image"
+                            hx-include="#file-input"
                         >
                             <sl-icon
                                 slot="prefix"
@@ -76,7 +76,12 @@
         </div>
         <div class="p-3">
             <h4 class="aligned">Output</h4>
-            <div id="form-file-output"></div>
+            <div id="form-file-output">
+                <sl-alert variant="primary" open>
+                    <sl-icon slot="icon" name="info-circle"></sl-icon>
+                    No output available yet. Upload a file and click "Calculate" or "Visualize" to see results.
+                </sl-alert>
+            </div>
         </div>
     </div>
 </div>

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"os/exec"
+	"time"
 
 	"github.com/gofiber/fiber/v3/log"
 	"github.com/joho/godotenv"
@@ -24,7 +25,8 @@ const (
 // TODO: Should be configurable using database.
 // App settings.
 var (
-	Port string
+	Port               string
+	ImageCacheDuration time.Duration
 
 	DenoJson    DenoConfig
 	GoMod       modfile.File
@@ -40,11 +42,16 @@ type DenoConfig struct {
 
 // Load environemnt variables from the '.env' file. Exits if any errors.
 func Load() {
+	var err error
 	if err := godotenv.Load(); err != nil {
 		log.Fatal(err)
 	}
 
 	Port = os.Getenv("PORT")
+	ImageCacheDuration, err = time.ParseDuration(os.Getenv("IMAGE_CACHE_DURATION"))
+	if err != nil {
+		ImageCacheDuration = time.Minute * 10
+	}
 
 	DenoJson = getJson[DenoConfig]("deno.json")
 	GoMod = getGoMod()

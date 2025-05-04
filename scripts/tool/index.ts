@@ -11,4 +11,5 @@ export const decoder = new TextDecoder("utf-8");
 
 export enum envKeys {
     PORT = "PORT",
+    IMAGE_CACHE_DURATION = "IMAGE_CACHE_DURATION",
 }
