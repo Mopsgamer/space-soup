@@ -20,8 +20,8 @@ type OrbitInputFile struct {
 	FileType FileType `form:"file-type"`
 }
 
-func (p *OrbitInputFile) MovementList(pFile multipart.FileHeader) ([]soup.Movement, error) {
-	var movements []soup.Movement
+func (p *OrbitInputFile) MovementTestList(pFile multipart.FileHeader) ([]soup.MovementTest, error) {
+	var movementTestList []soup.MovementTest
 
 	if p.FileType.ShouldDecide() {
 		ext := FileType(strings.ToLower(filepath.Ext(pFile.Filename)))
@@ -54,7 +54,7 @@ func (p *OrbitInputFile) MovementList(pFile multipart.FileHeader) ([]soup.Moveme
 		if err != nil {
 			return nil, err
 		}
-		movements, err = parseRecords(records)
+		movementTestList, err = parseRecords(records)
 		if err != nil {
 			return nil, err
 		}
@@ -68,7 +68,7 @@ func (p *OrbitInputFile) MovementList(pFile multipart.FileHeader) ([]soup.Moveme
 		if err != nil {
 			return nil, err
 		}
-		movements, err = parseRecords(rows)
+		movementTestList, err = parseRecords(rows)
 		if err != nil {
 			return nil, err
 		}
@@ -77,11 +77,11 @@ func (p *OrbitInputFile) MovementList(pFile multipart.FileHeader) ([]soup.Moveme
 		return nil, ErrUnsupportedFileType
 	}
 
-	return movements, nil
+	return movementTestList, nil
 }
 
-func parseRecords(records [][]string) ([]soup.Movement, error) {
-	var movements []soup.Movement
+func parseRecords(records [][]string) ([]soup.MovementTest, error) {
+	var movementTestList []soup.MovementTest
 	for _, record := range records {
 		if len(record) < 3 {
 			return nil, ErrInvalidRowFormat
@@ -110,9 +110,13 @@ func parseRecords(records [][]string) ([]soup.Movement, error) {
 			Date:  date,
 		}
 		movement := soup.NewMovement(input)
+		movementTest := soup.MovementTest{
+			Input:  input,
+			Actual: movement,
+		}
 		if movement.Fail == nil {
-			movements = append(movements, movement)
+			movementTestList = append(movementTestList, movementTest)
 		}
 	}
-	return movements, nil
+	return movementTestList, nil
 }

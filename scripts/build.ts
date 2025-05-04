@@ -156,12 +156,8 @@ const calls: (Call<typeof copy> | Call<typeof build>)[] = [
         outdir: `./${folder}/static/css`,
         entryPoints: [
             `./${folder}/src/tailwindcss/**/*.css`,
-            `./${folder}/templates/**/*.html`,
         ],
         external: ["/static/assets/*"],
-        loader: {
-            ".html": "empty",
-        },
         plugins: [
             tailwindcssPlugin({}),
         ],

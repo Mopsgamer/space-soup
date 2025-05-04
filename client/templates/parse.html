@@ -1,0 +1,85 @@
+<div class="p-page">
+    <div class="flex flex-col gap-page">
+        <div class="p-3">
+            <h4 class="aligned">
+                <sl-icon name="file-earmark-spreadsheet"></sl-icon>Upload and
+                calculate
+            </h4>
+            <form
+                id="form-file"
+                hx-encoding="multipart/form-data"
+                hx-trigger="click from:#calculate-file"
+                hx-target="#form-file-output"
+            >
+                <sl-card>
+                    <div class="flex flex-col gap-2">
+                        <input
+                            class="cursor-pointer"
+                            id="file-input"
+                            form="form-file"
+                            label="File"
+                            name="document"
+                            type="file"
+                            accept=".tsv,.csv,.xlsx"
+                            required
+                            hx-post="/alg/parse"
+                            hx-trigger="click from:#calculate-file"
+                            hx-target="#form-file-output"
+                        />
+                        <sl-alert variant="primary" open>
+                            <sl-icon slot="icon" name="info-circle"></sl-icon>
+                            <li>
+                                Supported file extensions: <code>*.csv</code>,
+                                <code>*.tsv</code>, <code>*.xlsx</code>.
+                            </li>
+                            <li>
+                                Row format: <code>tau1</code>, <code
+                                >tau2</code>,
+                                <code>date</code>, <code>v1, v2, ..., vn</code>.
+                            </li>
+                            <li>
+                                Date format: <code>2006-01-02T03:04</code>
+                                (JSON).
+                            </li>
+                        </sl-alert>
+                    </div>
+                </sl-card>
+                <div class="dialog-footer">
+                    <div>
+                        <sl-button
+                            id="calculate-file"
+                            form="form-file"
+                            variant="primary"
+                        >
+                            <sl-icon
+                                slot="prefix"
+                                name="table"
+                            ></sl-icon>
+                            Calculate
+                        </sl-button>
+                        <sl-button
+                            id="visualize-file"
+                            form="form-file"
+                            variant="primary"
+                            href="/alg/parse/image"
+                            target="_blank"
+                        >
+                            <sl-icon
+                                slot="prefix"
+                                name="magic"
+                            ></sl-icon>
+                            Visualize
+                        </sl-button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="p-3">
+            <h4 class="aligned">Output</h4>
+            <div id="form-file-output"></div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+</div>

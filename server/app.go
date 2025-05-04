@@ -48,7 +48,7 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 		}
 	}
 
-	UseVisualDeclRasc := func() fiber.Handler {
+	UseVisualDeclRasc := func(tests []soup.MovementTest) fiber.Handler {
 		return UseHttp(func(ctl controller_http.ControllerHttp) error {
 			req := new(model_http.TableImage)
 			err := ctl.BindAll(req)
@@ -151,8 +151,8 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 
 	app.Get("/", UseHttpPage("homepage", &fiber.Map{"Title": "Home", "IsHomePage": true}, noRedirect, "partials/main"))
 	app.Get("/manually", UseHttpPage("manually", &fiber.Map{"Title": "Calculate manually", "IsManually": true}, noRedirect, "partials/main"))
-	app.Get("/file", UseHttpPage("file", &fiber.Map{"Title": "Upload file", "IsFile": true}, noRedirect, "partials/main"))
-	app.Get("/table/image", UseVisualDeclRasc())
+	app.Get("/parse", UseHttpPage("parse", &fiber.Map{"Title": "Upload file", "IsFile": true}, noRedirect, "partials/main"))
+	app.Get("/table/image", UseVisualDeclRasc(tests))
 	app.Get("/table/:page", UseHttpPageTable("table", &fiber.Map{"Title": "Table"}, noRedirect, "partials/main"))
 	app.Get("/table", func(ctx fiber.Ctx) error { return ctx.Redirect().To("/table/1") })
 	app.Post("/table/expand", UseHttp(func(ctl controller_http.ControllerHttp) error {
@@ -182,8 +182,7 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 	app.Get("/privacy", UseHttpPage("privacy", &fiber.Map{"Title": "Privacy", "CenterContent": true}, noRedirect, "partials/main"))
 	app.Get("/acknowledgements", UseHttpPage("acknowledgements", &fiber.Map{"Title": "Acknowledgements"}, noRedirect, "partials/main"))
 
-	// calc
-	app.Post("/process/file", UseHttp(func(ctl controller_http.ControllerHttp) error {
+	app.Post("/alg/parse/image", UseHttp(func(ctl controller_http.ControllerHttp) error {
 		req := new(model_http.OrbitInputFile)
 		if err := ctl.BindAll(req); err != nil {
 			return ctl.RenderInternalError(err.Error(), "err-request")
@@ -195,19 +194,38 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 			return ctl.RenderInternalError(err.Error(), "err-calc")
 		}
 
-		movementList, err := req.MovementList(*pFile)
+		movementTestList, err := req.MovementTestList(*pFile)
+		if err != nil {
+			return ctl.RenderDanger(err.Error(), "err-calc")
+		}
+
+		return UseVisualDeclRasc(movementTestList)(ctl.Ctx)
+	}))
+	app.Post("/alg/parse", UseHttp(func(ctl controller_http.ControllerHttp) error {
+		req := new(model_http.OrbitInputFile)
+		if err := ctl.BindAll(req); err != nil {
+			return ctl.RenderInternalError(err.Error(), "err-request")
+		}
+
+		pFile, err := ctl.Ctx.FormFile("document")
+		if err != nil {
+			log.Info(string(ctl.Ctx.BodyRaw()))
+			return ctl.RenderInternalError(err.Error(), "err-calc")
+		}
+
+		movementTestList, err := req.MovementTestList(*pFile)
 		if err != nil {
 			return ctl.RenderDanger(err.Error(), "err-calc")
 		}
 
 		return ctl.Ctx.Render("partials/table", fiber.Map{
 			"ExpandTable": false,
-			"Table":       movementList,
+			"Table":       movementTestList,
 			"Page":        1,
 			"PageMax":     1,
 		})
 	}))
-	app.Post("/process", UseHttp(func(ctl controller_http.ControllerHttp) error {
+	app.Post("/alg", UseHttp(func(ctl controller_http.ControllerHttp) error {
 		req := new(model_http.OrbitInput)
 		if err := ctl.BindAll(req); err != nil {
 			return ctl.RenderInternalError(err.Error(), "err-request")

@@ -16,28 +16,6 @@ export function isMessageElement(value: unknown): value is HTMLDivElement {
         value.classList.contains("message");
 }
 
-export function findLastMessage(): Element | undefined {
-    const chat = document.getElementById("chat");
-    if (!chat) return;
-
-    return Array.from(chat.getElementsByClassName("message")).reverse()[0];
-}
-
-export function findLastMessageVisibleDate(): Element | undefined {
-    const chat = document.getElementById("chat");
-    if (!chat) return;
-    return Array.from(chat.getElementsByClassName("message")).reverse().find(
-        (c) => {
-            const previous = c.previousElementSibling;
-            if (!isMessageJoinDateElement(previous)) {
-                return true;
-            }
-
-            return false;
-        },
-    );
-}
-
 export function getFormPropData(form: HTMLFormElement, capital = false) {
     const data: Record<string, string> = {};
     for (
@@ -60,62 +38,6 @@ export function getFormPropData(form: HTMLFormElement, capital = false) {
     }
 
     return data;
-}
-
-export function chatJoinMessages(): void {
-    const chat = document.getElementById("chat");
-    if (!chat) return;
-
-    for (const element of chat.children) {
-        if (!isMessageElement(element)) continue;
-
-        const next = element.nextElementSibling;
-        if (!isMessageElement(next)) continue;
-
-        const elementAuthorId = element.getAttribute("data-author");
-        const nextAuthorId = next.getAttribute("data-author");
-        const sameAuthor = elementAuthorId === nextAuthorId;
-
-        const elementDate = new Date(element.getAttribute("data-created-at")!);
-        const nextDate = new Date(next.getAttribute("data-created-at")!);
-        const dateDiff = nextDate.getTime() - elementDate.getTime();
-        const sameDate = dateDiff < 1000 * 60 * 5; // 5 minutes
-
-        // join same author messages always
-
-        // if (sameAuthor) {
-        //     element.classList.add("join-end");
-        //     next.classList.add("join-start");
-        //     if (sameDate) {
-        //         next.classList.add("same-date");
-        //     }
-        // }
-
-        // join same author messages only if same date
-
-        if (sameAuthor && sameDate) {
-            element.classList.add("join-end");
-            next.classList.add("join-start");
-            next.classList.add("same-date");
-        }
-    }
-}
-
-export function chatScrollDownIfNoScroll(): void {
-    const chat = document.getElementById("chat");
-    if (!chat) return;
-
-    const isScrolledToBottom =
-        chat.scrollHeight - chat.scrollTop - chat.clientHeight < 450;
-    if (isScrolledToBottom) {
-        chat.scrollTop = chat.scrollHeight;
-    }
-}
-
-export function chatScrollDown(): void {
-    const chat = document.getElementById("chat");
-    if (!chat) return;
-    chat.scrollTop = chat.scrollHeight;
 }
 
 export const domLoaded = new Promise<void>((resolve) => {
