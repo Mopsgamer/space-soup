@@ -14,6 +14,7 @@ import (
 	"github.com/Mopsgamer/space-soup/server/soup"
 
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/log"
 	"github.com/gofiber/fiber/v3/middleware/logger"
 	"github.com/gofiber/fiber/v3/middleware/static"
 	expandrange "github.com/n0madic/expand-range"
@@ -88,7 +89,7 @@ func useHttpPageTable(
 	})
 }
 
-func useVisualDeclRasc(tests []soup.MovementTest, ctl controller_http.ControllerHttp) (hashStr string, err error) {
+func useVisualDeclRasc(tests []soup.MovementTest, ctl controller_http.ControllerHttp, file []byte) (hashStr string, err error) {
 	hashStr = ""
 	req := new(model_http.TableImage)
 	err = ctl.BindAll(req)
@@ -144,8 +145,11 @@ func useVisualDeclRasc(tests []soup.MovementTest, ctl controller_http.Controller
 		return
 	}
 
-	cache := VisualizationInMemoryFileMap.Add(imageBytes)
-	hashStr = cache.Hash()
+	if file != nil {
+		hashStr = HashString(file)
+		VisualizationInMemoryFileMap.Add(hashStr, imageBytes)
+		log.Info(hashStr)
+	}
 	return
 }
 
@@ -179,7 +183,7 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 	app.Get("/manually", useHttpPage("manually", &fiber.Map{"Title": "Calculate manually", "IsManually": true}, noRedirect, "partials/main"))
 	app.Get("/parse", useHttpPage("parse", &fiber.Map{"Title": "Upload file", "IsFile": true}, noRedirect, "partials/main"))
 	app.Get("/table/image", useHttp(func(ctl controller_http.ControllerHttp) error {
-		_, err = useVisualDeclRasc(tests, ctl)
+		_, err = useVisualDeclRasc(tests, ctl, nil)
 		return err
 	}))
 	app.Get("/table/:page", useHttpPageTable("table", &fiber.Map{"Title": "Table"}, noRedirect, "partials/main"))
@@ -218,6 +222,7 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 			return ctl.Ctx.SendStatus(fiber.StatusMovedPermanently)
 		}
 		VisualizationInMemoryFileMap[hash].Live()
+		log.Info(hash)
 		return ctl.Ctx.Send(imageCache.Bytes)
 	}))
 	app.Post("/alg/parse/image", useHttp(func(ctl controller_http.ControllerHttp) error {
@@ -231,16 +236,28 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 			return ctl.RenderInternalError(err.Error(), "err-calc")
 		}
 
+		file, err := pFile.Open()
+		if err != nil {
+			return err
+		}
+		buf := []byte{}
+		if _, err = file.Read(buf); err != nil {
+			file.Close()
+			return err
+		}
+		file.Close()
+
 		movementTestList, err := req.MovementTestList(*pFile)
 		if err != nil {
 			return ctl.RenderDanger(err.Error(), "err-calc")
 		}
 
-		hashStr, err := useVisualDeclRasc(movementTestList, ctl)
+		hashStr, err := useVisualDeclRasc(movementTestList, ctl, buf)
 		if err != nil {
 			return err
 		}
 
+		log.Info(hashStr)
 		ctl.HTMXRedirect("/alg/parse/image/" + hashStr + ".png")
 		return nil
 	}))
@@ -278,15 +295,16 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 			return ctl.RenderDanger(err.Error(), "err-calc")
 		}
 		result := soup.NewMovement(input)
+		movementTestList := []soup.MovementTest{{
+			Input:  input,
+			Actual: result,
+		}}
 
 		return ctl.Ctx.Render("partials/table", fiber.Map{
 			"ExpandTable": false,
-			"Table": []soup.MovementTest{{
-				Input:  input,
-				Actual: result,
-			}},
-			"Page":    1,
-			"PageMax": 1,
+			"Table":       movementTestList,
+			"Page":        1,
+			"PageMax":     1,
 		})
 	}))
 

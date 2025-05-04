@@ -13,8 +13,8 @@ type TimeLimitedCache struct {
 	Bytes     []byte
 }
 
-func (cache *TimeLimitedCache) Hash() string {
-	hashBytes := sha256.Sum256(cache.Bytes)
+func HashString(data []byte) string {
+	hashBytes := sha256.Sum256(data)
 	return hex.EncodeToString(hashBytes[:])
 }
 
@@ -39,10 +39,10 @@ func (m VisualizationCache) Free() {
 	}
 }
 
-func (m VisualizationCache) Add(bytes []byte) TimeLimitedCache {
-	cache := TimeLimitedCache{Bytes: bytes}
+func (m VisualizationCache) Add(hash string, image []byte) TimeLimitedCache {
+	cache := TimeLimitedCache{Bytes: image}
 	cache.Live()
 	m.Free()
-	m[cache.Hash()] = &cache
+	m[hash] = &cache
 	return cache
 }
