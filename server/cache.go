@@ -31,7 +31,7 @@ type VisualizationCache map[string]*TimeLimitedCache
 
 func (m VisualizationCache) Free() {
 	for hash, cache := range m {
-		if cache.ExpiresAt.Before(time.Now()) {
+		if cache.ExpiresAt.After(time.Now()) {
 			continue
 		}
 
@@ -42,7 +42,7 @@ func (m VisualizationCache) Free() {
 func (m VisualizationCache) Add(hash string, image []byte) TimeLimitedCache {
 	cache := TimeLimitedCache{Bytes: image}
 	cache.Live()
-	m.Free()
 	m[hash] = &cache
+	m.Free()
 	return cache
 }

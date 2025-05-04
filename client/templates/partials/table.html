@@ -152,7 +152,7 @@
     </table>
     {{end}}
 </div>
-{{if lt .PageMax 1}}
+{{if gt .PageMax 1}}
 <div class="flex flex-col relative gap-2 mt-page justify-center">
     <div class="flex items-center gap-2 justify-center">
         {{$pagePrev := add .Page -1}} {{$pageNext := add .Page 1}} {{if gt .Page
@@ -188,9 +188,9 @@
         <sl-button hx-post="/table/expand" hx-swap="none" class="ml-4">
             {{if .ExpandTable}}
             <sl-icon slot="prefix" name="cup-straw"></sl-icon>
-            Open normal table {{else}}
+            Open normal table {{- else}}
             <sl-icon slot="prefix" name="bug"></sl-icon>
-            Open testing table {{end}}
+            Open testing table {{- end}}
         </sl-button>
     </div>
 </div>

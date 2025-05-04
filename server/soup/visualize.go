@@ -74,12 +74,12 @@ func Visualize(config VisualizeConfig) (io.WriterTo, error) {
 		return amplitude * math.Sin(frequency*x+phase)
 	})
 	ecliptic.Width = vg.Points(1)
-	p.Legend.TextStyle.Color = color.White
 	p.X.Padding = vg.Centimeter
 
 	grid := plotter.NewGrid()
 
 	if config.Dark {
+
 		p.BackgroundColor = color.RGBA{R: 0, G: 0, B: 0, A: 255}
 		p.Title.TextStyle.Color = color.White
 
@@ -92,11 +92,12 @@ func Visualize(config VisualizeConfig) (io.WriterTo, error) {
 		p.X.Color = color.White
 		p.Y.Color = color.White
 
+		p.Legend.TextStyle.Color = color.White
+
 		grid.Horizontal.Color = color.RGBA{0, 0, 255, 50}
 		grid.Vertical.Color = grid.Horizontal.Color
 
 		scatter.Color = color.White
-
 		ecliptic.Color = color.RGBA{R: 255, G: 0, B: 0, A: 255}
 	}
 

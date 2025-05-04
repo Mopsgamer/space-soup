@@ -125,7 +125,7 @@ func useVisualization(tests []soup.MovementTest, ctl controller_http.ControllerH
 		Tests:       testsRanged,
 		Description: description,
 		GetXY: func(m soup.Movement) (x float64, y float64) {
-			x, y = m.Alpha, m.Delta
+			x, y = soup.DegreesFromRadians(m.Alpha), soup.DegreesFromRadians(m.Delta)
 			return
 		},
 	})
