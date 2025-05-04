@@ -3,12 +3,10 @@ package model_http
 import (
 	"encoding/csv"
 	"errors"
+	"fmt"
 	"mime/multipart"
-	"path/filepath"
-	"strings"
 
 	"github.com/Mopsgamer/space-soup/server/soup"
-	"github.com/gofiber/fiber/v3/log"
 	"github.com/xuri/excelize/v2"
 )
 
@@ -23,19 +21,7 @@ type OrbitInputFile struct {
 func (p *OrbitInputFile) MovementTestList(pFile multipart.FileHeader) ([]soup.MovementTest, error) {
 	var movementTestList []soup.MovementTest
 
-	if p.FileType.ShouldDecide() {
-		ext := FileType(strings.ToLower(filepath.Ext(pFile.Filename)))
-		switch ext {
-		case ".csv":
-			p.FileType = "csv"
-		case ".tsv":
-			p.FileType = "tsv"
-		case ".xlsx":
-			p.FileType = "xlsx"
-		default:
-			log.Info("can not decide file type for extension", ext)
-		}
-	}
+	p.FileType = p.FileType.DecideFileName(pFile.Filename)
 
 	file, err := pFile.Open()
 	if err != nil {
@@ -45,6 +31,7 @@ func (p *OrbitInputFile) MovementTestList(pFile multipart.FileHeader) ([]soup.Mo
 
 	switch string(p.FileType) {
 	case "csv":
+		fallthrough
 	case "tsv":
 		reader := csv.NewReader(file)
 		if p.FileType[0] == 't' { // filetype == tsv
@@ -73,8 +60,7 @@ func (p *OrbitInputFile) MovementTestList(pFile multipart.FileHeader) ([]soup.Mo
 			return nil, err
 		}
 	default:
-		log.Info("unknown file type", p.FileType)
-		return nil, ErrUnsupportedFileType
+		return nil, errors.Join(ErrUnsupportedFileType, fmt.Errorf("file type is '%s'", p.FileType))
 	}
 
 	return movementTestList, nil
@@ -90,17 +76,17 @@ func parseRecords(records [][]string) ([]soup.MovementTest, error) {
 		*error = nil
 		tau1 := soup.Float64Err(record[0], error)
 		tau2 := soup.Float64Err(record[1], error)
+		date, err := soup.ParseDateJSON(record[2])
+		if err != nil {
+			return nil, errors.Join(*error, err)
+		}
 		vList := []float64{}
-		for _, vString := range record[4:] {
+		for _, vString := range record[3:] {
 			v := soup.Float64Err(vString, error)
 			vList = append(vList, v)
 		}
 		if *error != nil {
 			return nil, *error
-		}
-		date, err := soup.ParseDateJSON(record[3])
-		if err != nil {
-			return nil, errors.Join(*error, err)
 		}
 
 		input := soup.Input{

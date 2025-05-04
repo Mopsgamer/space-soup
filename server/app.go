@@ -89,7 +89,7 @@ func useHttpPageTable(
 	})
 }
 
-func useVisualDeclRasc(tests []soup.MovementTest, ctl controller_http.ControllerHttp, file []byte) (hashStr string, err error) {
+func useVisualization(tests []soup.MovementTest, ctl controller_http.ControllerHttp, file []byte) (hashStr string, err error) {
 	hashStr = ""
 	req := new(model_http.TableImage)
 	err = ctl.BindAll(req)
@@ -111,7 +111,7 @@ func useVisualDeclRasc(tests []soup.MovementTest, ctl controller_http.Controller
 
 	if req.IsDownload {
 		ctl.Ctx.Set("Content-Type", "application/octet-stream")
-		ctl.Ctx.Set("Content-Disposition", "attachment; filename=orbits-decl-rasc.png")
+		ctl.Ctx.Set("Content-Disposition", "attachment; filename=orbits.png")
 	}
 
 	if len(req.Description) > 400 {
@@ -183,7 +183,7 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 	app.Get("/manually", useHttpPage("manually", &fiber.Map{"Title": "Calculate manually", "IsManually": true}, noRedirect, "partials/main"))
 	app.Get("/parse", useHttpPage("parse", &fiber.Map{"Title": "Upload file", "IsFile": true}, noRedirect, "partials/main"))
 	app.Get("/table/image", useHttp(func(ctl controller_http.ControllerHttp) error {
-		_, err = useVisualDeclRasc(tests, ctl, nil)
+		_, err = useVisualization(tests, ctl, nil)
 		return err
 	}))
 	app.Get("/table/:page", useHttpPageTable("table", &fiber.Map{"Title": "Table"}, noRedirect, "partials/main"))
@@ -252,7 +252,7 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 			return ctl.RenderDanger(err.Error(), "err-calc")
 		}
 
-		hashStr, err := useVisualDeclRasc(movementTestList, ctl, buf)
+		hashStr, err := useVisualization(movementTestList, ctl, buf)
 		if err != nil {
 			return err
 		}

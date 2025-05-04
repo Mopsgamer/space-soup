@@ -77,13 +77,13 @@ func ParseDateJSON(date string) (time.Time, error) {
 }
 
 func Float64(str string) float64 {
-	str = strings.Replace(str, ",", ".", -1)
+	str = strings.ReplaceAll(str, ",", ".")
 	result, _ := strconv.ParseFloat(str, 64)
 	return result
 }
 
 func Float64Err(str string, error *error) float64 {
-	str = strings.Replace(str, ",", ".", -1)
+	str = strings.ReplaceAll(str, ",", ".")
 	result, err := strconv.ParseFloat(str, 64)
 	if err != nil {
 		*error = errors.Join(*error, err)

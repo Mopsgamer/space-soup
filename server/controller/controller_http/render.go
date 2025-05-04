@@ -1,11 +1,16 @@
 package controller_http
 
 import (
+	"html/template"
+	"strings"
+
 	"github.com/Mopsgamer/space-soup/server/controller"
 	"github.com/Mopsgamer/space-soup/server/environment"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/log"
+
+	"github.com/google/safehtml"
 )
 
 // Should return redirect path or empty string.
@@ -42,10 +47,16 @@ func (ctl ControllerHttp) RenderString(template string, bind any) (string, error
 	return controller.RenderString(ctl.Ctx.App(), template, bind)
 }
 
-func wrapRenderNotice(r ControllerHttp, template, message, id string) error {
-	return r.Ctx.Render(template, fiber.Map{
+func escapeNewLines(message string) string {
+	message = safehtml.HTMLEscaped(message).String()
+	message = strings.ReplaceAll(message, "\n", "<br />")
+	return message
+}
+
+func wrapRenderNotice(r ControllerHttp, templateName, message, id string) error {
+	return r.Ctx.Render(templateName, fiber.Map{
 		"Id":      id,
-		"Message": message,
+		"Message": template.HTML(escapeNewLines(message)),
 	})
 }
 
