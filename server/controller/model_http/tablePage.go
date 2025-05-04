@@ -4,7 +4,18 @@ import "errors"
 
 var ErrInvalidPageRange = errors.New("invalid page range")
 
+type PageInt int
+
+// 1 < page <= max
+func (p PageInt) Validate(max int) error {
+	page := int(p)
+	if page > max || page < 1 {
+		return ErrInvalidPageRange
+	}
+	return nil
+}
+
 type TablePage struct {
 	TableExpanded
-	Page int `uri:"page"`
+	Page PageInt `uri:"page"`
 }

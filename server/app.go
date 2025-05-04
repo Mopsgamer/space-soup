@@ -67,8 +67,8 @@ func useHttpPageTable(
 		if err != nil {
 			return err
 		}
-		if req.Page > len(testsPaginated) || req.Page < 1 {
-			return model_http.ErrInvalidPageRange
+		if err := req.Page.Validate(len(testsPaginated)); err != nil {
+			return err
 		}
 		bindx["ExpandTable"] = req.ExpandTable
 		bindx["Table"] = testsPaginated[req.Page-1]
@@ -272,10 +272,10 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 		}
 
 		movementTestListPaginated := soup.Paginate(movementTestList)
-		if req.Page > len(movementTestListPaginated) || req.Page < 1 {
-			return model_http.ErrInvalidPageRange
+		if err := req.Page.Validate(len(movementTestListPaginated)); err != nil {
+			return err
 		}
-		movementList := movementTestListPaginated[req.Page]
+		movementList := movementTestListPaginated[req.Page-1]
 
 		return ctl.Ctx.Render("partials/table", fiber.Map{
 			"IsFile":      true,

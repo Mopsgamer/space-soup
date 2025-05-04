@@ -5,6 +5,7 @@ coverage
 # out
 dist
 out
+*debug*
 
 # project
 client/static
