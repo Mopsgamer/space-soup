@@ -11,14 +11,14 @@
             >
                 <sl-input
                     form="form-manually"
-                    label="date"
+                    label="Observation date"
                     name="date"
                     type="datetime-local"
                     value="1972-01-25T05:23"
                 ></sl-input>
                 <sl-input
                     form="form-manually"
-                    label="tau1"
+                    label="Time delay (&#x03C4;&#x2081;)"
                     name="tau1"
                     step="any"
                     type="number"
@@ -26,7 +26,7 @@
                 ></sl-input>
                 <sl-input
                     form="form-manually"
-                    label="tau2"
+                    label="Time delay (&#x03C4;&#x2082;)"
                     name="tau2"
                     step="any"
                     type="number"
@@ -34,7 +34,7 @@
                 ></sl-input>
                 <sl-input
                     form="form-manually"
-                    label="v1"
+                    label="Speed (v&#x2081;)"
                     name="v1"
                     step="any"
                     type="number"
@@ -42,7 +42,7 @@
                 ></sl-input>
                 <sl-input
                     form="form-manually"
-                    label="v2"
+                    label="Speed (v&#x2082;)"
                     name="v2"
                     step="any"
                     type="number"
@@ -50,7 +50,7 @@
                 ></sl-input>
                 <sl-input
                     form="form-manually"
-                    label="v3"
+                    label="Speed (v&#x2083;)"
                     name="v3"
                     step="any"
                     type="number"
@@ -72,7 +72,10 @@
             </form>
         </div>
         <div class="p-3">
-            <h4 class="aligned">Output</h4>
+            <h4 class="aligned">
+                <sl-icon name="recycle"></sl-icon>
+                Output
+            </h4>
             <div id="form-manually-output">
                 <sl-alert variant="primary" open>
                     <sl-icon slot="icon" name="info-circle"></sl-icon>
