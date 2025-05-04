@@ -214,8 +214,12 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 		if !ok {
 			return ctl.Ctx.SendStatus(fiber.StatusMovedPermanently)
 		}
+
 		FileHashCache.Free()
-		FileHashCache[hash].Live()
+		if err := FileHashCache[hash].Live(); err != nil {
+			return err
+		}
+
 		log.Info(hash)
 		return ctl.Ctx.Send(imageCache.PlotImageBytes)
 	}))

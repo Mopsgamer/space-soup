@@ -3,11 +3,14 @@ package internal
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"time"
 
 	"github.com/Mopsgamer/space-soup/server/environment"
 	"github.com/Mopsgamer/space-soup/server/soup"
 )
+
+var ErrCacheExpired = errors.New("cache expired")
 
 type SoupCache struct {
 	ExpiresAt time.Time
@@ -16,13 +19,17 @@ type SoupCache struct {
 	TestList       []soup.MovementTest
 }
 
-func (cache *SoupCache) IsExpired() bool {
+func (cache SoupCache) IsExpired() bool {
 	return cache.ExpiresAt.Before(time.Now())
 }
 
 // Increases ExpiresAt time.
-func (cache *SoupCache) Live() {
+func (cache *SoupCache) Live() error {
+	if cache == nil {
+		return ErrCacheExpired
+	}
 	cache.ExpiresAt = time.Now().Add(environment.ImageCacheDuration)
+	return nil
 }
 
 type FileHashCacheMap map[string]*SoupCache

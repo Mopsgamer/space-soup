@@ -27,38 +27,37 @@ func (p *OrbitInputFile) MovementTestList(pFile multipart.FileHeader) ([]soup.Mo
 	}
 	defer file.Close()
 
+	var rows [][]string
+
 	switch string(p.FileType) {
 	case "csv":
 		fallthrough
 	case "tsv":
 		reader := csv.NewReader(file)
+		reader.FieldsPerRecord = -1
+		reader.TrimLeadingSpace = true
 		if p.FileType[0] == 't' { // filetype == tsv
 			reader.Comma = '\t'
 		}
-		records, err := reader.ReadAll()
-		if err != nil {
-			return nil, err
-		}
-		movementTestList, err = soup.ParseRecords(records)
-		if err != nil {
-			return nil, err
-		}
+		rows, err = reader.ReadAll()
 	case "xlsx":
-		xlFile, err := excelize.OpenReader(file)
+		var xlFile *excelize.File
+		xlFile, err = excelize.OpenReader(file)
 		if err != nil {
 			return nil, err
 		}
 		sheetName := xlFile.GetSheetName(1)
-		rows, err := xlFile.GetRows(sheetName)
-		if err != nil {
-			return nil, err
-		}
-		movementTestList, err = soup.ParseRecords(rows)
-		if err != nil {
-			return nil, err
-		}
+		rows, err = xlFile.GetRows(sheetName)
 	default:
 		return nil, errors.Join(ErrUnsupportedFileType, fmt.Errorf("file type is '%s'", p.FileType))
+	}
+
+	if err != nil {
+		return nil, err
+	}
+	movementTestList, err = soup.ParseRecords(rows)
+	if err != nil {
+		return nil, err
 	}
 
 	return movementTestList, nil
