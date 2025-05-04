@@ -22,9 +22,6 @@
                             type="file"
                             accept=".tsv,.csv,.xlsx"
                             required
-                            hx-post="/alg/parse"
-                            hx-trigger="click from:#calculate-file"
-                            hx-target="#form-file-output"
                         />
                         <sl-alert variant="primary" open>
                             <sl-icon slot="icon" name="info-circle"></sl-icon>
@@ -50,6 +47,9 @@
                             id="calculate-file"
                             form="form-file"
                             variant="primary"
+                            hx-post="/alg/parse"
+                            hx-include="#file-input"
+                            hx-target="#form-file-output"
                         >
                             <sl-icon
                                 slot="prefix"

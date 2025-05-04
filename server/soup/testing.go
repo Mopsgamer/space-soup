@@ -113,50 +113,29 @@ func CheckOrbitList() (tests []MovementTest, testsPaginated [][]MovementTest, er
 		fields := fieldsOut[n]
 		entry := MovementTest{
 			Input:           input,
-			Actual:          Movement{},
+			Actual:          actual,
 			Expected:        Movement{},
 			AssertionResult: MovementAssertion{},
 		}
 
-		entry.Actual.Lambda_apex = DegreesFromRadians(actual.Lambda_apex)
-		// entry.Actual.H = actual.H
-		entry.Actual.A = DegreesFromRadians(actual.A)
-		entry.Actual.Z_avg = DegreesFromRadians(actual.Z_avg)
-		entry.Actual.Z_fix = DegreesFromRadians(actual.Z_fix)
-		entry.Actual.Delta = DegreesFromRadians(actual.Delta)
-		entry.Actual.Alpha = DegreesFromRadians(actual.Alpha)
-		entry.Actual.Beta = DegreesFromRadians(actual.Beta)
-		entry.Actual.Lambda = DegreesFromRadians(actual.Lambda)
-		entry.Actual.Lambda_deriv = DegreesFromRadians(actual.Lambda_deriv)
-		entry.Actual.Beta_deriv = DegreesFromRadians(actual.Beta_deriv)
-		entry.Actual.Inc = DegreesFromRadians(actual.Inc)
-		entry.Actual.Wmega = DegreesFromRadians(actual.Wmega)
-		entry.Actual.Omega = DegreesFromRadians(actual.Omega)
-		entry.Actual.V_g = actual.V_g
-		entry.Actual.V_h = actual.V_h
-		entry.Actual.Axis = actual.Axis
-		entry.Actual.Exc = actual.Exc
-		entry.Actual.Nu = DegreesFromRadians(actual.Nu)
-		entry.Actual.Angle = DegreesFromRadians(actual.Angle)
-
-		entry.Expected.Lambda_apex = Float64(fields[5])
-		// entry.Expected.H = Float64(fields[9])
-		entry.Expected.A = Float64(fields[10])
-		entry.Expected.Z_avg = Float64(fields[11])
-		entry.Expected.Delta = Float64(fields[12])
-		entry.Expected.Alpha = Float64(fields[13])
-		entry.Expected.Beta = Float64(fields[14])
-		entry.Expected.Lambda = Float64(fields[15])
-		entry.Expected.Lambda_deriv = Float64(fields[16])
-		entry.Expected.Beta_deriv = Float64(fields[17])
-		entry.Expected.Inc = Float64(fields[18])
-		entry.Expected.Wmega = Float64(fields[19])
-		entry.Expected.Omega = Float64(fields[20])
+		entry.Expected.Lambda_apex = RadiansFromDegrees(Float64(fields[5]))
+		// entry.Expected.H = RadiansFromDegrees(Float64(fields[9]))
+		entry.Expected.A = RadiansFromDegrees(Float64(fields[10]))
+		entry.Expected.Z_avg = RadiansFromDegrees(Float64(fields[11]))
+		entry.Expected.Delta = RadiansFromDegrees(Float64(fields[12]))
+		entry.Expected.Alpha = RadiansFromDegrees(Float64(fields[13]))
+		entry.Expected.Beta = RadiansFromDegrees(Float64(fields[14]))
+		entry.Expected.Lambda = RadiansFromDegrees(Float64(fields[15]))
+		entry.Expected.Lambda_deriv = RadiansFromDegrees(Float64(fields[16]))
+		entry.Expected.Beta_deriv = RadiansFromDegrees(Float64(fields[17]))
+		entry.Expected.Inc = RadiansFromDegrees(Float64(fields[18]))
+		entry.Expected.Wmega = RadiansFromDegrees(Float64(fields[19]))
+		entry.Expected.Omega = RadiansFromDegrees(Float64(fields[20]))
 		entry.Expected.V_g = Float64(fields[21])
 		entry.Expected.V_h = Float64(fields[22])
 		entry.Expected.Axis = Float64(fields[23])
 		entry.Expected.Exc = Float64(fields[24])
-		entry.Expected.Nu = Float64(fields[25])
+		entry.Expected.Nu = RadiansFromDegrees(Float64(fields[25]))
 
 		valueOfExpected := reflect.ValueOf(entry.Expected)
 		valueOfActual := reflect.ValueOf(entry.Actual)
@@ -166,24 +145,24 @@ func CheckOrbitList() (tests []MovementTest, testsPaginated [][]MovementTest, er
 			return InDelta(e, a, delta)
 		}
 
-		entry.AssertionResult.Lambda_apex = InDelta(allowedDeltaDegrees, "Lambda_apex")
-		// entry.AssertionResult.H = InDelta(allowedDeltaDegrees, "H")
-		entry.AssertionResult.A = InDelta(allowedDeltaDegrees, "A")
-		entry.AssertionResult.Z_avg = InDelta(allowedDeltaDegrees, "Z_avg")
-		entry.AssertionResult.Delta = InDelta(allowedDeltaDegrees, "Delta")
-		entry.AssertionResult.Alpha = InDelta(allowedDeltaDegrees, "Alpha")
-		entry.AssertionResult.Beta = InDelta(allowedDeltaDegrees, "Beta")
-		entry.AssertionResult.Lambda = InDelta(allowedDeltaDegrees, "Lambda")
-		entry.AssertionResult.Lambda_deriv = InDelta(allowedDeltaDegrees, "Lambda_deriv")
-		entry.AssertionResult.Beta_deriv = InDelta(allowedDeltaDegrees, "Beta_deriv")
-		entry.AssertionResult.Inc = InDelta(allowedDeltaDegrees, "Inc")
-		entry.AssertionResult.Wmega = InDelta(allowedDeltaDegrees, "Wmega")
-		entry.AssertionResult.Omega = InDelta(allowedDeltaDegrees, "Omega")
+		entry.AssertionResult.Lambda_apex = InDelta(allowedDeltaRadians, "Lambda_apex")
+		// entry.AssertionResult.H = InDelta(allowedDeltaRadians, "H")
+		entry.AssertionResult.A = InDelta(allowedDeltaRadians, "A")
+		entry.AssertionResult.Z_avg = InDelta(allowedDeltaRadians, "Z_avg")
+		entry.AssertionResult.Delta = InDelta(allowedDeltaRadians, "Delta")
+		entry.AssertionResult.Alpha = InDelta(allowedDeltaRadians, "Alpha")
+		entry.AssertionResult.Beta = InDelta(allowedDeltaRadians, "Beta")
+		entry.AssertionResult.Lambda = InDelta(allowedDeltaRadians, "Lambda")
+		entry.AssertionResult.Lambda_deriv = InDelta(allowedDeltaRadians, "Lambda_deriv")
+		entry.AssertionResult.Beta_deriv = InDelta(allowedDeltaRadians, "Beta_deriv")
+		entry.AssertionResult.Inc = InDelta(allowedDeltaRadians, "Inc")
+		entry.AssertionResult.Wmega = InDelta(allowedDeltaRadians, "Wmega")
+		entry.AssertionResult.Omega = InDelta(allowedDeltaRadians, "Omega")
 		entry.AssertionResult.V_g = InDelta(allowedDeltaSpeed, "V_g")
 		entry.AssertionResult.V_h = InDelta(allowedDeltaSpeed, "V_h")
 		entry.AssertionResult.Axis = InDelta(allowedDeltaAxis, "Axis")
 		entry.AssertionResult.Exc = InDelta(allowedDeltaExc, "Exc")
-		entry.AssertionResult.Nu = InDelta(allowedDeltaDegrees, "Nu")
+		entry.AssertionResult.Nu = InDelta(allowedDeltaRadians, "Nu")
 		tests[n] = entry
 	}
 	testsPaginated = [][]MovementTest{}
