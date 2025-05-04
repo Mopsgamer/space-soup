@@ -22,7 +22,6 @@ const (
 	BuildModeProduction
 )
 
-// TODO: Should be configurable using database.
 // App settings.
 var (
 	Port               string

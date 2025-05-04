@@ -17,15 +17,9 @@ import (
 	"github.com/gofiber/fiber/v3/log"
 	"github.com/gofiber/fiber/v3/middleware/logger"
 	"github.com/gofiber/fiber/v3/middleware/static"
-	expandrange "github.com/n0madic/expand-range"
 )
 
-var (
-	ErrInvalidIndiceRange = errors.New("invalid indice range")
-	ErrInvalidPageRange   = errors.New("invalid page range")
-)
-
-var VisualizationInMemoryFileMap = VisualizationCache{}
+var FileHashCache = FileHashCacheMap{}
 
 func useHttp(handler func(ctl controller_http.ControllerHttp) error) fiber.Handler {
 	return func(ctx fiber.Ctx) error {
@@ -74,7 +68,7 @@ func useHttpPageTable(
 			return err
 		}
 		if req.Page > len(testsPaginated) || req.Page < 1 {
-			return ErrInvalidPageRange
+			return model_http.ErrInvalidPageRange
 		}
 		bindx["ExpandTable"] = req.ExpandTable
 		bindx["Table"] = testsPaginated[req.Page-1]
@@ -97,16 +91,10 @@ func useVisualization(tests []soup.MovementTest, ctl controller_http.ControllerH
 		return
 	}
 
-	testsRanged := []soup.MovementTest{}
-	if rangeList, errParse := expandrange.Parse(req.Range); errParse != nil {
-		err = errors.Join(ErrInvalidIndiceRange, errParse)
+	testsRanged, err := soup.Range(tests, req.Range)
+	if err != nil {
+		err = errors.Join(model_http.ErrInvalidIndiceRange, err)
 		return
-	} else if req.Range == "" {
-		testsRanged = tests
-	} else {
-		for _, i := range rangeList {
-			testsRanged = append(testsRanged, tests[i])
-		}
 	}
 
 	if req.IsDownload {
@@ -147,7 +135,11 @@ func useVisualization(tests []soup.MovementTest, ctl controller_http.ControllerH
 
 	if file != nil {
 		hashStr = HashString(file)
-		VisualizationInMemoryFileMap.Add(hashStr, imageBytes)
+		cache := SoupCache{
+			PlotImageBytes: imageBytes,
+			TestList:       testsRanged,
+		}
+		FileHashCache.Add(hashStr, cache)
 		log.Info(hashStr)
 	}
 	return
@@ -161,10 +153,11 @@ var (
 // Initialize gofiber application, including DB and view engine.
 func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 	engine := NewAppHtmlEngine(embedFS, "client/templates")
-	tests, testsPaginated, err = soup.CheckOrbitList()
+	tests, err = soup.CheckOrbitList()
 	if err != nil {
 		return
 	}
+	testsPaginated = soup.Paginate(tests)
 	app = fiber.New(fiber.Config{
 		Views:             engine,
 		PassLocalsToViews: true,
@@ -217,13 +210,14 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 
 	app.Get("/alg/parse/image/:hash.png", useHttp(func(ctl controller_http.ControllerHttp) error {
 		hash := ctl.Ctx.Params("hash", "x")
-		imageCache, ok := VisualizationInMemoryFileMap[hash]
+		imageCache, ok := FileHashCache[hash]
 		if !ok {
 			return ctl.Ctx.SendStatus(fiber.StatusMovedPermanently)
 		}
-		VisualizationInMemoryFileMap[hash].Live()
+		FileHashCache.Free()
+		FileHashCache[hash].Live()
 		log.Info(hash)
-		return ctl.Ctx.Send(imageCache.Bytes)
+		return ctl.Ctx.Send(imageCache.PlotImageBytes)
 	}))
 	app.Post("/alg/parse/image", useHttp(func(ctl controller_http.ControllerHttp) error {
 		req := new(model_http.OrbitInputFile)
@@ -261,7 +255,7 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 		ctl.HTMXRedirect("/alg/parse/image/" + hashStr + ".png")
 		return nil
 	}))
-	app.Post("/alg/parse", useHttp(func(ctl controller_http.ControllerHttp) error {
+	app.Post("/alg/parse/:page", useHttp(func(ctl controller_http.ControllerHttp) error {
 		req := new(model_http.OrbitInputFile)
 		if err := ctl.BindAll(req); err != nil {
 			return ctl.RenderInternalError(err.Error(), "err-request")
@@ -277,11 +271,18 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 			return ctl.RenderDanger(err.Error(), "err-calc")
 		}
 
+		movementTestListPaginated := soup.Paginate(movementTestList)
+		if req.Page > len(movementTestListPaginated) || req.Page < 1 {
+			return model_http.ErrInvalidPageRange
+		}
+		movementList := movementTestListPaginated[req.Page]
+
 		return ctl.Ctx.Render("partials/table", fiber.Map{
+			"IsFile":      true,
 			"ExpandTable": false,
-			"Table":       movementTestList,
-			"Page":        1,
-			"PageMax":     1,
+			"Table":       movementList,
+			"Page":        req.Page,
+			"PageMax":     len(movementTestListPaginated),
 		})
 	}))
 	app.Post("/alg", useHttp(func(ctl controller_http.ControllerHttp) error {

@@ -3,7 +3,6 @@ package soup
 import (
 	"fmt"
 	"reflect"
-	"slices"
 	"strings"
 	"time"
 
@@ -26,7 +25,7 @@ type MovementTest struct {
 	AssertionResult MovementAssertion
 }
 
-func CheckOrbitList() (tests []MovementTest, testsPaginated [][]MovementTest, err error) {
+func CheckOrbitList() (tests []MovementTest, err error) {
 	start := time.Now()
 	fnStart := start
 	var sinceStart, sincefnStart, sincefnStart2 time.Duration
@@ -164,10 +163,6 @@ func CheckOrbitList() (tests []MovementTest, testsPaginated [][]MovementTest, er
 		entry.AssertionResult.Exc = InDelta(allowedDeltaExc, "Exc")
 		entry.AssertionResult.Nu = InDelta(allowedDeltaRadians, "Nu")
 		tests[n] = entry
-	}
-	testsPaginated = [][]MovementTest{}
-	for v := range slices.Chunk(tests, 50) {
-		testsPaginated = append(testsPaginated, v)
 	}
 	stop()
 	sincefnStart = time.Since(fnStart)

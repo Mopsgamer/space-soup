@@ -1,7 +1,7 @@
 package model_http
 
 type TableImage struct {
+	TableRanged
 	IsDownload  bool   `query:"download"`
-	Range       string `form:"range"`
 	Description string `form:"description"`
 }

@@ -3,10 +3,12 @@ package soup
 import (
 	"errors"
 	"math"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
 
+	expandrange "github.com/n0madic/expand-range"
 	"golang.org/x/exp/constraints"
 )
 
@@ -23,6 +25,35 @@ func LoopNumber[T constraints.Float | constraints.Integer](value, min, max T) T 
 		modVal += rangeSize
 	}
 	return modVal + min
+}
+
+// 50 items per cluster.
+func Paginate[S any](slice []S) (paginated [][]S) {
+	paginated = [][]S{}
+	for v := range slices.Chunk(slice, 50) {
+		paginated = append(paginated, v)
+	}
+	return
+}
+
+func Range(tests []MovementTest, bounds string) (testsRanged []MovementTest, err error) {
+	testsRanged = []MovementTest{}
+	err = nil
+	if bounds == "" {
+		testsRanged = tests
+		return
+	}
+
+	rangeList, err := expandrange.Parse(bounds)
+	if err != nil {
+		return
+	}
+
+	for _, i := range rangeList {
+		testsRanged = append(testsRanged, tests[i])
+	}
+
+	return
 }
 
 func RadiansFromDegrees(deg float64) float64 {

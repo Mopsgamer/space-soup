@@ -1,5 +1,5 @@
 <div class="p-page">
-    <div class="flex flex-col gap-page">
+    <div class="flex flex-col gap-page" hx-encoding="multipart/form-data">
         <div class="p-3">
             <h4 class="aligned">
                 <sl-icon name="file-earmark-spreadsheet"></sl-icon>Upload and
@@ -7,7 +7,6 @@
             </h4>
             <form
                 id="form-file"
-                hx-encoding="multipart/form-data"
                 hx-trigger="click from:#calculate-file"
                 hx-target="#form-file-output"
             >
@@ -47,7 +46,7 @@
                             id="calculate-file"
                             form="form-file"
                             variant="primary"
-                            hx-post="/alg/parse"
+                            hx-post="/alg/parse/1"
                             hx-include="#file-input"
                             hx-target="#form-file-output"
                         >

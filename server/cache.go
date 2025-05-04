@@ -6,30 +6,28 @@ import (
 	"time"
 
 	"github.com/Mopsgamer/space-soup/server/environment"
+	"github.com/Mopsgamer/space-soup/server/soup"
 )
 
-type TimeLimitedCache struct {
+type SoupCache struct {
 	ExpiresAt time.Time
-	Bytes     []byte
+
+	PlotImageBytes []byte
+	TestList       []soup.MovementTest
 }
 
-func HashString(data []byte) string {
-	hashBytes := sha256.Sum256(data)
-	return hex.EncodeToString(hashBytes[:])
-}
-
-func (cache *TimeLimitedCache) IsExpired() bool {
+func (cache *SoupCache) IsExpired() bool {
 	return cache.ExpiresAt.Before(time.Now())
 }
 
 // Increases ExpiresAt time.
-func (cache *TimeLimitedCache) Live() {
+func (cache *SoupCache) Live() {
 	cache.ExpiresAt = time.Now().Add(environment.ImageCacheDuration)
 }
 
-type VisualizationCache map[string]*TimeLimitedCache
+type FileHashCacheMap map[string]*SoupCache
 
-func (m VisualizationCache) Free() {
+func (m FileHashCacheMap) Free() {
 	for hash, cache := range m {
 		if cache.ExpiresAt.After(time.Now()) {
 			continue
@@ -39,10 +37,15 @@ func (m VisualizationCache) Free() {
 	}
 }
 
-func (m VisualizationCache) Add(hash string, image []byte) TimeLimitedCache {
-	cache := TimeLimitedCache{Bytes: image}
+func (m FileHashCacheMap) Add(key string, cache SoupCache) SoupCache {
 	cache.Live()
-	m[hash] = &cache
 	m.Free()
+	m[key] = &cache
 	return cache
+}
+
+// Create identificator for file content.
+func HashString(data []byte) string {
+	hashBytes := sha256.Sum256(data)
+	return hex.EncodeToString(hashBytes[:])
 }

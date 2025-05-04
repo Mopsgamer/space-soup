@@ -11,6 +11,8 @@ import (
 )
 
 type OrbitInputFile struct {
+	TablePage
+	TableRanged
 	FileType FileType `form:"file-type"`
 }
 

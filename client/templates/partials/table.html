@@ -154,9 +154,52 @@
 </div>
 {{if gt .PageMax 1}}
 <div class="flex flex-col relative gap-2 mt-page justify-center">
+    {{$pagePrev := add .Page -1}} {{$pageNext := add .Page 1}} {{if .IsFile}}
+    <!-- file section -->
     <div class="flex items-center gap-2 justify-center">
-        {{$pagePrev := add .Page -1}} {{$pageNext := add .Page 1}} {{if gt .Page
-        2}}
+        {{if gt .Page 2}}
+        <sl-button
+            pill
+            hx-post="alg/parse/1"
+            hx-target="#form-file-output"
+            hx-include="#file-input"
+            variant="default"
+        >1</sl-button>
+        <sl-icon name="three-dots"></sl-icon>
+        {{end}} {{if gt .Page 1}}
+        <sl-button
+            pill
+            hx-post="alg/parse/{{$pagePrev}}"
+            hx-target="#form-file-output"
+            hx-include="#file-input"
+            variant="default"
+        ><sl-icon name="caret-left"></sl-icon></sl-button>
+        {{end}}
+        <sl-button pill variant="primary" disabled>{{.Page}}</sl-button>
+
+        {{if lt .Page .PageMax}}
+        <sl-button
+            pill
+            hx-post="alg/parse/{{$pageNext}}"
+            hx-target="#form-file-output"
+            hx-include="#file-input"
+            variant="default"
+        ><sl-icon name="caret-right"></sl-icon></sl-button>
+        {{end}} {{if lt .Page (add .PageMax -1)}}
+        <sl-icon name="three-dots"></sl-icon>
+        <sl-button
+            pill
+            hx-post="alg/parse/{{.PageMax}}"
+            hx-target="#form-file-output"
+            hx-include="#file-input"
+            variant="default"
+        >{{.PageMax}}</sl-button>
+        {{end}}
+    </div>
+    <!-- file end section -->
+    {{else}}
+    <div class="flex items-center gap-2 justify-center">
+        {{if gt .Page 2}}
         <sl-button pill href="/table/1" variant="default">1</sl-button>
         <sl-icon name="three-dots"></sl-icon>
         {{end}} {{if gt .Page 1}}
@@ -193,5 +236,6 @@
             Open testing table {{- end}}
         </sl-button>
     </div>
+    {{end}}
 </div>
 {{end}}
