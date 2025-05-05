@@ -2,6 +2,7 @@ package internal
 
 import (
 	"io/fs"
+	"math"
 	"net/http"
 	"time"
 
@@ -48,6 +49,9 @@ func NewAppHtmlEngine(embedFS fs.FS, directory string) *html.Engine {
 				result += str
 			}
 			return result
+		},
+		"absMinus": func(a, b float64) float64 {
+			return math.Abs(a - b)
 		},
 		"jsonTime": func(t time.Time) string {
 			return t.Format("2006-01-02T15:04:05.000Z")

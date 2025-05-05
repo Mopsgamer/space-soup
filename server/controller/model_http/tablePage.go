@@ -16,6 +16,6 @@ func (p PageInt) Validate(max int) error {
 }
 
 type TablePage struct {
-	TableExpanded
-	Page PageInt `uri:"page"`
+	TableMode
+	Page PageInt `query:"page"`
 }

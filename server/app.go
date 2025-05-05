@@ -70,7 +70,7 @@ func useHttpPageTable(
 		if err := req.Page.Validate(len(testsPaginated)); err != nil {
 			return err
 		}
-		bindx["ExpandTable"] = req.ExpandTable
+		bindx["ExpandTable"] = req.TableState
 		bindx["Table"] = testsPaginated[req.Page-1]
 		bindx["Page"] = int(req.Page)
 		bindx["PageMax"] = len(testsPaginated)
@@ -182,24 +182,20 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 	app.Get("/table/:page", useHttpPageTable("table", &fiber.Map{"Title": "Table"}, noRedirect, "partials/main"))
 	app.Get("/table", func(ctx fiber.Ctx) error { return ctx.Redirect().To("/table/1") })
 	app.Post("/table/expand", useHttp(func(ctl controller_http.ControllerHttp) error {
-		req := new(model_http.TablePage)
+		req := new(model_http.TableSetMode)
 		err := ctl.BindAll(req)
 		if err != nil {
 			return err
 		}
-		if req.ExpandTable {
-			ctl.Ctx.Cookie(&fiber.Cookie{
-				Name:    "expanded",
-				Expires: time.Now(),
-				Value:   "",
-			})
-		} else {
-			ctl.Ctx.Cookie(&fiber.Cookie{
-				Name:    "expanded",
-				Expires: time.Now().Add(time.Hour * 24 * 30),
-				Value:   "true",
-			})
+
+		newCookie := fiber.Cookie{Name: "expand-state", Expires: time.Now()}
+
+		if req.ExpandTable != model_http.TableStateNormal {
+			newCookie.Expires = newCookie.Expires.Add(time.Hour * 24 * 30)
+			newCookie.Value = string(req.ExpandTable)
 		}
+
+		ctl.Ctx.Cookie(&newCookie)
 
 		ctl.HTMXRefresh()
 		return nil
@@ -283,7 +279,7 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 
 		return ctl.Ctx.Render("partials/table", fiber.Map{
 			"IsFile":      true,
-			"ExpandTable": false,
+			"ExpandTable": model_http.TableStateNormal,
 			"Table":       movementList,
 			"Page":        int(req.Page),
 			"PageMax":     len(movementTestListPaginated),
@@ -306,7 +302,7 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 		}}
 
 		return ctl.Ctx.Render("partials/table", fiber.Map{
-			"ExpandTable": false,
+			"ExpandTable": model_http.TableStateNormal,
 			"Table":       movementTestList,
 			"Page":        1,
 			"PageMax":     1,

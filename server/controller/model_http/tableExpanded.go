@@ -1,5 +1,17 @@
 package model_http
 
-type TableExpanded struct {
-	ExpandTable bool `cookie:"expanded"`
+type TableState string
+
+const (
+	TableStateExpanded TableState = "expanded"
+	TableStateNormal   TableState = ""
+	TableStateDelta    TableState = "delta"
+)
+
+type TableMode struct {
+	TableState TableState `cookie:"expand-state"`
+}
+
+type TableSetMode struct {
+	ExpandTable TableState `form:"expand-table"`
 }
