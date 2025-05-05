@@ -79,7 +79,6 @@ func Visualize(config VisualizeConfig) (io.WriterTo, error) {
 	grid := plotter.NewGrid()
 
 	if config.Dark {
-
 		p.BackgroundColor = color.RGBA{R: 0, G: 0, B: 0, A: 255}
 		p.Title.TextStyle.Color = color.White
 
@@ -98,8 +97,8 @@ func Visualize(config VisualizeConfig) (io.WriterTo, error) {
 		grid.Vertical.Color = grid.Horizontal.Color
 
 		scatter.Color = color.White
-		ecliptic.Color = color.RGBA{R: 255, G: 0, B: 0, A: 255}
 	}
+	ecliptic.Color = color.RGBA{R: 255, G: 0, B: 0, A: 255}
 
 	p.Add(ecliptic)
 	p.Add(grid)
