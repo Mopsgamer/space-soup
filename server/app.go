@@ -175,13 +175,13 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 	app.Get("/", useHttpPage("homepage", &fiber.Map{"Title": "Home", "IsHomePage": true}, noRedirect, "partials/main"))
 	app.Get("/manually", useHttpPage("manually", &fiber.Map{"Title": "Calculate manually", "IsManually": true}, noRedirect, "partials/main"))
 	app.Get("/parse", useHttpPage("parse", &fiber.Map{"Title": "Upload file", "IsFile": true}, noRedirect, "partials/main"))
-	app.Get("/table/image", useHttp(func(ctl controller_http.ControllerHttp) error {
+	app.Get("/tests/image", useHttp(func(ctl controller_http.ControllerHttp) error {
 		_, err = useVisualization(tests, ctl, nil)
 		return err
 	}))
-	app.Get("/table/:page", useHttpPageTable("table", &fiber.Map{"Title": "Table"}, noRedirect, "partials/main"))
-	app.Get("/table", func(ctx fiber.Ctx) error { return ctx.Redirect().To("/table/1") })
-	app.Post("/table/expand", useHttp(func(ctl controller_http.ControllerHttp) error {
+	app.Get("/tests/:page", useHttpPageTable("tests", &fiber.Map{"Title": "Table"}, noRedirect, "partials/main"))
+	app.Get("/tests", func(ctx fiber.Ctx) error { return ctx.Redirect().To("/tests/1") })
+	app.Post("/tests/expand", useHttp(func(ctl controller_http.ControllerHttp) error {
 		req := new(model_http.TableSetMode)
 		err := ctl.BindAll(req)
 		if err != nil {

@@ -1,5 +1,5 @@
 <div class="max-h-[50svh] overflow-auto">
-    {{if eq .ExpandTable "expanded"}}
+    {{if eq .ExpandTable "values"}}
     <table id="test-pass-table">
         <tr>
             <th rowspan="2">#</th>
@@ -138,23 +138,87 @@
             <td>{{printf "%.4f" $entry.Input.V_avg}}</td>
             <td>{{printf "%.4f" $entry.Input.Tau1}}</td>
             <td>{{printf "%.4f" $entry.Input.Tau2}}</td>
-            <td>{{printf "%.4f°" (degrees $entry.Actual.Lambda_apex)}} ± {{printf "%.2f°" (degrees (absMinus $entry.Actual.Lambda_apex $entry.Expected.Lambda_apex))}}</td>
-            <td>{{printf "%.4f°" (degrees $entry.Actual.A)}} ± {{printf "%.2f°" (degrees (absMinus $entry.Actual.A $entry.Expected.A))}}</td>
-            <td>{{printf "%.4f°" (degrees $entry.Actual.Z_avg)}} ± {{printf "%.2f°" (degrees (absMinus $entry.Actual.Z_avg $entry.Expected.Z_avg))}}</td>
-            <td>{{printf "%.4f°" (degrees $entry.Actual.Delta)}} ± {{printf "%.2f°" (degrees (absMinus $entry.Actual.Delta $entry.Expected.Delta))}}</td>
-            <td>{{printf "%.4f°" (degrees $entry.Actual.Alpha)}} ± {{printf "%.2f°" (degrees (absMinus $entry.Actual.Alpha $entry.Expected.Alpha))}}</td>
-            <td>{{printf "%.4f°" (degrees $entry.Actual.Beta)}} ± {{printf "%.2f°" (degrees (absMinus $entry.Actual.Beta $entry.Expected.Beta))}}</td>
-            <td>{{printf "%.4f°" (degrees $entry.Actual.Lambda)}} ± {{printf "%.2f°" (degrees (absMinus $entry.Actual.Lambda $entry.Expected.Lambda))}}</td>
-            <td>{{printf "%.4f°" (degrees $entry.Actual.Lambda_deriv)}} ± {{printf "%.2f°" (degrees (absMinus $entry.Actual.Lambda_deriv $entry.Expected.Lambda_deriv))}}</td>
-            <td>{{printf "%.4f°" (degrees $entry.Actual.Beta_deriv)}} ± {{printf "%.2f°" (degrees (absMinus $entry.Actual.Beta_deriv $entry.Expected.Beta_deriv))}}</td>
-            <td>{{printf "%.4f°" (degrees $entry.Actual.Inc)}} ± {{printf "%.2f°" (degrees (absMinus $entry.Actual.Inc $entry.Expected.Inc))}}</td>
-            <td>{{printf "%.4f°" (degrees $entry.Actual.Wmega)}} ± {{printf "%.2f°" (degrees (absMinus $entry.Actual.Wmega $entry.Expected.Wmega))}}</td>
-            <td>{{printf "%.4f°" (degrees $entry.Actual.Omega)}} ± {{printf "%.2f°" (degrees (absMinus $entry.Actual.Omega $entry.Expected.Omega))}}</td>
-            <td>{{printf "%.4f" $entry.Actual.V_g}} ± {{printf "%.2f" (absMinus $entry.Actual.V_g $entry.Expected.V_g)}}</td>
-            <td>{{printf "%.4f" $entry.Actual.V_h}} ± {{printf "%.2f" (absMinus $entry.Actual.V_h $entry.Expected.V_h)}}</td>
-            <td>{{printf "%.4f" $entry.Actual.Axis}} ± {{printf "%.2f" (absMinus $entry.Actual.Axis $entry.Expected.Axis)}}</td>
-            <td>{{printf "%.4f" $entry.Actual.Exc}} ± {{printf "%.2f" (absMinus $entry.Actual.Exc $entry.Expected.Exc)}}</td>
-            <td>{{printf "%.4f°" (degrees $entry.Actual.Nu)}} ± {{printf "%.2f°" (degrees (absMinus $entry.Actual.Nu $entry.Expected.Nu))}}</td>
+            <td>
+                {{printf "%.4f°" (degrees
+                $entry.Actual.Lambda_apex)}} ± {{printf "%.2f°" (degrees
+                (absMinus $entry.Actual.Lambda_apex
+                $entry.Expected.Lambda_apex))}}
+            </td>
+            <td>
+                {{printf "%.4f°" (degrees $entry.Actual.A)}} ± {{printf "%.2f°"
+                (degrees (absMinus $entry.Actual.A $entry.Expected.A))}}
+            </td>
+            <td>
+                {{printf "%.4f°" (degrees $entry.Actual.Z_avg)}} ± {{printf
+                "%.2f°" (degrees (absMinus $entry.Actual.Z_avg
+                $entry.Expected.Z_avg))}}
+            </td>
+            <td>
+                {{printf "%.4f°" (degrees $entry.Actual.Delta)}} ± {{printf
+                "%.2f°" (degrees (absMinus $entry.Actual.Delta
+                $entry.Expected.Delta))}}
+            </td>
+            <td>
+                {{printf "%.4f°" (degrees $entry.Actual.Alpha)}} ± {{printf
+                "%.2f°" (degrees (absMinus $entry.Actual.Alpha
+                $entry.Expected.Alpha))}}
+            </td>
+            <td>
+                {{printf "%.4f°" (degrees $entry.Actual.Beta)}} ± {{printf
+                "%.2f°" (degrees (absMinus $entry.Actual.Beta
+                $entry.Expected.Beta))}}
+            </td>
+            <td>
+                {{printf "%.4f°" (degrees $entry.Actual.Lambda)}} ± {{printf
+                "%.2f°" (degrees (absMinus $entry.Actual.Lambda
+                $entry.Expected.Lambda))}}
+            </td>
+            <td>
+                {{printf "%.4f°" (degrees
+                $entry.Actual.Lambda_deriv)}} ± {{printf "%.2f°" (degrees
+                (absMinus $entry.Actual.Lambda_deriv
+                $entry.Expected.Lambda_deriv))}}
+            </td>
+            <td>
+                {{printf "%.4f°" (degrees $entry.Actual.Beta_deriv)}} ± {{printf
+                "%.2f°" (degrees (absMinus $entry.Actual.Beta_deriv
+                $entry.Expected.Beta_deriv))}}
+            </td>
+            <td>
+                {{printf "%.4f°" (degrees $entry.Actual.Inc)}} ± {{printf
+                "%.2f°" (degrees (absMinus $entry.Actual.Inc
+                $entry.Expected.Inc))}}
+            </td>
+            <td>
+                {{printf "%.4f°" (degrees $entry.Actual.Wmega)}} ± {{printf
+                "%.2f°" (degrees (absMinus $entry.Actual.Wmega
+                $entry.Expected.Wmega))}}
+            </td>
+            <td>
+                {{printf "%.4f°" (degrees $entry.Actual.Omega)}} ± {{printf
+                "%.2f°" (degrees (absMinus $entry.Actual.Omega
+                $entry.Expected.Omega))}}
+            </td>
+            <td>
+                {{printf "%.4f" $entry.Actual.V_g}} ± {{printf "%.2f" (absMinus
+                $entry.Actual.V_g $entry.Expected.V_g)}}
+            </td>
+            <td>
+                {{printf "%.4f" $entry.Actual.V_h}} ± {{printf "%.2f" (absMinus
+                $entry.Actual.V_h $entry.Expected.V_h)}}
+            </td>
+            <td>
+                {{printf "%.4f" $entry.Actual.Axis}} ± {{printf "%.2f" (absMinus
+                $entry.Actual.Axis $entry.Expected.Axis)}}
+            </td>
+            <td>
+                {{printf "%.4f" $entry.Actual.Exc}} ± {{printf "%.2f" (absMinus
+                $entry.Actual.Exc $entry.Expected.Exc)}}
+            </td>
+            <td>
+                {{printf "%.4f°" (degrees $entry.Actual.Nu)}} ± {{printf "%.2f°"
+                (degrees (absMinus $entry.Actual.Nu $entry.Expected.Nu))}}
+            </td>
         </tr>
         {{end}}
     </table>
@@ -251,12 +315,12 @@
     {{else}}
     <div class="flex items-center gap-2 justify-center">
         {{if gt .Page 2}}
-        <sl-button pill href="/table/1" variant="default">1</sl-button>
+        <sl-button pill href="/tests/1" variant="default">1</sl-button>
         <sl-icon name="three-dots"></sl-icon>
         {{end}} {{if gt .Page 1}}
         <sl-button
             pill
-            href="/table/{{$pagePrev}}"
+            href="/tests/{{$pagePrev}}"
             variant="default"
         ><sl-icon name="caret-left"></sl-icon></sl-button>
         {{end}}
@@ -265,31 +329,41 @@
         {{if lt .Page .PageMax}}
         <sl-button
             pill
-            href="/table/{{$pageNext}}"
+            href="/tests/{{$pageNext}}"
             variant="default"
         ><sl-icon name="caret-right"></sl-icon></sl-button>
         {{end}} {{if lt .Page (add .PageMax -1)}}
         <sl-icon name="three-dots"></sl-icon>
-        <sl-button pill href="/table/{{.PageMax}}" variant="default"
+        <sl-button pill href="/tests/{{.PageMax}}" variant="default"
         >{{.PageMax}}</sl-button>
         {{end}}
     </div>
     <div class="flex items-center gap-2 justify-center">
-        <sl-button href="/table/image" target="_blank"><sl-icon
+        <sl-button href="/tests/image" target="_blank"><sl-icon
                 slot="prefix"
                 name="magic"
             ></sl-icon>Visualize</sl-button>
         <sl-select
-        hx-post="/table/expand"
-        hx-swap="none"
+            hx-post="/tests/expand"
+            hx-swap="none"
+            hx-trigger="sl-change"
             name="expand-table"
             value="{{.ExpandTable}}"
-            hx-trigger="sl-change"
-            >
-                <sl-option value="">Open normal table</sl-option>
-                <sl-option value="expanded">Open testing table</sl-option>
-                <sl-option value="delta">Open delta table</sl-option>
-            </sl-select>
+        >
+            <sl-icon name="eye" slot="prefix"></sl-icon>
+            <sl-option value="">
+                <sl-icon slot="prefix" name="cup-straw"></sl-icon>
+                Normal
+            </sl-option>
+            <sl-option value="values">
+                <sl-icon slot="prefix" name="123"></sl-icon>
+                Values
+            </sl-option>
+            <sl-option value="delta">
+                <sl-icon slot="prefix" name="plus-slash-minus"></sl-icon>
+                Delta
+            </sl-option>
+        </sl-select>
     </div>
     {{end}}
 </div>

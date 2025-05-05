@@ -3,7 +3,7 @@ package model_http
 type TableState string
 
 const (
-	TableStateExpanded TableState = "expanded"
+	TableStateExpanded TableState = "values"
 	TableStateNormal   TableState = ""
 	TableStateDelta    TableState = "delta"
 )
