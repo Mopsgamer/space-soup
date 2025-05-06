@@ -28,6 +28,7 @@ func (p *OrbitInput) Input() (soup.Input, error) {
 	}
 
 	return soup.Input{
+		Id:    1,
 		Tau1:  p.Tau1,
 		Tau2:  p.Tau2,
 		V_avg: soup.Average(speedList),

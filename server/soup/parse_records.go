@@ -10,7 +10,7 @@ var (
 
 func ParseRecords(records [][]string) ([]MovementTest, error) {
 	var movementTestList []MovementTest
-	for _, record := range records {
+	for i, record := range records {
 		if len(record) < 3 {
 			return nil, ErrInvalidRowFormat
 		}
@@ -32,6 +32,7 @@ func ParseRecords(records [][]string) ([]MovementTest, error) {
 		}
 
 		input := Input{
+			Id:    i + 1,
 			Tau1:  tau1,
 			Tau2:  tau2,
 			V_avg: Average(vList),
