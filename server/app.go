@@ -167,7 +167,7 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 
 	// static
 	app.Get("/static/*", static.New("./client/static", static.Config{Browse: true}))
-	app.Get("/partials*", static.New("./client/templates/partials", static.Config{Browse: true}))
+	app.Get("/partials/*", static.New("./client/templates/partials", static.Config{Browse: true}))
 
 	// pages
 	var noRedirect controller_http.RedirectCompute = func(ctl controller_http.ControllerHttp, bind *fiber.Map) string { return "" }
