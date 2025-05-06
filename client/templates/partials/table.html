@@ -200,20 +200,20 @@
                 $entry.Expected.Omega))}}
             </td>
             <td>
-                {{printf "%.4f" $entry.Actual.V_g}} ± {{printf "%.2f" (absMinus
-                $entry.Actual.V_g $entry.Expected.V_g)}}
+                {{printf "%.4f" $entry.Actual.V_g}} ± {{ printf "%.2f" (
+                absMinus $entry.Actual.V_g $entry.Expected.V_g)}}
             </td>
             <td>
-                {{printf "%.4f" $entry.Actual.V_h}} ± {{printf "%.2f" (absMinus
-                $entry.Actual.V_h $entry.Expected.V_h)}}
+                {{printf "%.4f" $entry.Actual.V_h}} ± {{ printf "%.2f" (
+                absMinus $entry.Actual.V_h $entry.Expected.V_h)}}
             </td>
             <td>
-                {{printf "%.4f" $entry.Actual.Axis}} ± {{printf "%.2f" (absMinus
-                $entry.Actual.Axis $entry.Expected.Axis)}}
+                {{printf "%.4f" $entry.Actual.Axis}} ± {{ printf "%.2f"
+                (absMinus $entry.Actual.Axis $entry.Expected.Axis)}}
             </td>
             <td>
-                {{printf "%.4f" $entry.Actual.Exc}} ± {{printf "%.2f" (absMinus
-                $entry.Actual.Exc $entry.Expected.Exc)}}
+                {{printf "%.4f" $entry.Actual.Exc}} ± {{ printf "%.2f" (
+                absMinus $entry.Actual.Exc $entry.Expected.Exc)}}
             </td>
             <td>
                 {{printf "%.4f°" (degrees $entry.Actual.Nu)}} ± {{printf "%.2f°"
@@ -229,19 +229,23 @@
             <th>V_avg</th>
             <th>Tau1</th>
             <th>Tau2</th>
-            <th>Az</th>
-            <th>Zen</th>
-            <th>Zen g</th>
-            <th>Declination</th>
-            <th>Right Ascension</th>
+            <th>Lambda_apex</th>
+            <th>A</th>
+            <th>Z_avg</th>
+            <th>Delta</th>
+            <th>Alpha</th>
+            <th>Beta</th>
+            <th>Lambda</th>
+            <th>Lambda_deriv</th>
+            <th>Beta_deriv</th>
+            <th>Inc</th>
+            <th>Wmega</th>
+            <th>Omega</th>
             <th>V_g</th>
             <th>V_h</th>
-            <th>Latitude</th>
-            <th>Longitude</th>
-            <th>Inc</th>
             <th>Axis</th>
-            <th>Ecc</th>
-            <th>Angle</th>
+            <th>Exc</th>
+            <th>Nu</th>
         </tr>
         {{range $i, $entry := .Table}}
         <tr>
@@ -249,19 +253,23 @@
             <td>{{printf "%.4f" $entry.Input.V_avg}}</td>
             <td>{{printf "%.4f" $entry.Input.Tau1}}</td>
             <td>{{printf "%.4f" $entry.Input.Tau2}}</td>
+            <td>{{printf "%.4f°" (degrees $entry.Actual.Lambda_apex)}}</td>
             <td>{{printf "%.4f°" (degrees $entry.Actual.A)}}</td>
             <td>{{printf "%.4f°" (degrees $entry.Actual.Z_avg)}}</td>
-            <td>{{printf "%.4f°" (degrees $entry.Actual.Z_fix)}}</td>
             <td>{{printf "%.4f°" (degrees $entry.Actual.Delta)}}</td>
             <td>{{printf "%.4f°" (degrees $entry.Actual.Alpha)}}</td>
+            <td>{{printf "%.4f°" (degrees $entry.Actual.Beta)}}</td>
+            <td>{{printf "%.4f°" (degrees $entry.Actual.Lambda)}}</td>
+            <td>{{printf "%.4f°" (degrees $entry.Actual.Lambda_deriv)}}</td>
+            <td>{{printf "%.4f°" (degrees $entry.Actual.Beta_deriv)}}</td>
+            <td>{{printf "%.4f°" (degrees $entry.Actual.Inc)}}</td>
+            <td>{{printf "%.4f°" (degrees $entry.Actual.Wmega)}}</td>
+            <td>{{printf "%.4f°" (degrees $entry.Actual.Omega)}}</td>
             <td>{{printf "%.4f" $entry.Actual.V_g}}</td>
             <td>{{printf "%.4f" $entry.Actual.V_h}}</td>
-            <td>{{printf "%.4f°" (degrees $entry.Actual.Beta_deriv)}}</td>
-            <td>{{printf "%.4f°" (degrees $entry.Actual.Lambda_deriv)}}</td>
             <td>{{printf "%.4f" $entry.Actual.Axis}}</td>
-            <td>{{printf "%.4f°" (degrees $entry.Actual.Inc)}}</td>
             <td>{{printf "%.4f" $entry.Actual.Exc}}</td>
-            <td>{{printf "%.4f°" (degrees $entry.Actual.Angle)}}</td>
+            <td>{{printf "%.4f°" (degrees $entry.Actual.Nu)}}</td>
         </tr>
         {{end}}
     </table>
