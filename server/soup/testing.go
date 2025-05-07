@@ -1,6 +1,7 @@
 package soup
 
 import (
+	"encoding/csv"
 	"fmt"
 	"reflect"
 	"strings"
@@ -11,11 +12,13 @@ import (
 	"github.com/gofiber/fiber/v3/log"
 )
 
-//go:embed ORB_72.txt
-var ORB_72 string
+var idInc = 800000
 
-//go:embed orb-72.txt
-var orb_72 string
+//go:embed ORB_78.PAR
+var fileExpected string
+
+//go:embed ORB_1978-save.csv
+var fileInput string
 
 type MovementTest struct {
 	Input    Input
@@ -34,23 +37,27 @@ func CheckOrbitList() (tests []MovementTest, err error) {
 		sincefnStart2 += sinceStart
 	}
 
-	linesOut := strings.Split(ORB_72, "\n")
+	linesOut := strings.Split(fileExpected, "\n")
 	stop()
 	log.Infof("Read answers file and split %d lines: %v", len(linesOut), sinceStart)
 
 	start = time.Now()
-	linesIn := strings.Split(orb_72, "\n")[1:]
+	reader := csv.NewReader(strings.NewReader(fileInput))
+	rowsIn, err := reader.ReadAll()
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse fileInput: %w", err)
+	}
+	rowsIn = rowsIn[1:]
 	stop()
-	log.Infof("Read input file and split %d lines: %v", len(linesIn), sinceStart)
+	log.Infof("Read input file and split %d lines: %v", len(rowsIn), sinceStart)
 
 	start = time.Now()
 	inputList := map[int]Input{}
-	for _, line := range linesIn {
-		fields := strings.Fields(line)
+	for _, fields := range rowsIn {
 		if len(fields) == 0 {
 			continue
 		}
-		dt := strings.Split(fields[2], ".")
+		dt := strings.Split(fields[2], "/")
 		date := time.Date(1900+Int(dt[2]), time.Month(Int(dt[0])), Int(dt[1]), Int(fields[4]), Int(fields[5]), 0, 0, time.UTC)
 
 		speedList := []float64{}
@@ -72,7 +79,7 @@ func CheckOrbitList() (tests []MovementTest, err error) {
 		inputList[Int(fields[0])] = input
 	}
 	stop()
-	log.Infof("Parse input %d lines: %v", len(linesIn), sinceStart)
+	log.Infof("Parse input %d lines: %v", len(rowsIn), sinceStart)
 
 	start = time.Now()
 	fieldsOut := [][]string{}
@@ -83,7 +90,7 @@ func CheckOrbitList() (tests []MovementTest, err error) {
 			continue
 		}
 		fieldsOut = append(fieldsOut, fields)
-		n := Int(fields[0]) - 200000
+		n := Int(fields[0]) - idInc
 		input, ok := inputList[n]
 		if !ok {
 			continue
@@ -98,7 +105,7 @@ func CheckOrbitList() (tests []MovementTest, err error) {
 	for _, input := range validInputList {
 		actual := NewMovement(input)
 		if actual.Fail != nil {
-			fmt.Printf("%d-th got error: %s\n", 200000+input.Id, actual.Fail)
+			fmt.Printf("%d-th got error: %s\n", idInc+input.Id, actual.Fail)
 		}
 		actualList = append(actualList, actual)
 	}
