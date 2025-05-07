@@ -22,14 +22,5 @@ func (ft FileType) DecideFileName(filename string) FileType {
 	}
 
 	ext := FileType(strings.ToLower(filepath.Ext(filename)))
-	switch ext {
-	case ".csv":
-		return "csv"
-	case ".tsv":
-		return "tsv"
-	case ".xlsx":
-		return "xlsx"
-	default:
-		return FileType(ext)
-	}
+	return FileType(ext[1:])
 }

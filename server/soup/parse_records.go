@@ -2,6 +2,8 @@ package soup
 
 import (
 	"errors"
+	"fmt"
+	"strings"
 )
 
 var (
@@ -10,9 +12,16 @@ var (
 
 func ParseRecords(records [][]string) ([]MovementTest, error) {
 	var movementTestList []MovementTest
+ForLine:
 	for i, record := range records {
-		if len(record) < 3 {
+		if len(record) < 4 {
 			return nil, ErrInvalidRowFormat
+		}
+		for _, field := range record {
+			fmt.Println(field)
+			if strings.Contains(field, `,`) {
+				continue ForLine
+			}
 		}
 		error := new(error)
 		*error = nil

@@ -7,7 +7,6 @@ import (
 	"mime/multipart"
 
 	"github.com/Mopsgamer/space-soup/server/soup"
-	"github.com/xuri/excelize/v2"
 )
 
 type OrbitInputFile struct {
@@ -41,13 +40,14 @@ func (p *OrbitInputFile) MovementTestList(pFile multipart.FileHeader) ([]soup.Mo
 		}
 		rows, err = reader.ReadAll()
 	case "xlsx":
-		var xlFile *excelize.File
-		xlFile, err = excelize.OpenReader(file)
-		if err != nil {
-			return nil, err
-		}
-		sheetName := xlFile.GetSheetName(1)
-		rows, err = xlFile.GetRows(sheetName)
+		// var xlFile *excelize.File
+		// xlFile, err = excelize.OpenReader(file)
+		// if err != nil {
+		// 	return nil, err
+		// }
+		// sheetName := xlFile.GetSheetName(1)
+		// rows, err = xlFile.GetRows(sheetName)
+		fallthrough
 	default:
 		return nil, errors.Join(ErrUnsupportedFileType, fmt.Errorf("file type is '%s'", p.FileType))
 	}
