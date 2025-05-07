@@ -2,24 +2,27 @@ package soup
 
 import (
 	"errors"
-	"fmt"
-	"strings"
+	"regexp"
 )
 
 var (
 	ErrInvalidRowFormat = errors.New("invalid row format")
 )
 
+var notnum = regexp.MustCompile(`[^\s0-9,.]`)
+
 func ParseRecords(records [][]string) ([]MovementTest, error) {
 	var movementTestList []MovementTest
-ForLine:
 	for i, record := range records {
 		if len(record) < 4 {
 			return nil, ErrInvalidRowFormat
 		}
-		for _, field := range record {
-			fmt.Println(field)
-			if strings.Contains(field, `,`) {
+	ForLine:
+		for i, field := range record {
+			if i == 2 {
+				continue
+			}
+			if notnum.MatchString(field) {
 				continue ForLine
 			}
 		}
