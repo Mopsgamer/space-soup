@@ -58,7 +58,7 @@
 
     /* normal body contains modals. real does not */
     #real-body {
-        @apply relative flex flex-co overflow-auto;
+        @apply relative flex flex-col overflow-auto;
         .center-content {
             @apply flex flex-col size-full justify-center items-center;
         }
