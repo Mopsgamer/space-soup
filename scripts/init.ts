@@ -50,7 +50,7 @@ try {
     const path = ".env";
     logInitFiles.start(`Initializing '${path}'`);
     initEnvFile(path);
-    logInitFiles.end(true);
+    logInitFiles.end("completed");
 } catch (error) {
     logInitFiles.error(error);
     Deno.exit(1);

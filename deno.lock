@@ -2,8 +2,10 @@
   "version": "5",
   "specifiers": {
     "jsr:@luca/esbuild-deno-loader@~0.11.1": "0.11.1",
+    "jsr:@m234/logger@1": "1.0.0",
     "jsr:@std/bytes@^1.0.2": "1.0.5",
     "jsr:@std/encoding@^1.0.5": "1.0.9",
+    "jsr:@std/fmt@^1.0.6": "1.0.7",
     "jsr:@std/fmt@^1.0.7": "1.0.7",
     "jsr:@std/fs@^1.0.17": "1.0.17",
     "jsr:@std/path@^1.0.6": "1.0.9",
@@ -15,6 +17,7 @@
     "npm:esbuild@~0.24.2": "0.24.2",
     "npm:htmx-ext-debug@^2.0.1": "2.0.1",
     "npm:htmx.org@^1.9.12": "1.9.12",
+    "npm:tailwindcss@^4.1.6": "4.1.6",
     "npm:tree-kill@^1.2.2": "1.2.2"
   },
   "jsr": {
@@ -24,6 +27,12 @@
         "jsr:@std/bytes",
         "jsr:@std/encoding",
         "jsr:@std/path@^1.0.6"
+      ]
+    },
+    "@m234/logger@1.0.0": {
+      "integrity": "6cb3345612149a1c8ac96bb17a93086148898bcb172f7fecc7beaa1c7f3d7a8d",
+      "dependencies": [
+        "jsr:@std/fmt@^1.0.6"
       ]
     },
     "@std/bytes@1.0.5": {
@@ -467,7 +476,7 @@
         "autoprefixer",
         "postcss",
         "postcss-modules",
-        "tailwindcss"
+        "tailwindcss@3.4.17_postcss@8.5.3"
       ]
     },
     "esbuild@0.24.2": {
@@ -1030,6 +1039,9 @@
       ],
       "bin": true
     },
+    "tailwindcss@4.1.6": {
+      "integrity": "sha512-j0cGLTreM6u4OWzBeLBpycK0WIh8w7kSwcUsQZoGLHZ7xDTdM69lN64AgoIEEwFi0tnhs4wSykUa5YWxAzgFYg=="
+    },
     "thenify-all@1.6.0": {
       "integrity": "sha512-RNxQH/qI8/t3thXJDwcstUO4zeqo64+Uy/+sNVRBx4Xn2OX+OZ9oP+iJnNFqplFra2ZUVeKCSa2oVWi3T4uVmA==",
       "dependencies": [
@@ -1101,6 +1113,7 @@
   "workspace": {
     "dependencies": [
       "jsr:@luca/esbuild-deno-loader@~0.11.1",
+      "jsr:@m234/logger@1",
       "jsr:@std/fmt@^1.0.7",
       "jsr:@std/fs@^1.0.17",
       "jsr:@std/path@^1.0.9",
@@ -1111,6 +1124,7 @@
       "npm:esbuild@~0.24.2",
       "npm:htmx-ext-debug@^2.0.1",
       "npm:htmx.org@^1.9.12",
+      "npm:tailwindcss@^4.1.6",
       "npm:tree-kill@^1.2.2"
     ]
   }
