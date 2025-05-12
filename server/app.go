@@ -1,11 +1,8 @@
 package internal
 
 import (
-	"bytes"
-	"errors"
 	"fmt"
 	"io/fs"
-	"strings"
 	"time"
 
 	"github.com/Mopsgamer/space-soup/server/controller"
@@ -14,12 +11,11 @@ import (
 	"github.com/Mopsgamer/space-soup/server/soup"
 
 	"github.com/gofiber/fiber/v3"
-	"github.com/gofiber/fiber/v3/log"
 	"github.com/gofiber/fiber/v3/middleware/logger"
 	"github.com/gofiber/fiber/v3/middleware/static"
 )
 
-var FileHashCache = FileHashCacheMap{}
+var AlgCache = soup.FileHashCacheMap{}
 
 func useHttp(handler func(ctl controller_http.ControllerHttp) error) fiber.Handler {
 	return func(ctx fiber.Ctx) error {
@@ -49,100 +45,6 @@ func useHttpPage(
 			layouts...,
 		)
 	})
-}
-
-func useHttpPageTable(
-	templatePath string,
-	bind *fiber.Map,
-	redirect controller_http.RedirectCompute,
-	layouts ...string,
-) fiber.Handler {
-	bindx := fiber.Map{
-		"Title": "?",
-	}
-	bindx = controller.MapMerge(&bindx, bind)
-	return useHttp(func(ctl controller_http.ControllerHttp) error {
-		req := new(model_http.TablePage)
-		err := ctl.BindAll(req)
-		if err != nil {
-			return err
-		}
-		if err := req.Page.Validate(len(testsPaginated)); err != nil {
-			return err
-		}
-		bindx["ExpandTable"] = req.TableState
-		bindx["Table"] = testsPaginated[req.Page-1]
-		bindx["Page"] = int(req.Page)
-		bindx["PageMax"] = len(testsPaginated)
-		return ctl.RenderPage(
-			templatePath,
-			&bindx,
-			redirect,
-			layouts...,
-		)
-	})
-}
-
-func useVisualization(tests []soup.MovementTest, ctl controller_http.ControllerHttp, file []byte) (hashStr string, err error) {
-	hashStr = ""
-	req := new(model_http.TableImage)
-	err = ctl.BindAll(req)
-	if err != nil {
-		return
-	}
-
-	testsRanged, err := soup.Range(tests, req.Range)
-	if err != nil {
-		err = errors.Join(model_http.ErrInvalidIndiceRange, err)
-		return
-	}
-
-	if req.IsDownload {
-		ctl.Ctx.Set("Content-Type", "application/octet-stream")
-		ctl.Ctx.Set("Content-Disposition", "attachment; filename=orbits.png")
-	}
-
-	if len(req.Description) > 400 {
-		req.Description = req.Description[:400]
-	}
-	description := strings.ReplaceAll(req.Description, "\n", " | ")
-
-	imageWriterTo, err := soup.Visualize(soup.VisualizeConfig{
-		XLabel:      "Right Ascension",
-		YLabel:      "Declination",
-		Tests:       testsRanged,
-		Description: description,
-		GetXY: func(m soup.Movement) (x float64, y float64) {
-			x, y = soup.DegreesFromRadians(m.Alpha), soup.DegreesFromRadians(m.Delta)
-			return
-		},
-	})
-	if err != nil {
-		return
-	}
-
-	buf := []byte{}
-	imageBuffer := bytes.NewBuffer(buf)
-	_, err = imageWriterTo.WriteTo(imageBuffer)
-	if err != nil {
-		return
-	}
-	imageBytes := imageBuffer.Bytes()
-	_, err = ctl.Ctx.Write(imageBytes)
-	if err != nil {
-		return
-	}
-
-	if file != nil {
-		hashStr = HashString(file)
-		cache := SoupCache{
-			PlotImageBytes: imageBytes,
-			TestList:       testsRanged,
-		}
-		FileHashCache.Add(hashStr, cache)
-		log.Info(hashStr)
-	}
-	return
 }
 
 var (
@@ -175,17 +77,71 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 	app.Get("/", useHttpPage("homepage", &fiber.Map{"Title": "Home", "IsHomePage": true}, noRedirect, "partials/main"))
 	app.Get("/manually", useHttpPage("manually", &fiber.Map{"Title": "Calculate manually", "IsManually": true}, noRedirect, "partials/main"))
 	app.Get("/parse", useHttpPage("parse", &fiber.Map{"Title": "Upload file", "IsFile": true}, noRedirect, "partials/main"))
-	app.Get("/tests/image", useHttp(func(ctl controller_http.ControllerHttp) error {
-		_, err = useVisualization(tests, ctl, nil)
-		return err
+	app.Get("/tests.png", useHttp(func(ctl controller_http.ControllerHttp) error {
+		req := new(model_http.OrbitInputFile)
+		if err := ctl.BindAll(req); err != nil {
+			return ctl.RenderInternalError(err.Error(), "err-request")
+		}
+
+		writerTo, err := soup.VisualizeAlphaDelta(tests, "")
+		if err != nil {
+			return ctl.RenderInternalError(err.Error(), "err-request")
+		}
+
+		_, err = writerTo.WriteTo(ctl.Ctx)
+		if err != nil {
+			return ctl.RenderInternalError(err.Error(), "err-request")
+		}
+
+		return nil
 	}))
-	app.Get("/tests/:page", useHttpPageTable("tests", &fiber.Map{"Title": "Table"}, noRedirect, "partials/main"))
+	app.Get("/tests.xlsx", useHttp(func(ctl controller_http.ControllerHttp) error {
+		req := new(model_http.OrbitInputFile)
+		if err := ctl.BindAll(req); err != nil {
+			return ctl.RenderInternalError(err.Error(), "err-request")
+		}
+
+		bytes, err := soup.NewFileExcelBytes(tests)
+		if err != nil {
+			return ctl.RenderInternalError(err.Error(), "err-request")
+		}
+
+		_, err = ctl.Ctx.Write(bytes)
+		if err != nil {
+			return ctl.RenderInternalError(err.Error(), "err-request")
+		}
+
+		return nil
+	}))
+	app.Get("/tests/:page", useHttp(func(ctl controller_http.ControllerHttp) error {
+		req := new(model_http.TablePage)
+		err := ctl.BindAll(req)
+		if err != nil {
+			return ctl.RenderInternalError(err.Error(), "err-request")
+		}
+
+		if err := req.Page.Validate(len(testsPaginated)); err != nil {
+			return ctl.RenderInternalError(err.Error(), "err-request")
+		}
+		return ctl.RenderPage(
+			"tests",
+			&fiber.Map{
+				"Title":       "Table",
+				"ExpandTable": req.TableState,
+				"Table":       testsPaginated[req.Page-1],
+				"Page":        int(req.Page),
+				"PageMax":     len(testsPaginated),
+			},
+			noRedirect,
+			"partials/main",
+		)
+	}))
 	app.Get("/tests", func(ctx fiber.Ctx) error { return ctx.Redirect().To("/tests/1") })
 	app.Post("/tests/expand", useHttp(func(ctl controller_http.ControllerHttp) error {
 		req := new(model_http.TableSetMode)
 		err := ctl.BindAll(req)
 		if err != nil {
-			return err
+			return ctl.RenderInternalError(err.Error(), "err-request")
 		}
 
 		newCookie := fiber.Cookie{Name: "expand-state", Expires: time.Now()}
@@ -204,56 +160,64 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 	app.Get("/privacy", useHttpPage("privacy", &fiber.Map{"Title": "Privacy", "CenterContent": true}, noRedirect, "partials/main"))
 	app.Get("/acknowledgements", useHttpPage("acknowledgements", &fiber.Map{"Title": "Acknowledgements"}, noRedirect, "partials/main"))
 
-	app.Get("/alg/parse/image/:hash.png", useHttp(func(ctl controller_http.ControllerHttp) error {
+	app.Get("/alg/parse/cache/:hash.xlsx", useHttp(func(ctl controller_http.ControllerHttp) error {
 		hash := ctl.Ctx.Params("hash", "x")
-		imageCache, ok := FileHashCache[hash]
-		if !ok {
+		cache, cacheExists := AlgCache[hash]
+		if !cacheExists {
 			return ctl.Ctx.SendStatus(fiber.StatusMovedPermanently)
 		}
 
-		FileHashCache.Free()
-		if err := FileHashCache[hash].Live(); err != nil {
-			return err
+		if err := AlgCache.Live(hash); err != nil {
+			return ctl.RenderInternalError(err.Error(), "err-request")
 		}
 
-		log.Info(hash)
-		return ctl.Ctx.Send(imageCache.PlotImageBytes)
+		return ctl.Ctx.Send(cache.ExcelBytes)
 	}))
-	app.Post("/alg/parse/image", useHttp(func(ctl controller_http.ControllerHttp) error {
+	app.Get("/alg/parse/cache/:hash.png", useHttp(func(ctl controller_http.ControllerHttp) error {
+		hash := ctl.Ctx.Params("hash", "x")
+		cache, cacheExists := AlgCache[hash]
+		if !cacheExists {
+			return ctl.Ctx.SendStatus(fiber.StatusMovedPermanently)
+		}
+
+		if err := AlgCache.Live(hash); err != nil {
+			return ctl.RenderInternalError(err.Error(), "err-request")
+		}
+
+		return ctl.Ctx.Send(cache.PlotImageBytes)
+	}))
+	app.Post("/alg/parse/cache", useHttp(func(ctl controller_http.ControllerHttp) error {
 		req := new(model_http.OrbitInputFile)
 		if err := ctl.BindAll(req); err != nil {
 			return ctl.RenderInternalError(err.Error(), "err-request")
 		}
 
-		pFile, err := ctl.Ctx.FormFile("document")
+		formFile, err := ctl.Ctx.FormFile("document")
 		if err != nil {
-			return ctl.RenderInternalError(err.Error(), "err-calc")
+			return ctl.RenderInternalError(err.Error(), "err-request")
 		}
 
-		file, err := pFile.Open()
+		formFileBytes, err := soup.NewFormFileBytes(formFile)
 		if err != nil {
-			return err
-		}
-		buf := []byte{}
-		if _, err = file.Read(buf); err != nil {
-			file.Close()
-			return err
-		}
-		file.Close()
-
-		movementTestList, err := req.MovementTestList(*pFile)
-		if err != nil {
-			return ctl.RenderDanger(err.Error(), "err-calc")
+			return ctl.RenderInternalError(err.Error(), "err-request")
 		}
 
-		hashStr, err := useVisualization(movementTestList, ctl, buf)
-		if err != nil {
-			return err
+		hash := soup.HashString(formFileBytes)
+		cache, cacheExists := AlgCache[hash]
+		if !cacheExists {
+			tests, err := soup.NewMovementTestsFromFromFile(formFile, req.FileType)
+			if err != nil {
+				return ctl.RenderInternalError(err.Error(), "err-request")
+			}
+			newCache, err := soup.NewCache(tests, req.Range, "")
+			if err != nil {
+				return ctl.RenderInternalError(err.Error(), "err-request")
+			}
+			cache = newCache
 		}
+		AlgCache.Add(hash, cache)
 
-		log.Info(hashStr)
-		ctl.HTMXRedirect("/alg/parse/image/" + hashStr + ".png")
-		return nil
+		return ctl.Ctx.SendString(hash)
 	}))
 	app.Post("/alg/parse/:page", useHttp(func(ctl controller_http.ControllerHttp) error {
 		req := new(model_http.OrbitInputFile)
@@ -261,28 +225,44 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 			return ctl.RenderInternalError(err.Error(), "err-request")
 		}
 
-		pFile, err := ctl.Ctx.FormFile("document")
+		formFile, err := ctl.Ctx.FormFile("document")
 		if err != nil {
-			return ctl.RenderInternalError(err.Error(), "err-calc")
+			return ctl.RenderInternalError(err.Error(), "err-request")
 		}
 
-		movementTestList, err := req.MovementTestList(*pFile)
+		formFileBytes, err := soup.NewFormFileBytes(formFile)
 		if err != nil {
-			return ctl.RenderDanger(err.Error(), "err-calc")
+			return ctl.RenderInternalError(err.Error(), "err-request")
 		}
 
-		movementTestListPaginated := soup.Paginate(movementTestList)
-		if err := req.Page.Validate(len(movementTestListPaginated)); err != nil {
-			return err
+		hash := soup.HashString(formFileBytes)
+		cache, cacheExists := AlgCache[hash]
+		if !cacheExists {
+			tests, err := soup.NewMovementTestsFromFromFile(formFile, req.FileType)
+			if err != nil {
+				return ctl.RenderInternalError(err.Error(), "err-request")
+			}
+			newCache, err := soup.NewCache(tests, req.Range, "")
+			if err != nil {
+				return ctl.RenderInternalError(err.Error(), "err-request")
+			}
+			cache = newCache
 		}
-		movementList := movementTestListPaginated[req.Page-1]
+		AlgCache.Add(hash, cache)
+
+		movementTestsPaginated := soup.Paginate(cache.TestList)
+		if err := req.Page.Validate(len(movementTestsPaginated)); err != nil {
+			return ctl.RenderInternalError(err.Error(), "err-request")
+		}
+		movementTests := movementTestsPaginated[req.Page-1]
 
 		return ctl.Ctx.Render("partials/table", fiber.Map{
 			"IsFile":      true,
+			"FileHash":    hash,
 			"ExpandTable": model_http.TableStateNormal,
-			"Table":       movementList,
+			"Table":       movementTests,
 			"Page":        int(req.Page),
-			"PageMax":     len(movementTestListPaginated),
+			"PageMax":     len(movementTestsPaginated),
 		})
 	}))
 	app.Post("/alg", useHttp(func(ctl controller_http.ControllerHttp) error {

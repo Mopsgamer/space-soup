@@ -1,3 +1,32 @@
+{{if .IsFile}}
+<div class="dialog-footer">
+    <div>
+        <sl-button
+            id="visualize-file"
+            variant="primary"
+            href="/alg/parse/cache/{{.FileHash}}.xlsx"
+        >
+            <sl-icon
+                slot="prefix"
+                name="magic"
+            ></sl-icon>
+            Download as .xlsx
+        </sl-button>
+        <sl-button
+            id="visualize-file"
+            variant="primary"
+            href="/alg/parse/cache/{{.FileHash}}.png"
+            target="_blank"
+        >
+            <sl-icon
+                slot="prefix"
+                name="magic"
+            ></sl-icon>
+            Visualize
+        </sl-button>
+    </div>
+</div>
+{{end}}
 <div class="max-h-[50svh] overflow-auto">
     {{if eq .ExpandTable "values"}}
     <table id="test-pass-table">
@@ -347,7 +376,13 @@
         {{end}}
     </div>
     <div class="flex items-center gap-2 justify-center">
-        <sl-button href="/tests/image" target="_blank"><sl-icon
+        <sl-button href="/tests.xlsx" target="_blank">
+            <sl-icon
+                slot="prefix"
+                name="table"
+            ></sl-icon>Download .xlsx</sl-button>
+            <sl-button href="/tests.xlsx" target="_blank">
+            <sl-icon
                 slot="prefix"
                 name="magic"
             ></sl-icon>Visualize</sl-button>

@@ -5,6 +5,7 @@ import (
 	"image/color"
 	"io"
 	"math"
+	"strings"
 	"time"
 
 	"gonum.org/v1/plot"
@@ -33,6 +34,31 @@ type VisualizeConfig struct {
 	GetXY          func(m Movement) (x float64, y float64)
 }
 
+func VisualizeAlphaDelta(tests []MovementTest, description string) (io.WriterTo, error) {
+	return Visualize(VisualizeConfig{
+		XLabel:      "Right Ascension",
+		YLabel:      "Declination",
+		Tests:       tests,
+		Description: description,
+		GetXY: func(m Movement) (x float64, y float64) {
+			x, y =
+				DegreesFromRadians(m.Alpha),
+				DegreesFromRadians(m.Delta)
+			return
+		},
+	})
+}
+
+func sanitizeDescription(description string) string {
+	if len(description) > 400 {
+		description = description[:400]
+	}
+	description = strings.TrimSpace(description)
+	description = strings.ReplaceAll(description, "\n", " | ")
+	description = strings.Trim(description, " | ")
+	return description
+}
+
 func Visualize(config VisualizeConfig) (io.WriterTo, error) {
 	p := plot.New()
 	p.Title.Text = fmt.Sprintf(
@@ -42,7 +68,7 @@ func Visualize(config VisualizeConfig) (io.WriterTo, error) {
 	p.Title.Padding = 10
 
 	if config.Description != "" {
-		p.Title.Text += " | " + config.Description
+		p.Title.Text += " | " + sanitizeDescription(config.Description)
 	}
 
 	p.X.Label.Text, p.Y.Label.Text = config.XLabel, config.YLabel

@@ -59,19 +59,6 @@
                             ></sl-icon>
                             Calculate
                         </sl-button>
-                        <sl-button
-                            id="visualize-file"
-                            form="form-file"
-                            variant="primary"
-                            hx-post="/alg/parse/image"
-                            hx-include="#file-input"
-                        >
-                            <sl-icon
-                                slot="prefix"
-                                name="magic"
-                            ></sl-icon>
-                            Visualize
-                        </sl-button>
                     </div>
                 </div>
             </form>
@@ -81,7 +68,7 @@
                 <sl-icon name="recycle"></sl-icon>
                 Output
             </h4>
-            <div id="form-file-output">
+            <div id="form-file-output" class="flex flex-col gap-2">
                 <sl-alert variant="primary" open>
                     <sl-icon slot="icon" name="info-circle"></sl-icon>
                     No output available yet. Upload a file and click "Calculate"

@@ -7,6 +7,7 @@ toolchain go1.23.4
 require (
 	github.com/gofiber/fiber/v3 v3.0.0-beta.4
 	github.com/gofiber/template/html/v2 v2.1.3
+	github.com/google/safehtml v0.1.0
 	github.com/joho/godotenv v1.5.1
 	github.com/n0madic/expand-range v0.1.1
 	github.com/stretchr/testify v1.10.0
@@ -31,7 +32,6 @@ require (
 	github.com/gofiber/utils v1.1.0 // indirect
 	github.com/gofiber/utils/v2 v2.0.0-beta.8 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
-	github.com/google/safehtml v0.1.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/klauspost/compress v1.18.0 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect

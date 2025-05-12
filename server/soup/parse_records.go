@@ -1,15 +1,67 @@
 package soup
 
 import (
+	"encoding/csv"
 	"errors"
+	"fmt"
+	"mime/multipart"
 	"regexp"
 )
 
 var (
-	ErrInvalidRowFormat = errors.New("invalid row format")
+	ErrInvalidRowFormat    = errors.New("invalid row format")
+	ErrUnsupportedFileType = errors.New("unsupported file type")
 )
 
 var notnum = regexp.MustCompile(`[^\s0-9,.]`)
+
+func NewMovementTestsFromFromFile(formFile *multipart.FileHeader, filetype FileType) ([]MovementTest, error) {
+	var movementTestList []MovementTest
+
+	filetype = filetype.DecideFileName(formFile.Filename)
+
+	file, err := formFile.Open()
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	var rows [][]string
+
+	switch string(filetype) {
+	case "csv":
+		fallthrough
+	case "tsv":
+		reader := csv.NewReader(file)
+		reader.FieldsPerRecord = -1
+		reader.TrimLeadingSpace = true
+		if filetype[0] == 't' { // filetype == tsv
+			reader.Comma = '\t'
+		}
+		rows, err = reader.ReadAll()
+	case "xlsx":
+		// var xlFile *excelize.File
+		// xlFile, err = excelize.OpenReader(file)
+		// if err != nil {
+		// 	return nil, err
+		// }
+		// sheetName := xlFile.GetSheetName(1)
+		// rows, err = xlFile.GetRows(sheetName)
+		fallthrough
+	default:
+		return nil, errors.Join(ErrUnsupportedFileType, fmt.Errorf("file type is '%s'", filetype))
+	}
+
+	if err != nil {
+		return nil, err
+	}
+	movementTestList, err = ParseRecords(rows)
+	if err != nil {
+		return nil, err
+	}
+
+	return movementTestList, nil
+}
 
 func ParseRecords(records [][]string) ([]MovementTest, error) {
 	var movementTestList []MovementTest

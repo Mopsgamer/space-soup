@@ -1,6 +1,8 @@
 package soup
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"math"
 	"slices"
@@ -34,6 +36,12 @@ func Paginate[S any](slice []S) (paginated [][]S) {
 		paginated = append(paginated, v)
 	}
 	return
+}
+
+// Create identificator for file content.
+func HashString(data []byte) string {
+	hashBytes := sha256.Sum256(data)
+	return hex.EncodeToString(hashBytes[:])
 }
 
 func Range(tests []MovementTest, bounds string) (testsRanged []MovementTest, err error) {

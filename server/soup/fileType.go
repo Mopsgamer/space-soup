@@ -1,13 +1,8 @@
-package model_http
+package soup
 
 import (
-	"errors"
 	"path/filepath"
 	"strings"
-)
-
-var (
-	ErrUnsupportedFileType = errors.New("unsupported file type")
 )
 
 type FileType string
