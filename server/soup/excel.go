@@ -17,28 +17,29 @@ func NewFileExcelBytes(movementList []MovementTest) ([]byte, error) {
 		return cell
 	}
 	for rowIndex, movement := range movementList {
+		row := rowIndex + 1
 		colIndex = 0
 		// V_avg	Tau1	Tau2	Lambda_apex	A	Z_avg	Delta	Alpha	Beta	Lambda	Lambda_deriv	Beta_deriv	Inc	Wmega	Omega	V_g	V_h	Axis	Exc	Nu
-		file.SetCellFloat(sheetName, nextColCell(rowIndex), movement.Input.V_avg, 2, 32)
-		file.SetCellFloat(sheetName, nextColCell(rowIndex), movement.Input.Tau1, 2, 32)
-		file.SetCellFloat(sheetName, nextColCell(rowIndex), movement.Input.Tau2, 2, 32)
-		file.SetCellFloat(sheetName, nextColCell(rowIndex), movement.Actual.Lambda_apex, 2, 32)
-		file.SetCellFloat(sheetName, nextColCell(rowIndex), movement.Actual.A, 2, 32)
-		file.SetCellFloat(sheetName, nextColCell(rowIndex), movement.Actual.Z_avg, 2, 32)
-		file.SetCellFloat(sheetName, nextColCell(rowIndex), movement.Actual.Delta, 2, 32)
-		file.SetCellFloat(sheetName, nextColCell(rowIndex), movement.Actual.Alpha, 2, 32)
-		file.SetCellFloat(sheetName, nextColCell(rowIndex), movement.Actual.Beta, 2, 32)
-		file.SetCellFloat(sheetName, nextColCell(rowIndex), movement.Actual.Lambda, 2, 32)
-		file.SetCellFloat(sheetName, nextColCell(rowIndex), movement.Actual.Lambda_deriv, 2, 32)
-		file.SetCellFloat(sheetName, nextColCell(rowIndex), movement.Actual.Beta_deriv, 2, 32)
-		file.SetCellFloat(sheetName, nextColCell(rowIndex), movement.Actual.Inc, 2, 32)
-		file.SetCellFloat(sheetName, nextColCell(rowIndex), movement.Actual.Wmega, 2, 32)
-		file.SetCellFloat(sheetName, nextColCell(rowIndex), movement.Actual.Omega, 2, 32)
-		file.SetCellFloat(sheetName, nextColCell(rowIndex), movement.Actual.V_g, 2, 32)
-		file.SetCellFloat(sheetName, nextColCell(rowIndex), movement.Actual.V_h, 2, 32)
-		file.SetCellFloat(sheetName, nextColCell(rowIndex), movement.Actual.Axis, 2, 32)
-		file.SetCellFloat(sheetName, nextColCell(rowIndex), movement.Actual.Exc, 2, 32)
-		file.SetCellFloat(sheetName, nextColCell(rowIndex), movement.Actual.Nu, 2, 32)
+		file.SetCellFloat(sheetName, nextColCell(row), movement.Input.V_avg, 2, 32)
+		file.SetCellFloat(sheetName, nextColCell(row), movement.Input.Tau1, 2, 32)
+		file.SetCellFloat(sheetName, nextColCell(row), movement.Input.Tau2, 2, 32)
+		file.SetCellFloat(sheetName, nextColCell(row), movement.Actual.Lambda_apex, 2, 32)
+		file.SetCellFloat(sheetName, nextColCell(row), movement.Actual.A, 2, 32)
+		file.SetCellFloat(sheetName, nextColCell(row), movement.Actual.Z_avg, 2, 32)
+		file.SetCellFloat(sheetName, nextColCell(row), movement.Actual.Delta, 2, 32)
+		file.SetCellFloat(sheetName, nextColCell(row), movement.Actual.Alpha, 2, 32)
+		file.SetCellFloat(sheetName, nextColCell(row), movement.Actual.Beta, 2, 32)
+		file.SetCellFloat(sheetName, nextColCell(row), movement.Actual.Lambda, 2, 32)
+		file.SetCellFloat(sheetName, nextColCell(row), movement.Actual.Lambda_deriv, 2, 32)
+		file.SetCellFloat(sheetName, nextColCell(row), movement.Actual.Beta_deriv, 2, 32)
+		file.SetCellFloat(sheetName, nextColCell(row), movement.Actual.Inc, 2, 32)
+		file.SetCellFloat(sheetName, nextColCell(row), movement.Actual.Wmega, 2, 32)
+		file.SetCellFloat(sheetName, nextColCell(row), movement.Actual.Omega, 2, 32)
+		file.SetCellFloat(sheetName, nextColCell(row), movement.Actual.V_g, 2, 32)
+		file.SetCellFloat(sheetName, nextColCell(row), movement.Actual.V_h, 2, 32)
+		file.SetCellFloat(sheetName, nextColCell(row), movement.Actual.Axis, 2, 32)
+		file.SetCellFloat(sheetName, nextColCell(row), movement.Actual.Exc, 2, 32)
+		file.SetCellFloat(sheetName, nextColCell(row), movement.Actual.Nu, 2, 32)
 	}
 
 	var buf bytes.Buffer
