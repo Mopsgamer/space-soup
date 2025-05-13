@@ -21,10 +21,9 @@ var fileExpected string
 var fileInput string
 
 type MovementTest struct {
-	Input    Input
-	Expected Movement
-	Actual   Movement
-	// 0 - Success, 1 - Acceptable, 2 - Not acceptable
+	Input           Input
+	Expected        Movement
+	Actual          Movement
 	AssertionResult MovementAssertion
 }
 
@@ -145,7 +144,7 @@ func CheckOrbitList() (tests []MovementTest, err error) {
 
 		valueOfExpected := reflect.ValueOf(entry.Expected)
 		valueOfActual := reflect.ValueOf(entry.Actual)
-		InDelta := func(delta float64, propName string) uint {
+		InDelta := func(delta float64, propName string) TestResult {
 			e := reflect.Indirect(valueOfExpected).FieldByName(propName).Float()
 			a := reflect.Indirect(valueOfActual).FieldByName(propName).Float()
 			return InDelta(e, a, delta)

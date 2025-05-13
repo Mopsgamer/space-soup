@@ -135,18 +135,25 @@ func Int(str string) int {
 	return int(result)
 }
 
-// 0 - Success, 1 - Acceptable, 2 - Not acceptable
-func InDelta(expected, actual, delta float64) uint {
+type TestResult uint
+
+const (
+	TestResultAbsoluteSuccess TestResult = iota
+	TestResultAcceptable
+	TestResultFailed
+)
+
+func InDelta(expected, actual, delta float64) TestResult {
 	if math.IsNaN(expected) || math.IsNaN(actual) {
-		return 2
+		return TestResultFailed
 	}
 	if expected == actual {
-		return 0
+		return TestResultAcceptable
 	}
 	dt := expected - actual
 	if dt >= -delta && dt <= delta {
-		return 1
+		return TestResultAcceptable
 	}
 
-	return 2
+	return TestResultFailed
 }

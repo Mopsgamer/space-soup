@@ -129,8 +129,7 @@ type MovementGeneric[T any] struct {
 
 type Movement = MovementGeneric[float64]
 
-// 0 - Успіх, 1 - Прийнятно, 2 - Неприйнятно
-type MovementAssertion = MovementGeneric[uint]
+type MovementAssertion = MovementGeneric[TestResult]
 
 type InputGeneric[T any] struct {
 	Id int
