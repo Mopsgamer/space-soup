@@ -110,7 +110,7 @@ func Average(x []float64) (avg float64) {
 	return
 }
 
-// Format: 2006-01-02T03:04
+// Format: 2006-01-02T03:04 or YYYY-MM-DDThh:mm
 func ParseDateJSON(date string) (time.Time, error) {
 	return time.Parse("2006-01-02T15:04", date)
 }

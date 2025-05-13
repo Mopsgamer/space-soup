@@ -43,6 +43,40 @@ func CheckOrbit(assert *assert.Assertions, input Input, expected Movement) {
 	InDelta(allowedDeltaRadians, "Nu")
 }
 
+func TestOrbit800016(t *testing.T) {
+	assert := assert.New(t)
+	date, _ := ParseDateJSON("1978-01-02T10:28")
+	CheckOrbit(
+		assert,
+		Input{
+			Id:    800016,
+			Tau1:  -12.9214,
+			Tau2:  -13.5505,
+			V_avg: Average([]float64{49.037, 49.604}),
+			Date:  date,
+		},
+		Movement{
+			A:            RadiansFromDegrees(51.248),
+			Lambda_apex:  RadiansFromDegrees(193.337),
+			Z_avg:        RadiansFromDegrees(38.540),
+			Delta:        RadiansFromDegrees(19.833),
+			Alpha:        RadiansFromDegrees(219.011),
+			Beta:         RadiansFromDegrees(33.152),
+			Lambda:       RadiansFromDegrees(209.186),
+			Lambda_deriv: RadiansFromDegrees(240.753),
+			Beta_deriv:   RadiansFromDegrees(60.410),
+			Inc:          RadiansFromDegrees(111.022),
+			Wmega:        RadiansFromDegrees(87.743),
+			Omega:        RadiansFromDegrees(283.346),
+			V_g:          50.882,
+			V_h:          31.998,
+			Axis:         1.1365,
+			Exc:          0.3846,
+			Nu:           RadiansFromDegrees(92.257),
+		},
+	)
+}
+
 func BenchmarkNewMovement(b *testing.B) {
 	var date, err = ParseDateJSON("1972-01-25T06:07")
 	if err != nil {
