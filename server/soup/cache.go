@@ -57,7 +57,7 @@ func (cache *SoupCache) Live() error {
 	if cache == nil {
 		return ErrCacheExpired
 	}
-	cache.ExpiresAt = time.Now().Add(environment.ImageCacheDuration)
+	cache.ExpiresAt = time.Now().Add(environment.AlgCacheDuration)
 	return nil
 }
 

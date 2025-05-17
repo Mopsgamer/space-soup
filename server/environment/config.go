@@ -24,8 +24,8 @@ const (
 
 // App settings.
 var (
-	Port               string
-	ImageCacheDuration time.Duration
+	Port             string
+	AlgCacheDuration time.Duration
 
 	DenoJson    DenoConfig
 	GoMod       modfile.File
@@ -47,9 +47,9 @@ func Load() {
 	}
 
 	Port = os.Getenv("PORT")
-	ImageCacheDuration, err = time.ParseDuration(os.Getenv("IMAGE_CACHE_DURATION"))
+	AlgCacheDuration, err = time.ParseDuration(os.Getenv("ALG_CACHE_DURATION"))
 	if err != nil {
-		ImageCacheDuration = time.Minute * 10
+		AlgCacheDuration = time.Minute * 10
 	}
 
 	DenoJson = getJson[DenoConfig]("deno.json")

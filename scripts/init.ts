@@ -13,7 +13,7 @@ function initEnvFile(path: string): void {
         value: 3000,
         comment: "application port",
     });
-    defaultEnv.set(envKeys.IMAGE_CACHE_DURATION, {
+    defaultEnv.set(envKeys.ALG_CACHE_DURATION, {
         value: "10m",
         comment:
             "images cache expiration time.\nfallback for invalid values - 10m.\nmemory is freed only when new images created.\nsee https://pkg.go.dev/time#ParseDuration",
