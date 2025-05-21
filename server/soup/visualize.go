@@ -15,13 +15,21 @@ import (
 )
 
 type AngleTicker struct {
-	Step float64
+	Step    float64
+	Reverse bool
 }
 
 func (t AngleTicker) Ticks(min, max float64) []plot.Tick {
 	var ticks []plot.Tick
-	for val := min; val <= max; val += t.Step {
-		ticks = append(ticks, plot.Tick{Value: val, Label: fmt.Sprintf("%.1f°", val)})
+
+	if t.Reverse {
+		for val := min; val <= max; val += t.Step {
+			ticks = append(ticks, plot.Tick{Value: 360 - val, Label: fmt.Sprintf("%.1f°", math.Round(val*10)/10)})
+		}
+	} else {
+		for val := min; val <= max; val += t.Step {
+			ticks = append(ticks, plot.Tick{Value: val, Label: fmt.Sprintf("%.1f°", math.Round(val*10)/10)})
+		}
 	}
 	return ticks
 }
@@ -55,11 +63,12 @@ func sanitizeDescription(description string) string {
 	}
 	description = strings.TrimSpace(description)
 	description = strings.ReplaceAll(description, "\n", " | ")
-	description = strings.Trim(description, " | ")
+	description = strings.Trim(description, " |")
 	return description
 }
 
 func Visualize(config VisualizeConfig) (io.WriterTo, error) {
+	reverseX := true
 	p := plot.New()
 	p.Title.Text = fmt.Sprintf(
 		"Generation Date: %s | Orbit Count: %d",
@@ -73,7 +82,7 @@ func Visualize(config VisualizeConfig) (io.WriterTo, error) {
 
 	p.X.Label.Text, p.Y.Label.Text = config.XLabel, config.YLabel
 	p.X.Tick.Length, p.Y.Tick.Length = 5, 5
-	p.X.Tick.Marker, p.Y.Tick.Marker = AngleTicker{Step: 45}, AngleTicker{Step: 10}
+	p.X.Tick.Marker, p.Y.Tick.Marker = AngleTicker{Step: 45, Reverse: reverseX}, AngleTicker{Step: 10}
 	p.X.Min, p.X.Max = 0, 360
 	p.Y.Min, p.Y.Max = -90, 90
 
@@ -83,6 +92,9 @@ func Visualize(config VisualizeConfig) (io.WriterTo, error) {
 			continue
 		}
 		xActual, yActual := config.GetXY(m.Actual)
+		if reverseX {
+			xActual = 360 - xActual
+		}
 		pointsActual = append(pointsActual, plotter.XY{X: xActual, Y: yActual})
 	}
 	scatter, err := plotter.NewScatter(pointsActual)
@@ -90,12 +102,15 @@ func Visualize(config VisualizeConfig) (io.WriterTo, error) {
 		return nil, err
 	}
 	scatter.Shape = draw.CircleGlyph{}
-	scatter.GlyphStyle.Radius = vg.Points(.4)
+	scatter.GlyphStyle.Radius = vg.Points(.7)
 
 	ecliptic := plotter.NewFunction(func(x float64) float64 {
+		if reverseX {
+			x += 180
+		}
 		amplitude := 23.5
 		frequency := 2 * math.Pi / 360
-		phase := 0.0
+		phase := 0.
 
 		return amplitude * math.Sin(frequency*x+phase)
 	})
@@ -127,8 +142,8 @@ func Visualize(config VisualizeConfig) (io.WriterTo, error) {
 	ecliptic.Color = color.RGBA{R: 255, G: 0, B: 0, A: 255}
 
 	p.Add(ecliptic)
+	// p.Legend.Add("Ecliptic", ecliptic)
 	p.Add(grid)
-	p.Legend.Add("Ecliptic", ecliptic)
 	p.Add(scatter)
 
 	w, h := 16*45, 9*45
