@@ -3,6 +3,7 @@ package soup
 import (
 	"bytes"
 	"fmt"
+	"math"
 	"strings"
 
 	"github.com/xuri/excelize/v2"
@@ -100,34 +101,41 @@ func NewFileExcelBytes(movementList []MovementTest) ([]byte, error) {
 			file.SetCellInt(sheetName, coord, v)
 			file.SetCellStyle(sheetName, coord, coord, normal)
 		}
-		setCellFloat := func(v float64) {
+		setCellFloat := func(v float64, suffix string) {
 			coord := nextColCell(row)
-			str := strings.Replace(fmt.Sprintf("%.2f", v), ".", ",", 1)
+			str := strings.Replace(fmt.Sprintf("%.2f%s", v, suffix), ".", ",", 1)
+			file.SetCellValue(sheetName, coord, str)
+			file.SetCellStyle(sheetName, coord, coord, normal)
+		}
+		setCellFloatDelta := func(actual, expected float64, suffix string) {
+			coord := nextColCell(row)
+			delta := math.Abs(actual - expected)
+			str := strings.Replace(fmt.Sprintf("%.2f%s ± %.2f%s", actual, suffix, delta, suffix), ".", ",", -1)
 			file.SetCellValue(sheetName, coord, str)
 			file.SetCellStyle(sheetName, coord, coord, normal)
 		}
 		setCellInt(rowIndex + 1)
 		setCellInt(movement.Input.Id)
-		setCellFloat(movement.Input.V_avg)
-		setCellFloat(movement.Input.Tau1)
-		setCellFloat(movement.Input.Tau2)
-		setCellFloat(movement.Actual.Lambda_apex)
-		setCellFloat(movement.Actual.A)
-		setCellFloat(movement.Actual.Z_avg)
-		setCellFloat(movement.Actual.Delta)
-		setCellFloat(movement.Actual.Alpha)
-		setCellFloat(movement.Actual.Beta)
-		setCellFloat(movement.Actual.Lambda)
-		setCellFloat(movement.Actual.Lambda_deriv)
-		setCellFloat(movement.Actual.Beta_deriv)
-		setCellFloat(movement.Actual.Inc)
-		setCellFloat(movement.Actual.Wmega)
-		setCellFloat(movement.Actual.Omega)
-		setCellFloat(movement.Actual.V_g)
-		setCellFloat(movement.Actual.V_h)
-		setCellFloat(movement.Actual.Axis)
-		setCellFloat(movement.Actual.Exc)
-		setCellFloat(movement.Actual.Nu)
+		setCellFloat(movement.Input.V_avg, "")
+		setCellFloat(movement.Input.Tau1, "")
+		setCellFloat(movement.Input.Tau2, "")
+		setCellFloatDelta(movement.Actual.Lambda_apex, movement.Expected.Lambda_apex, "°")
+		setCellFloatDelta(movement.Actual.A, movement.Expected.A, "°")
+		setCellFloatDelta(movement.Actual.Z_avg, movement.Expected.Z_avg, "°")
+		setCellFloatDelta(movement.Actual.Delta, movement.Expected.Delta, "°")
+		setCellFloatDelta(movement.Actual.Alpha, movement.Expected.Alpha, "°")
+		setCellFloatDelta(movement.Actual.Beta, movement.Expected.Beta, "°")
+		setCellFloatDelta(movement.Actual.Lambda, movement.Expected.Lambda, "°")
+		setCellFloatDelta(movement.Actual.Lambda_deriv, movement.Expected.Lambda_deriv, "°")
+		setCellFloatDelta(movement.Actual.Beta_deriv, movement.Expected.Beta_deriv, "°")
+		setCellFloatDelta(movement.Actual.Inc, movement.Expected.Inc, "°")
+		setCellFloatDelta(movement.Actual.Wmega, movement.Expected.Wmega, "°")
+		setCellFloatDelta(movement.Actual.Omega, movement.Expected.Omega, "°")
+		setCellFloatDelta(movement.Actual.V_g, movement.Expected.V_g, "")
+		setCellFloatDelta(movement.Actual.V_h, movement.Expected.V_h, "")
+		setCellFloatDelta(movement.Actual.Axis, movement.Expected.Axis, "")
+		setCellFloatDelta(movement.Actual.Exc, movement.Expected.Exc, "")
+		setCellFloatDelta(movement.Actual.Nu, movement.Expected.Nu, "°")
 	}
 
 	var buf bytes.Buffer
