@@ -8,11 +8,28 @@ import (
 )
 
 var (
-	allowedDeltaDegrees = 4.
-	allowedDeltaRadians = RadiansFromDegrees(allowedDeltaDegrees) // 0.06981317007977318
-	allowedDeltaSpeed   = 2.
-	allowedDeltaAxis    = 0.1
-	allowedDeltaExc     = 0.1
+	allowedDeltaDegrees   = 10.0
+	allowedDeltaRadians   = RadiansFromDegrees(allowedDeltaDegrees)
+	allowedDeltaA         = RadiansFromDegrees(2.7)
+	allowedDeltaZ_avg     = RadiansFromDegrees(6.4)
+	allowedDeltaDelta     = RadiansFromDegrees(5.2)
+	allowedDeltaAlpha     = RadiansFromDegrees(7.0)
+	allowedDeltaBeta      = RadiansFromDegrees(4.7)
+	allowedDeltaLambda    = RadiansFromDegrees(9.4)
+	allowedDeltaLambdaDer = RadiansFromDegrees(4.8)
+	allowedDeltaBetaDer   = RadiansFromDegrees(4.7)
+	allowedDeltaInc       = RadiansFromDegrees(6.6)
+	allowedDeltaWmega     = RadiansFromDegrees(8.0)
+	allowedDeltaOmega     = RadiansFromDegrees(8.0)
+	allowedDeltaVg        = 2.9
+	allowedDeltaVh        = 3.0
+	allowedDeltaAxis      = 0.68
+	allowedDeltaExc       = 0.36
+	allowedDeltaNu        = allowedDeltaDegrees
+	allowedDeltaEapex     = RadiansFromDegrees(4.6)
+	allowedDeltaEderiv    = RadiansFromDegrees(4.0)
+	// allowedDeltaQ         = 0.68
+	// allowedDeltaP         = 0.36
 )
 
 var (
