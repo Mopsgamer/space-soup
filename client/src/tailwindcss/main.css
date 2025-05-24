@@ -95,15 +95,25 @@
         }
 
         td.danger-level-0 {
-            @apply text-[#00ff00];
+            @apply text-[green];
         }
-
         td.danger-level-1 {
-            @apply text-[#ffff00];
+            @apply text-[goldenrod];
         }
-
         td.danger-level-2 {
-            @apply text-[#ff0000];
+            @apply text-[orangered] font-bold;
+        }
+    }
+
+    .sl-theme-dark table {
+        td.danger-level-0 {
+            @apply text-[springgreen];
+        }
+        td.danger-level-1 {
+            @apply text-[gold];
+        }
+        td.danger-level-2 {
+            @apply text-[red] font-bold;
         }
     }
 

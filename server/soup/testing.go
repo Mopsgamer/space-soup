@@ -15,10 +15,10 @@ import (
 var idInc = 800000
 
 //go:embed ORB_78.PAR
-var fileExpected string
+var FileContentEtalon string
 
 //go:embed ORB_1978-save.csv
-var fileInput string
+var FileContentInput string
 
 type MovementTest struct {
 	Input           Input
@@ -27,7 +27,7 @@ type MovementTest struct {
 	AssertionResult MovementAssertion
 }
 
-func CheckOrbitList() (tests []MovementTest, err error) {
+func CheckOrbitList(fileEtalon, fileInput string) (tests []MovementTest, err error) {
 	start := time.Now()
 	fnStart := start
 	var sinceStart, sincefnStart, sincefnStart2 time.Duration
@@ -36,7 +36,7 @@ func CheckOrbitList() (tests []MovementTest, err error) {
 		sincefnStart2 += sinceStart
 	}
 
-	linesOut := strings.Split(fileExpected, "\n")
+	linesOut := strings.Split(fileEtalon, "\n")
 	stop()
 	log.Infof("Read answers file and split %d lines: %v", len(linesOut), sinceStart)
 

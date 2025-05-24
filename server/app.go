@@ -55,7 +55,7 @@ var (
 // Initialize gofiber application, including DB and view engine.
 func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 	engine := NewAppHtmlEngine(embedFS, "client/templates")
-	tests, err = soup.CheckOrbitList()
+	tests, err = soup.CheckOrbitList(soup.FileContentEtalon, soup.FileContentInput)
 	if err != nil {
 		return
 	}
