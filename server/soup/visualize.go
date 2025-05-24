@@ -87,6 +87,7 @@ func Visualize(config VisualizeConfig) (io.WriterTo, error) {
 	p.Y.Min, p.Y.Max = -90, 90
 
 	pointsActual := plotter.XYs{}
+	pointsActualFail := plotter.XYs{}
 	for _, m := range config.Tests {
 		if m.Actual.Fail != nil {
 			continue
@@ -95,7 +96,12 @@ func Visualize(config VisualizeConfig) (io.WriterTo, error) {
 		if reverseX {
 			xActual = 360 - xActual
 		}
-		pointsActual = append(pointsActual, plotter.XY{X: xActual, Y: yActual})
+
+		if m.AssertionResult.Has(TestResultFailed) {
+			pointsActualFail = append(pointsActualFail, plotter.XY{X: xActual, Y: yActual})
+		} else {
+			pointsActual = append(pointsActual, plotter.XY{X: xActual, Y: yActual})
+		}
 	}
 	scatter, err := plotter.NewScatter(pointsActual)
 	if err != nil {
@@ -103,6 +109,14 @@ func Visualize(config VisualizeConfig) (io.WriterTo, error) {
 	}
 	scatter.Shape = draw.CircleGlyph{}
 	scatter.GlyphStyle.Radius = vg.Points(.7)
+
+	scatterFail, err := plotter.NewScatter(pointsActualFail)
+	if err != nil {
+		return nil, err
+	}
+	scatterFail.Shape = draw.CircleGlyph{}
+	scatterFail.GlyphStyle.Radius = vg.Points(.7)
+	scatterFail.GlyphStyle.Color = color.RGBA{R: 255, G: 0, B: 0, A: 255}
 
 	ecliptic := plotter.NewFunction(func(x float64) float64 {
 		if reverseX {
@@ -145,6 +159,7 @@ func Visualize(config VisualizeConfig) (io.WriterTo, error) {
 	// p.Legend.Add("Ecliptic", ecliptic)
 	p.Add(grid)
 	p.Add(scatter)
+	p.Add(scatterFail)
 
 	w, h := 16*45, 9*45
 	return p.WriterTo(vg.Length(w), vg.Length(h), "png")

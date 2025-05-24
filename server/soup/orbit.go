@@ -146,7 +146,27 @@ type MovementGeneric[T any] struct {
 
 type Movement = MovementGeneric[float64]
 
-type MovementAssertion = MovementGeneric[TestResult]
+type MovementAssertion MovementGeneric[TestResult]
+
+func (assertion MovementAssertion) Has(result TestResult) bool {
+	return assertion.Lambda_apex == result ||
+		assertion.A == result ||
+		assertion.Z_avg == result ||
+		assertion.Delta == result ||
+		assertion.Alpha == result ||
+		assertion.Beta == result ||
+		assertion.Lambda == result ||
+		assertion.Lambda_deriv == result ||
+		assertion.Beta_deriv == result ||
+		assertion.Inc == result ||
+		assertion.Wmega == result ||
+		assertion.Omega == result ||
+		assertion.V_g == result ||
+		assertion.V_h == result ||
+		assertion.Axis == result ||
+		assertion.Exc == result ||
+		assertion.Nu == result
+}
 
 type InputGeneric[T any] struct {
 	Id int
