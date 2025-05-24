@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"fmt"
 	"io/fs"
 	"math"
 	"net/http"
@@ -30,6 +31,9 @@ func NewAppHtmlEngine(embedFS fs.FS, directory string) *html.Engine {
 	engine.AddFuncMap(map[string]interface{}{
 		"degrees": soup.DegreesFromRadians,
 		"radians": soup.RadiansFromDegrees,
+		"percent": func(current, total int) string {
+			return fmt.Sprintf("%.2f%%", float64(current)/float64(total)*100)
+		},
 		"add": func(n ...int) (result int) {
 			for _, v := range n {
 				result += v

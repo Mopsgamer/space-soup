@@ -50,16 +50,24 @@ func useHttpPage(
 var (
 	tests          []soup.MovementTest
 	testsPaginated [][]soup.MovementTest
+	testsFailCount int
 )
 
 // Initialize gofiber application, including DB and view engine.
 func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
-	engine := NewAppHtmlEngine(embedFS, "client/templates")
 	tests, err = soup.CheckOrbitList(soup.FileContentEtalon, soup.FileContentInput)
 	if err != nil {
 		return
 	}
 	testsPaginated = soup.Paginate(tests)
+	for _, test := range tests {
+		if test.AssertionResult.Has(soup.TestResultFailed) {
+			testsFailCount += 1
+		}
+	}
+
+	engine := NewAppHtmlEngine(embedFS, "client/templates")
+
 	app = fiber.New(fiber.Config{
 		Views:             engine,
 		PassLocalsToViews: true,
@@ -126,40 +134,23 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 		return ctl.RenderPage(
 			"tests",
 			&fiber.Map{
-				"Title":       "Table",
-				"ExpandTable": req.TableState,
-				"Table":       testsPaginated[req.Page-1],
-				"Page":        int(req.Page),
-				"PageMax":     len(testsPaginated),
+				"Title":          "Table",
+				"IsTests":        true,
+				"TestsFailCount": testsFailCount,
+				"ExpandTable":    req.TableState,
+				"Table":          testsPaginated[req.Page-1],
+				"TableMax":       len(tests),
+				"Page":           int(req.Page),
+				"PageMax":        len(testsPaginated),
 			},
 			noRedirect,
 			"partials/main",
 		)
 	}))
 	app.Get("/tests", func(ctx fiber.Ctx) error { return ctx.Redirect().To("/tests/1") })
-	app.Post("/tests/expand", useHttp(func(ctl controller_http.ControllerHttp) error {
-		req := new(model_http.TableSetMode)
-		err := ctl.BindAll(req)
-		if err != nil {
-			return ctl.RenderInternalError(err.Error(), "err-request")
-		}
-
-		newCookie := fiber.Cookie{Name: "expand-state", Expires: time.Now()}
-
-		if req.ExpandTable != model_http.TableStateNormal {
-			newCookie.Expires = newCookie.Expires.Add(time.Hour * 24 * 30)
-			newCookie.Value = string(req.ExpandTable)
-		}
-
-		ctl.Ctx.Cookie(&newCookie)
-
-		ctl.HTMXRefresh()
-		return nil
-	}))
 	app.Get("/terms", useHttpPage("terms", &fiber.Map{"Title": "Terms", "CenterContent": true}, noRedirect, "partials/main"))
 	app.Get("/privacy", useHttpPage("privacy", &fiber.Map{"Title": "Privacy", "CenterContent": true}, noRedirect, "partials/main"))
 	app.Get("/acknowledgements", useHttpPage("acknowledgements", &fiber.Map{"Title": "Acknowledgements"}, noRedirect, "partials/main"))
-
 	app.Get("/alg/parse/cache/:hash.xlsx", useHttp(func(ctl controller_http.ControllerHttp) error {
 		hash := ctl.Ctx.Params("hash", "x")
 		cache, cacheExists := AlgCache[hash]
@@ -185,6 +176,27 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 		}
 
 		return ctl.Ctx.Send(cache.PlotImageBytes)
+	}))
+
+	// api
+	app.Post("/tests/expand", useHttp(func(ctl controller_http.ControllerHttp) error {
+		req := new(model_http.TableSetMode)
+		err := ctl.BindAll(req)
+		if err != nil {
+			return ctl.RenderInternalError(err.Error(), "err-request")
+		}
+
+		newCookie := fiber.Cookie{Name: "expand-state", Expires: time.Now()}
+
+		if req.ExpandTable != model_http.TableStateNormal {
+			newCookie.Expires = newCookie.Expires.Add(time.Hour * 24 * 30)
+			newCookie.Value = string(req.ExpandTable)
+		}
+
+		ctl.Ctx.Cookie(&newCookie)
+
+		ctl.HTMXRefresh()
+		return nil
 	}))
 	app.Post("/alg/parse/cache", useHttp(func(ctl controller_http.ControllerHttp) error {
 		req := new(model_http.OrbitInputFile)
@@ -261,6 +273,7 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 			"FileHash":    hash,
 			"ExpandTable": model_http.TableStateNormal,
 			"Table":       movementTests,
+			"TableMax":    len(cache.TestList),
 			"Page":        int(req.Page),
 			"PageMax":     len(movementTestsPaginated),
 		})
@@ -284,6 +297,7 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 		return ctl.Ctx.Render("partials/table", fiber.Map{
 			"ExpandTable": model_http.TableStateNormal,
 			"Table":       movementTestList,
+			"TableMax":    1,
 			"Page":        1,
 			"PageMax":     1,
 		})

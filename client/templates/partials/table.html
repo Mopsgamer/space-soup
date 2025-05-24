@@ -27,6 +27,12 @@
     </div>
 </div>
 {{end}}
+<p class="aligned p-2">
+    <sl-icon slot="icon" name="info-circle"></sl-icon>
+    {{.TableMax}} rows, page {{.Page}} (50 per page). {{if .IsTests}}
+    {{.TestsFailCount}}/{{.TableMax}} rows have bad results ({{percent
+    .TestsFailCount .TableMax}}). {{end}}
+</p>
 <div class="max-h-[50svh] overflow-auto">
     {{if eq .ExpandTable "values"}}
     <table id="test-pass-table">
@@ -168,55 +174,106 @@
             <td>{{printf "%.4f" $entry.Input.Tau1}}</td>
             <td>{{printf "%.4f" $entry.Input.Tau2}}</td>
             <td>
-                {{printf "%.4f°" (degrees $entry.Actual.Lambda_apex)}} ± <span class="danger-level-{{$entry.AssertionResult.Lambda_apex}}">{{printf "%.2f°" (degrees (absMinus $entry.Actual.Lambda_apex $entry.Expected.Lambda_apex))}}</span>
+                {{printf "%.4f°" (degrees $entry.Actual.Lambda_apex)}} ± <span
+                    class="danger-level-{{$entry.AssertionResult.Lambda_apex}}"
+                >{{printf "%.2f°" (degrees (absMinus $entry.Actual.Lambda_apex
+                    $entry.Expected.Lambda_apex))}}</span>
             </td>
             <td>
-                {{printf "%.4f°" (degrees $entry.Actual.A)}} ± <span class="danger-level-{{$entry.AssertionResult.A}}">{{printf "%.2f°" (degrees (absMinus $entry.Actual.A $entry.Expected.A))}}</span>
+                {{printf "%.4f°" (degrees $entry.Actual.A)}} ± <span
+                    class="danger-level-{{$entry.AssertionResult.A}}"
+                >{{printf "%.2f°" (degrees (absMinus $entry.Actual.A
+                    $entry.Expected.A))}}</span>
             </td>
             <td>
-                {{printf "%.4f°" (degrees $entry.Actual.Z_avg)}} ± <span class="danger-level-{{$entry.AssertionResult.Z_avg}}">{{printf "%.2f°" (degrees (absMinus $entry.Actual.Z_avg $entry.Expected.Z_avg))}}</span>
+                {{printf "%.4f°" (degrees $entry.Actual.Z_avg)}} ± <span
+                    class="danger-level-{{$entry.AssertionResult.Z_avg}}"
+                >{{printf "%.2f°" (degrees (absMinus $entry.Actual.Z_avg
+                    $entry.Expected.Z_avg))}}</span>
             </td>
             <td>
-                {{printf "%.4f°" (degrees $entry.Actual.Delta)}} ± <span class="danger-level-{{$entry.AssertionResult.Delta}}">{{printf "%.2f°" (degrees (absMinus $entry.Actual.Delta $entry.Expected.Delta))}}</span>
+                {{printf "%.4f°" (degrees $entry.Actual.Delta)}} ± <span
+                    class="danger-level-{{$entry.AssertionResult.Delta}}"
+                >{{printf "%.2f°" (degrees (absMinus $entry.Actual.Delta
+                    $entry.Expected.Delta))}}</span>
             </td>
             <td>
-                {{printf "%.4f°" (degrees $entry.Actual.Alpha)}} ± <span class="danger-level-{{$entry.AssertionResult.Alpha}}">{{printf "%.2f°" (degrees (absMinus $entry.Actual.Alpha $entry.Expected.Alpha))}}</span>
+                {{printf "%.4f°" (degrees $entry.Actual.Alpha)}} ± <span
+                    class="danger-level-{{$entry.AssertionResult.Alpha}}"
+                >{{printf "%.2f°" (degrees (absMinus $entry.Actual.Alpha
+                    $entry.Expected.Alpha))}}</span>
             </td>
             <td>
-                {{printf "%.4f°" (degrees $entry.Actual.Beta)}} ± <span class="danger-level-{{$entry.AssertionResult.Beta}}">{{printf "%.2f°" (degrees (absMinus $entry.Actual.Beta $entry.Expected.Beta))}}</span>
+                {{printf "%.4f°" (degrees $entry.Actual.Beta)}} ± <span
+                    class="danger-level-{{$entry.AssertionResult.Beta}}"
+                >{{printf "%.2f°" (degrees (absMinus $entry.Actual.Beta
+                    $entry.Expected.Beta))}}</span>
             </td>
             <td>
-                {{printf "%.4f°" (degrees $entry.Actual.Lambda)}} ± <span class="danger-level-{{$entry.AssertionResult.Lambda}}">{{printf "%.2f°" (degrees (absMinus $entry.Actual.Lambda $entry.Expected.Lambda))}}</span>
+                {{printf "%.4f°" (degrees $entry.Actual.Lambda)}} ± <span
+                    class="danger-level-{{$entry.AssertionResult.Lambda}}"
+                >{{printf "%.2f°" (degrees (absMinus $entry.Actual.Lambda
+                    $entry.Expected.Lambda))}}</span>
             </td>
             <td>
-                {{printf "%.4f°" (degrees $entry.Actual.Lambda_deriv)}} ± <span class="danger-level-{{$entry.AssertionResult.Lambda_deriv}}">{{printf "%.2f°" (degrees (absMinus $entry.Actual.Lambda_deriv $entry.Expected.Lambda_deriv))}}</span>
+                {{printf "%.4f°" (degrees $entry.Actual.Lambda_deriv)}} ± <span
+                    class="danger-level-{{$entry.AssertionResult.Lambda_deriv}}"
+                >{{printf "%.2f°" (degrees (absMinus $entry.Actual.Lambda_deriv
+                    $entry.Expected.Lambda_deriv))}}</span>
             </td>
             <td>
-                {{printf "%.4f°" (degrees $entry.Actual.Beta_deriv)}} ± <span class="danger-level-{{$entry.AssertionResult.Beta_deriv}}">{{printf "%.2f°" (degrees (absMinus $entry.Actual.Beta_deriv $entry.Expected.Beta_deriv))}}</span>
+                {{printf "%.4f°" (degrees $entry.Actual.Beta_deriv)}} ± <span
+                    class="danger-level-{{$entry.AssertionResult.Beta_deriv}}"
+                >{{printf "%.2f°" (degrees (absMinus $entry.Actual.Beta_deriv
+                    $entry.Expected.Beta_deriv))}}</span>
             </td>
             <td>
-                {{printf "%.4f°" (degrees $entry.Actual.Inc)}} ± <span class="danger-level-{{$entry.AssertionResult.Inc}}">{{printf "%.2f°" (degrees (absMinus $entry.Actual.Inc $entry.Expected.Inc))}}</span>
+                {{printf "%.4f°" (degrees $entry.Actual.Inc)}} ± <span
+                    class="danger-level-{{$entry.AssertionResult.Inc}}"
+                >{{printf "%.2f°" (degrees (absMinus $entry.Actual.Inc
+                    $entry.Expected.Inc))}}</span>
             </td>
             <td>
-                {{printf "%.4f°" (degrees $entry.Actual.Wmega)}} ± <span class="danger-level-{{$entry.AssertionResult.Wmega}}">{{printf "%.2f°" (degrees (absMinus $entry.Actual.Wmega $entry.Expected.Wmega))}}</span>
+                {{printf "%.4f°" (degrees $entry.Actual.Wmega)}} ± <span
+                    class="danger-level-{{$entry.AssertionResult.Wmega}}"
+                >{{printf "%.2f°" (degrees (absMinus $entry.Actual.Wmega
+                    $entry.Expected.Wmega))}}</span>
             </td>
             <td>
-                {{printf "%.4f°" (degrees $entry.Actual.Omega)}} ± <span class="danger-level-{{$entry.AssertionResult.Omega}}">{{printf "%.2f°" (degrees (absMinus $entry.Actual.Omega $entry.Expected.Omega))}}</span>
+                {{printf "%.4f°" (degrees $entry.Actual.Omega)}} ± <span
+                    class="danger-level-{{$entry.AssertionResult.Omega}}"
+                >{{printf "%.2f°" (degrees (absMinus $entry.Actual.Omega
+                    $entry.Expected.Omega))}}</span>
             </td>
             <td>
-                {{printf "%.4f" $entry.Actual.V_g}} ± <span class="danger-level-{{$entry.AssertionResult.V_g}}">{{ printf "%.2f" (absMinus $entry.Actual.V_g $entry.Expected.V_g)}}</span>
+                {{printf "%.4f" $entry.Actual.V_g}} ± <span
+                    class="danger-level-{{$entry.AssertionResult.V_g}}"
+                >{{ printf "%.2f" (absMinus $entry.Actual.V_g
+                    $entry.Expected.V_g)}}</span>
             </td>
             <td>
-                {{printf "%.4f" $entry.Actual.V_h}} ± <span class="danger-level-{{$entry.AssertionResult.V_h}}">{{ printf "%.2f" (absMinus $entry.Actual.V_h $entry.Expected.V_h)}}</span>
+                {{printf "%.4f" $entry.Actual.V_h}} ± <span
+                    class="danger-level-{{$entry.AssertionResult.V_h}}"
+                >{{ printf "%.2f" (absMinus $entry.Actual.V_h
+                    $entry.Expected.V_h)}}</span>
             </td>
             <td>
-                {{printf "%.4f" $entry.Actual.Axis}} ± <span class="danger-level-{{$entry.AssertionResult.Axis}}">{{ printf "%.2f" (absMinus $entry.Actual.Axis $entry.Expected.Axis)}}</span>
+                {{printf "%.4f" $entry.Actual.Axis}} ± <span
+                    class="danger-level-{{$entry.AssertionResult.Axis}}"
+                >{{ printf "%.2f" (absMinus $entry.Actual.Axis
+                    $entry.Expected.Axis)}}</span>
             </td>
             <td>
-                {{printf "%.4f" $entry.Actual.Exc}} ± <span class="danger-level-{{$entry.AssertionResult.Exc}}">{{ printf "%.2f" (absMinus $entry.Actual.Exc $entry.Expected.Exc)}}</span>
+                {{printf "%.4f" $entry.Actual.Exc}} ± <span
+                    class="danger-level-{{$entry.AssertionResult.Exc}}"
+                >{{ printf "%.2f" (absMinus $entry.Actual.Exc
+                    $entry.Expected.Exc)}}</span>
             </td>
             <td>
-                {{printf "%.4f°" (degrees $entry.Actual.Nu)}} ± <span class="danger-level-{{$entry.AssertionResult.Nu}}">{{printf "%.2f°" (degrees (absMinus $entry.Actual.Nu $entry.Expected.Nu))}}</span>
+                {{printf "%.4f°" (degrees $entry.Actual.Nu)}} ± <span
+                    class="danger-level-{{$entry.AssertionResult.Nu}}"
+                >{{printf "%.2f°" (degrees (absMinus $entry.Actual.Nu
+                    $entry.Expected.Nu))}}</span>
             </td>
         </tr>
         {{end}}
@@ -351,7 +408,7 @@
                 slot="prefix"
                 name="table"
             ></sl-icon>Download .xlsx</sl-button>
-            <sl-button href="/tests.png" target="_blank">
+        <sl-button href="/tests.png" target="_blank">
             <sl-icon
                 slot="prefix"
                 name="magic"
