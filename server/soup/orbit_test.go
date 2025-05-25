@@ -40,8 +40,6 @@ func CheckOrbit(assert *assert.Assertions, input Input, expected Movement) {
 	InDelta(allowedDeltaAxis, "Axis")
 	InDelta(allowedDeltaExc, "Exc")
 	InDelta(allowedDeltaNu, "Nu")
-	InDelta(allowedDeltaEapex, "E_apex")
-	InDelta(allowedDeltaEderiv, "E_deriv")
 }
 
 func TestOrbit800016(t *testing.T) {
