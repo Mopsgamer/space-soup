@@ -9,7 +9,7 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-func NewFileExcelBytes(movementList []MovementTest) ([]byte, error) {
+func NewFileExcelBytes(movementList []MovementTest, noDelta bool) ([]byte, error) {
 	file := excelize.NewFile()
 	sheetName := file.GetSheetName(0)
 
@@ -108,6 +108,10 @@ func NewFileExcelBytes(movementList []MovementTest) ([]byte, error) {
 			file.SetCellStyle(sheetName, coord, coord, normal)
 		}
 		setCellFloatDelta := func(actual, expected float64, suffix string) {
+			if noDelta {
+				setCellFloat(actual, suffix)
+				return
+			}
 			coord := nextColCell(row)
 			delta := math.Abs(actual - expected)
 			str := strings.Replace(fmt.Sprintf("%.2f%s ± %.2f%s", actual, suffix, delta, suffix), ".", ",", -1)

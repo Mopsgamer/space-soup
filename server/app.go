@@ -109,7 +109,7 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 			return ctl.RenderInternalError(err.Error(), "err-request")
 		}
 
-		bytes, err := soup.NewFileExcelBytes(tests)
+		bytes, err := soup.NewFileExcelBytes(tests, false)
 		if err != nil {
 			return ctl.RenderInternalError(err.Error(), "err-request")
 		}

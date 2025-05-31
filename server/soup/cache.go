@@ -36,7 +36,7 @@ func NewCache(tests []MovementTest, rang, description string) (cache *SoupCache,
 		return
 	}
 
-	excelBytes, err := NewFileExcelBytes(movementTestList)
+	excelBytes, err := NewFileExcelBytes(movementTestList, true)
 	if err != nil {
 		return
 	}
