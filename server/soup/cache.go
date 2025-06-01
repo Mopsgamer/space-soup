@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/Mopsgamer/space-soup/server/environment"
-	"github.com/gofiber/fiber/v3/log"
 )
 
 var ErrCacheExpired = errors.New("cache expired")
@@ -118,12 +117,10 @@ func NewFormFileBytes(formFile *multipart.FileHeader) (fileBytes []byte, err err
 	}
 	defer file.Close()
 
-	log.Info(len(fileBytes))
 	fileBytes, err = io.ReadAll(file)
 	if err != nil {
 		return
 	}
-	log.Info(len(fileBytes))
 
 	return
 }
