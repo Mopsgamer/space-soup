@@ -13,8 +13,7 @@ import (
 var ErrCacheExpired = errors.New("cache expired")
 
 type SoupCache struct {
-	ExpiresAt  time.Time
-	IsImmortal bool
+	ExpiresAt time.Time
 
 	TestList []MovementTest
 
@@ -50,7 +49,7 @@ func NewCache(tests []MovementTest, rang, description string) (cache *SoupCache,
 }
 
 func (cache SoupCache) IsExpired() bool {
-	return !cache.IsImmortal && cache.ExpiresAt.Before(time.Now())
+	return cache.ExpiresAt.Before(time.Now())
 }
 
 // Increases ExpiresAt time.
