@@ -217,7 +217,7 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 		hash := soup.HashString(formFileBytes)
 		cache, cacheExists := AlgCache[hash]
 		if !cacheExists {
-			tests, err := soup.NewMovementTestsFromFromFile(formFile, req.FileType)
+			tests, err := soup.NewMovementTestsFromFile(formFile, req.FileType)
 			if err != nil {
 				return ctl.RenderInternalError(err.Error(), "err-request")
 			}
@@ -250,7 +250,7 @@ func NewApp(embedFS fs.FS) (app *fiber.App, err error) {
 		hash := soup.HashString(formFileBytes)
 		cache, cacheExists := AlgCache[hash]
 		if !cacheExists {
-			tests, err := soup.NewMovementTestsFromFromFile(formFile, req.FileType)
+			tests, err := soup.NewMovementTestsFromFile(formFile, req.FileType)
 			if err != nil {
 				return ctl.RenderInternalError(err.Error(), "err-request")
 			}

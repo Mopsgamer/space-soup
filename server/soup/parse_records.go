@@ -15,7 +15,7 @@ var (
 
 var notnum = regexp.MustCompile(`[^\s0-9,.]`)
 
-func NewMovementTestsFromFromFile(formFile *multipart.FileHeader, filetype FileType) ([]MovementTest, error) {
+func NewMovementTestsFromFile(formFile *multipart.FileHeader, filetype FileType) ([]MovementTest, error) {
 	var movementTestList []MovementTest
 
 	filetype = filetype.DecideFileName(formFile.Filename)
